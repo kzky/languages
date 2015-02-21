@@ -1,0 +1,31 @@
+<h1>Listing goods</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Makers</th>
+    <th>Price</th>
+    <th>Star</th>
+    <th>Memo</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @goods.each do |good| %>
+  <tr>
+    <td><%= good.name %></td>
+    <td><%= good.makers_id %></td>
+    <td><%= good.price %></td>
+    <td><%= good.star %></td>
+    <td><%= good.memo %></td>
+    <td><%= link_to 'Show', good %></td>
+    <td><%= link_to 'Edit', edit_good_path(good) %></td>
+    <td><%= link_to 'Destroy', good, :method => :delete, :data => { :confirm => 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Good', new_good_path %>

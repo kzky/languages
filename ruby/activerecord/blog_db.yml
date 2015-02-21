@@ -1,0 +1,16 @@
+db:
+  production:
+    adapter:  mysql2
+    host:     localhost
+    username: mysql
+    password: mysql
+    database: blog
+
+  development:
+    adapter:  mysql2
+    host:     localhost
+    username:	mysql
+    password: mysql
+    database: mysql
+    database: blog
+

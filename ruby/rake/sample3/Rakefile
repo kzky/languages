@@ -1,0 +1,11 @@
+namespace :test do 
+  task :hello do 
+    puts "namespace-wrapped task: hello"
+  end
+  task :hello_2 do 
+    puts "namespace-wrapped task: hello_2"
+  end
+  task :hello_world => [:hello_2, :hello] do 
+    puts "namespace-wrapped task: hello world"
+  end
+end

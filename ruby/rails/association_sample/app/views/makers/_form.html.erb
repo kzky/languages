@@ -1,0 +1,29 @@
+<%= form_for(@maker) do |f| %>
+  <% if @maker.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@maker.errors.count, "error") %> prohibited this maker from being saved:</h2>
+
+      <ul>
+      <% @maker.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :site %><br />
+    <%= f.text_field :site %>
+  </div>
+  <div class="field">
+    <%= f.label :memo %><br />
+    <%= f.text_area :memo %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

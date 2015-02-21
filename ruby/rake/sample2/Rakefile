@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+# foo.txtがない場合のみ実行されるタスク
+
+file "foo.txt" do ## fileもタスクの一覧
+  puts "create foo.txt"
+  open("./foo.txt", "w"){|f| f << "test." }
+end
+
+task :foo do
+  file "foo.txt" do
+    puts "create foo.txt"
+    open("./foo.txt", "w"){|f| f << "test." }
+  end
+end

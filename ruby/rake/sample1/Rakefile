@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+## 書き方
+# task <タスク名> , [<パラメータ名>, <パラメータ名> ... ] => [<前提タスク名>,<前提タスク名> ... ] do
+#    # アクション
+# end
+
+# "default" タスク
+task :default do
+  puts 'default'
+end
+
+# "hello" を表示するだけのタスク
+task :hello do
+  puts 'hello'
+end
+
+# "hello"の後に"world"を出力するタスク
+task :hello_world=>[:hello] do
+  puts 'world'
+end
+
+# アクションなしのタスク
+task :all=>[:hello_world, :echo]
+
+#パラメータを受け付けるタスク
+task :echo, [:message] => [:hello] do |t, args|
+  # ブロックへのパラメータとしてタスクオブジェクトとパラメータが渡される。
+  puts args.message
+end

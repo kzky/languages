@@ -1,0 +1,151 @@
+
+<HTML>
+<head>
+<link rel=stylesheet type="text/css" href="../style.css" title="style">
+<title>fread(3) - Linux manual page</title>
+<style type="text/css">
+<!--
+body { color:#000000; background-color:#F8F8F8; }
+b    { color:#502000; }
+i    { color:#006000; }
+h2   { color:#A00000; padding-top: 15px; font-size: 100%; }
+h3   { color:#600000; font-size: 100%; padding-top: 10px; padding-left: 20px; }
+pre  { font-family: monospace, courier; }
+a:link    { text-decoration: none; color: blue; }
+a:visited { text-decoration: none; color: blue; }
+a:hover   { text-decoration: underline; color: red; }
+a:active  { text-decoration: underline; background-color: #FFD0D0; }
+//-->
+</style>
+</head>
+<BODY><a name="section_dir"></a>
+<form method="get" action="http://www.google.com/search">
+<table border=0 cellpadding=0 cellspacing=0 width="100%">
+<tr>
+<td align="left">
+<font size="-1">
+
+<a href="../../../index.html">man7.org</a> > Linux > <a href="../index.html">man-pages</a></font>
+</td>
+<td align="right">
+<input type="text" name="q" size=10 maxlength=255 value="">
+<input type="hidden" name="sitesearch" value="man7.org/linux/man-pages">
+<input type="submit" name="sa" value="Search online pages">
+</td>
+</tr>
+</table>
+</form>
+<hr>
+<p>
+<table width="100%"><tr><td><font size="-1"><a href="#NAME">NAME</a> | <a href="#SYNOPSIS">SYNOPSIS</a> | <a href="#DESCRIPTION">DESCRIPTION</a> | <a href="#RETURN_VALUE">RETURN VALUE</a> | <a href="#CONFORMING_TO">CONFORMING TO</a> | <a href="#SEE_ALSO">SEE ALSO</a> | <a href="#COLOPHON">COLOPHON</a></font></td><td align="right"><font size="-1"><a href="http://man7.org/tlpi/"><em>The Linux Programming Interface</em></a></font></td></td></tr></table></font>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+FREAD(3)                     Linux Programmer's Manual                    FREAD(3)
+</PRE>
+<a name="NAME" href="#NAME"></a><H2>NAME  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       fread, fwrite - binary stream input/output
+</PRE>
+<a name="SYNOPSIS" href="#SYNOPSIS"></a><H2>SYNOPSIS  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       <B>#include</B> <B>&lt;stdio.h&gt;</B>
+
+       <B>size_t</B> <B>fread(void</B> <B>*</B><I>ptr</I><B>,</B> <B>size_t</B> <I>size</I><B>,</B> <B>size_t</B> <I>nmemb</I><B>,</B> <B>FILE</B> <B>*</B><I>stream</I><B>);</B>
+
+       <B>size_t</B> <B>fwrite(const</B> <B>void</B> <B>*</B><I>ptr</I><B>,</B> <B>size_t</B> <I>size</I><B>,</B> <B>size_t</B> <I>nmemb</I><B>,</B>
+                     <B>FILE</B> <B>*</B><I>stream</I><B>);</B>
+</PRE>
+<a name="DESCRIPTION" href="#DESCRIPTION"></a><H2>DESCRIPTION  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       The function <B>fread</B>() reads <I>nmemb</I> elements of data, each <I>size</I> bytes long,
+       from the stream pointed to by <I>stream</I>, storing them at the location given by
+       <I>ptr</I>.
+
+       The function <B>fwrite</B>() writes <I>nmemb</I> elements of data, each <I>size</I> bytes long,
+       to the stream pointed to by <I>stream</I>, obtaining them from the location given
+       by <I>ptr</I>.
+
+       For nonlocking counterparts, see <A HREF="../man3/unlocked_stdio.3.html">unlocked_stdio(3)</A>.
+</PRE>
+<a name="RETURN_VALUE" href="#RETURN_VALUE"></a><H2>RETURN VALUE  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       On success, <B>fread</B>() and <B>fwrite</B>() return the number of <I>items</I> read or
+       written.  This number equals the number of bytes transferred only when <I>size</I>
+       is 1.  If an error occurs, or the end of the file is reached, the return
+       value is a short item count (or zero).
+
+       <B>fread</B>() does not distinguish between end-of-file and error, and callers
+       must use <A HREF="../man3/feof.3.html">feof(3)</A> and <A HREF="../man3/ferror.3.html">ferror(3)</A> to determine which occurred.
+</PRE>
+<a name="CONFORMING_TO" href="#CONFORMING_TO"></a><H2>CONFORMING TO  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       C89, POSIX.1-2001.
+</PRE>
+<a name="SEE_ALSO" href="#SEE_ALSO"></a><H2>SEE ALSO  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       <A HREF="../man2/read.2.html">read(2)</A>, <A HREF="../man2/write.2.html">write(2)</A>, <A HREF="../man3/feof.3.html">feof(3)</A>, <A HREF="../man3/ferror.3.html">ferror(3)</A>, <A HREF="../man3/unlocked_stdio.3.html">unlocked_stdio(3)</A>
+</PRE>
+<a name="COLOPHON" href="#COLOPHON"></a><H2>COLOPHON  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#section_dir"><font size="-2">top</font></a></H2><PRE>
+       This page is part of release 3.40 of the Linux <I>man-pages</I> project.  A
+       description of the project, and information about reporting bugs, can be
+       found at <a href="http://www.kernel.org/doc/man-pages/">http://www.kernel.org/doc/man-pages/</a>.
+
+GNU                                 2012-03-30                            FREAD(3)
+</PRE>
+<HR>
+<p>HTML rendering created 2012-04-27 by Michael Kerrisk, 
+author of 
+<a href="http://man7.org/tlpi/"><em>The Linux Programming Interface</em></a>, 
+maintainer of the 
+<a href="http://www.kernel.org/doc/man-pages/">Linux <em>man-pages</em> project</a>
+</PR>
+
+<!--BEGIN-SITETRACKING-->
+<!-- SITETRACKING.man7.org_linux_man-pages -->
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=7422636; 
+var sc_invisible=1; 
+var sc_security="9b6714ff"; 
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="free hit counters"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/7422636/0/9b6714ff/1/"
+alt="free hit counters" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+
+<!-- Start of Google Analytics Code -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-9830363-8']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<!-- SITETRACKING.linux_man-pages -->
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+var sc_project=5618989;
+var sc_invisible=1;
+var sc_partition=60;
+var sc_click_stat=1;
+var sc_security="4f8507d7";
+</script>
+
+<script type="text/javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><div
+class="statcounter"><a title="customisable counter"
+href="http://www.statcounter.com/free_hit_counter.html"
+target="_blank"><img class="statcounter"
+src="http://c.statcounter.com/5618989/0/4f8507d7/1/" alt="customisable
+counter" ></a></div></noscript>
+<!-- End of StatCounter Code -->
+<!--END-SITETRACKING-->
+
+</BODY>
+</HTML>

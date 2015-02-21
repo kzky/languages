@@ -1,0 +1,18 @@
+# Wishart distribution
+http://en.wikipedia.org/wiki/Wishart_distribution
+
+- Assumption
+-- zero-mean
+
+# key word
+- baysian network
+- relevence vector machine
+- semi-supervised learning
+- hyper parameter free = tuning parameter free
+- no-scaling
+- kernalize
+-- mahalanobis kernel
+
+tuning parameter free no-scaling
+
+TPFNS-SSL

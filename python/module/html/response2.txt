@@ -1,0 +1,14 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=EUC-JP">
+<META HTTP-EQUIV="Content-Language" CONTENT="ja">
+<TITLE>Not Found</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<!-- gacky -->
+<A HREF="http://www.rakuten.co.jp/"><IMG SRC="/errors/RAKUTEN.gif" BORDER=0></A>
+<H1>見つかりません</H1>
+URL をもう一度ご確認の上，アクセスしてください。
+</BODY>
+</HTML>
+

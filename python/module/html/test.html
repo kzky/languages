@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS" />
+<title>HTMLを解析(スクレイピング)する: Python Tips</title>
+<meta name="description" content="HTMLを解析(スクレイピング)する,プログラミング言語 Python について" />
+<meta name="keywords" content="Python Tips " />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<link rel="alternate" media="handheld" type="text/html" href="http://python-tips.seesaa.net/article/148611391.html" />
+<link rel="stylesheet" href="http://python-tips.seesaa.net/styles-index.css" type="text/css" />
+<link rel="stylesheet" href="http://blog.seesaa.jp/css/user-common.css" type="text/css" />
+<link rel="alternate" href="http://python-tips.seesaa.net/index.rdf" type="application/rss+xml" title="RSS" />
+</head>
+<body><script type="text/javaScript">seesaa_site_id = 'python-tips'; seesaa_floating = true;</script>
+<span id="iphone-link" style="display:none; padding-top:3px;text-align:right;"><a href="javascript:document.cookie='force_pc=0; max-age=15768000; path=/'; document.location='/'">スマートフォン専用ページを表示</a></span>
+<script type="text/javaScript"><!--
+if ((0 <= navigator.userAgent.indexOf('iPhone')) || (0 <= navigator.userAgent.indexOf('Android'))) { document.getElementById('iphone-link').style.display = 'block'; }
+//--></script>
+
+
+<div id="container">
+<script type="text/javascript" language="JavaScript" src="http://blog.seesaa.jp/contents/js/ad_plugin.js"></script>
+<div id="banner">
+<h1><a href="http://python-tips.seesaa.net/" accesskey="1">Python Tips</a></h1>
+
+<span class="description">プログラミング言語 Python について</span>
+
+
+
+</div>
+
+<div id="links-left">
+<div class="sidetitle">新着記事</div>
+<div class="side">
+
+
+・<!--(05/05)--><a href="http://python-tips.seesaa.net/article/148856422.html">名前空間のつまらないネタ</a><br />
+
+・<!--(05/03)--><a href="http://python-tips.seesaa.net/article/148611391.html">HTMLを解析(スクレイピング)する</a><br />
+
+・<!--(05/03)--><a href="http://python-tips.seesaa.net/article/18289742.html">URLから読み込むには</a><br />
+
+・<!--(04/11)--><a href="http://python-tips.seesaa.net/article/146246855.html">Python で fc2ブログに投稿する</a><br />
+
+・<!--(06/14)--><a href="http://python-tips.seesaa.net/article/18290339.html">日本語を扱う - 2. 文字列とユニコード文字列</a><br />
+
+
+</div>
+
+<div class="sidetitle">人気プログラミング書籍</div>
+<div class="side rakuten_rank">
+
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6447045%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">1位:「入門＋実践」要求を仕様化する技術…</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F5274360%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">2位:基礎からのMySQL</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6536643%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">3位:WEB ＋ DB PRESS（Vol．58）</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6677334%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">4位:Rubyレシピブック303の技</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6594812%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">5位:間違いだらけのソフトウェア・アーキ…</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6197627%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">6位:MySQL全機能バイブル</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6526650%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">7位:SEのための29歳からのキャリア向上計画</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F6172307%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">8位:MySQLによるタフなサイトの作り方</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F5850793%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">9位:ARToolKit拡張現実感プログラミング…</a><br />
+
+<a href="http://hb.afl.rakuten.co.jp/hgc/08770b71.98db4e88.08770b72.f6a25d4e?pc=http%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F5994419%2F%26D2%3D1.239.10235.9685.1009164" target="_self" rel="nofollow">10位:C言語によるPICプログラミング入門…</a><br />
+
+
+</div>
+
+<div style="text-align:center; margin: .8em 0;"><a href="http://www.python.jp/" target="_self"><img border="0" src="http://python-tips.up.seesaa.net/image/amimoto115x50b.png" alt="python.jp" width="115" height="50" /></a></div>  
+
+
+
+<div class="sidetitle">カテゴリ</div>
+<div class="side">
+
+
+<a href="http://python-tips.seesaa.net/category/1205376-1.html">Pythonとは？</a>(3)<br />
+
+<a href="http://python-tips.seesaa.net/category/1207912-1.html">Pythonの導入</a>(1)<br />
+
+<a href="http://python-tips.seesaa.net/category/1312152-1.html">Pythonで日本語</a>(2)<br />
+
+<a href="http://python-tips.seesaa.net/category/1541011-1.html">ネット関連</a>(0)<br />
+
+<a href="http://python-tips.seesaa.net/category/8102237-1.html">ブログ</a>(4)<br />
+
+<a href="http://python-tips.seesaa.net/category/8110382-1.html">Python言語</a>(1)<br />
+
+
+</div>
+
+<div class="sidetitle">お気に入りリンク</div>
+
+<div class="side">
+
+<a rel="nofollow" href="http://www.python.jp/Zope/" >日本Pythonユーザ会</a><br />
+
+<a rel="nofollow" href="http://www.python.jp/doc/release/" >オンラインドキュメント</a><br />
+
+<a rel="nofollow" href="http://paison.hp.infoseek.co.jp/paison/main/index.html" >Cafe de Paison</a><br />
+
+<a rel="nofollow" href="http://hp.vector.co.jp/authors/VA003670/python/" >Pythonハンディマニュアル</a><br />
+
+<a rel="nofollow" href="http://www.f7.ems.okayama-u.ac.jp/~yan/python/" >ニシキヘビを飼おう</a><br />
+
+
+</div>
+
+<div class="syndicate">
+<a href="/index.rdf">RDF Site Summary</a><br />
+<a href="/index20.rdf">RSS 2.0</a><br />
+</div>
+
+<div class="powered">
+
+<script src=http://snowgate.net/ac/t.js></script><table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td><a href="http://tag.seesaa.jp"><img src="http://blog.seesaa.jp/img/seesaablog.gif" width="138" height="22" border="0" alt="Powered by Seesaa" /></a></td>
+</tr> 
+<tr>
+<td><div style="background-color:#9C9C9C;text-align:center;font-size:10px;padding:3px;margin:0px;"><a href="http://tag.seesaa.jp" style="color:#FFF;">Seesaa</a><a href="http://blog.seesaa.jp" style="color:#FFF;">ブログ</a></div></td>
+</tr>
+</table>
+<div style="text-align:center;font-size:7px;"> <a href="http://python-tips.up.seesaa.net/image/python_prettify.html">python_prettify</a></div></div>
+
+
+
+</div>
+
+<div id="content">
+
+<!-- Content -->
+
+<div class="navi">
+&lt;&lt;<a href="http://python-tips.seesaa.net/article/18289742.html">URLから読み込むには</a>| 
+<a href="http://python-tips.seesaa.net/">Main</a>
+| <a href="http://python-tips.seesaa.net/article/148856422.html">名前空間のつまらないネタ</a>&gt;&gt;
+</div>
+
+
+
+
+
+<div class="blog">
+
+<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:Trackback="http://madskills.com/public/xml/rss/module/Trackback/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rdf:Description
+    rdf:about="http://python-tips.seesaa.net/article/148611391.html"
+    trackback:ping="http://blog.seesaa.jp/tb/148611391"
+    dc:title="HTMLを解析(スクレイピング)する"
+    dc:identifier="http://python-tips.seesaa.net/article/148611391.html"
+    dc:description="HTML解析に使用するライブラリ・BeautifulSoup.py　Pure-Python で書かれている。大きなページだと処理速度は遅い。・HTMLの解析は、やはり、XPathで行うのが簡単でラク。   XPath が使える主なHTML解析ライブラリには、　　lxml、libxml2　の２つがある。 XPath 言語仕様1. lxmlを使った例finance.yahoo.comから、グーグルの最新株価を取得するimport urllibimport lxml.htmlfd .."
+    dc:creator="nickname"
+    dc:subject="Pythonとは？"
+    dc:date="2010-05-03T15:17:15+09:00"
+/>
+</rdf:RDF>
+-->
+<h2 class="date">2010年05月03日</h2>
+<div class="blogbody">
+<h3 class="title"><a href="http://python-tips.seesaa.net/article/148611391.html" class="title">HTMLを解析(スクレイピング)する</a></h3>
+
+<div class="text"><!-- MATCH SEESAA : NO FLOATING -->HTML解析に使用するライブラリ<br /><br />・BeautifulSoup.py<br />　Pure-Python で書かれている。大きなページだと処理速度は遅い。<br /><br /><strong>・HTMLの解析は、やはり、XPathで行うのが簡単でラク。</strong><br />  <br /> XPath が使える主なHTML解析ライブラリには、<br />　　<strong><a href="http://codespeak.net/lxml/" target="_blank">lxml</a>、<a href="http://xmlsoft.org/" target="_blank">libxml2</a></strong><br />　の２つがある。<br /><br /> <a href="http://www.doraneko.org/xml/xpath10/19991116/Overview.html" target="_blank">XPath 言語仕様</a><br /><br /><strong>1. lxmlを使った例</strong><br /><br />finance.yahoo.comから、グーグルの最新株価を取得する<br /><pre><code><span class=states>import</span> urllib<br /><span class=states>import</span> lxml.html<br /><br />fd = urllib.urlopen(<span class=comment>'http://finance.yahoo.com/q?s=GOOG'</span>)<br />s = fd.read().decode(<span class=comment>'utf-8'</span>)<br />xRoot = lxml.html.fromstring(s)<br />path = <span class=comment>'''string(<br />  //tr[<br />   th/text() = <span class=comment>'Last Trade:'</span> or<br />   th/text() = <span class=comment>'Index Value:'</span> <br />  ]/td[1])'''</span><br /><br /><span class=states>print</span> xRoot.xpath(path)<br /></code></pre><br /><br /><br /><strong>・2. libxml2を使った例</strong><br /><pre><code><span class=states>import</span> libxml2<br />doc = libxml2.htmlReadFile(<span class=comment>'http://www.yahoo.co.jp', 'utf-8'</span><br />        libxml2.HTML_PARSE_RECOVER |<br />        libxml2.HTML_PARSE_NOERROR |<br />        libxml2.HTML_PARSE_NOWARNING <br />      )<br /><span class=comment>#全てのＡタグのリンク先を表示する</span><br />nodes = doc.xpathEval("//a[@href]")<br />links = list([x.prop(<span class=comment>'href'</span>) <span class=keyword>for</span> x <span class=keyword>in</span> nodes])<br />doc.freeDoc()<br /><span class=states>print</span> links<br /></code></pre><br /><strong>注意</strong>) libxml2 のPythonバインディングは、メモリ管理を手動で行う必要がある。freeDoc(), xpathFreeContext() を忘れると、すぐにメモリリークする。<br /><br /><pre><code><span class=keyword>def</span> debugRun():<br />  debugMemory(1)<br />  <span class=keyword>try</span>:<br />    main() <span class=comment>#メモリリークをテスト</span><br />  <span class=keyword>finally</span>: <br />    cleanupParser()<br />    <span class=states>print</span> "Memory leak %d bytes" % (debugMemory(1))<br />    dumpMemory()<br /></code></pre><br /><br />現時点では、lxmlのほうが使いやすい。<br /><br /><a name="more"></a></div>
+
+<div class="posted">
+
+
+
+ <a href="http://python-tips.seesaa.net/article/148611391.html#comment">Comment(2)</a>
+
+
+| <a href="http://python-tips.seesaa.net/article/148611391.html#trackback">TrackBack(0)</a>
+
+| <a href="http://python-tips.seesaa.net/category/1205376-1.html">Pythonとは？</a>
+</div>
+
+</div>
+
+</div>
+
+
+
+
+<div id="comments">
+
+<a name="comment"></a>
+
+<div class="comments-head">この記事へのコメント</div>
+
+
+<div class="comments-body">
+<div class="text">─＞ <a href="http://code.google.com/p/html5lib/" target="_blank" rel="nofollow">http://code.google.com/p/html5lib/</a><br /></div>
+<div class="comments-post">Posted by  at 2010年05月03日 15:42<br /></div>
+</div>
+
+<div class="comments-body">
+<div class="text">TBありがとうございます。<br />Pythonは、経験ないのですが大変興味があります。<br /><br />最近、スクレイピング、マッシュアップみたいなことができておりませんが、なにか記事ができましたら書きますのでまたよろしくお願いいたします。<br /><br />マサ</div>
+<div class="comments-post">Posted by <a href="http://blogs.yahoo.co.jp/rakuten200802" target="_blank" rel="nofollow">マサ</a> at 2010年05月03日 18:09<br /></div>
+</div>
+
+
+<div class="comments-head">コメントを書く</div>
+<form action="http://python-tips.seesaa.net/pages/user/comments2/regist/input" method="post">
+<div class="comments-body">
+お名前: <br />
+<input type="text" name="article_child__writer" size="50" value="" /><br />
+メールアドレス: <br />
+<input type="text" name="article_child__email" size="50" value="" /><br />
+ホームページアドレス: <br />
+<input type="text" name="article_child__homepage" size="50" value="" /><br />
+コメント: <br />
+<textarea name="article_child__body" rows="10" cols="45"></textarea><br />
+<input type="hidden" name="article_child__article_id" value="148611391" />
+<input type="hidden" name="article_id" value="148611391" />
+
+<input name="need_confirm" type="submit" class="input-submit"  value="確認する" /><input name="posted" type="submit" class="input-submit"  value="書き込む" />
+</div>
+</form>
+
+</div>
+
+
+
+<div id="trackback">
+
+この記事へのTrackBack URL<br />http://blog.seesaa.jp/tb/148611391<br />
+
+
+
+</div>
+
+
+
+
+<!-- /Content -->
+
+
+
+</div>
+
+
+<div id="footer">
+
+</div>
+
+</div>
+
+<!-- common footer -->
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  makers_id: 1
+  price: 1
+  star: 1
+  memo: MyText
+
+two:
+  name: MyString
+  makers_id: 1
+  price: 1
+  star: 1
+  memo: MyText

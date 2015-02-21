@@ -1,0 +1,219 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=euc-jp">
+<meta http-equiv="Content-Language" content="ja">
+<title>【楽天】ログイン</title>
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<script type="text/javascript" src="/com/js/id/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/com/js/id/hint.js"></script>
+<link rel="stylesheet" href="/com/css/id/common_login.css" type="text/css" media="all">
+<script language="Javascript" type="text/javascript">
+<!--
+function setfocus() {
+	obj = document.SecondAuthBirthForm;
+    obj.birthday.focus();
+}
+//-->
+</script>
+</head>
+<body id="confirm">
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div align="center">
+<!--header-->
+<div style="clear:both; float:left; width:100%; border-bottom:2px solid #348cff;">
+    <h1 style="margin:0px; padding:0px; float:left;"><a href="http://www.nikki.ne.jp/" title="楽天みんなの就職活動日記" style="display: block; margin:10px; width:402px; height:40px; background:url(https://www.nikki.ne.jp/img/www/logo_minshu.gif) no-repeat; text-indent: -10000px;">楽天みんなの就職活動日記</a></h1>
+    <p style="float:right; font-size:90%; padding:10px; text-align:right;">
+        <span id="grpNote">
+        <noscript><a href="//card.rakuten.co.jp/entry/">今すぐ2,000ポイント！</a></noscript>
+        </span>
+        <script type="text/javascript" src="//jp.rakuten-static.com/1/js/lib/prm_selector.js"></script>
+        <script type="text/javascript" src="//jp.rakuten-static.com/1/js/grp/hdr/prm_sender.js"></script> | <a href="http://rd.rakuten.co.jp/s/?R2=http%3A%2F%2Fwww.rakuten.co.jp%2F&D2=140.5283.46431.758780.11944474&C3=c762eb5d3455bf620b2308ea59cfca2deb1c1904"><strong>楽天市場へ</strong></a><br>
+        <a href="https://www.nikki.ne.jp/d1/client_form_05">広告掲載</a> | <a href="http://www.nikki.ne.jp/d1/help/ ">ヘルプ</a> | <a href="http://www.nikki.ne.jp/rd/123091/">ご意見・ご要望</a> | <a href="http://www.nikki.ne.jp/sitemap/">サイトマップ</a>
+    </p>
+</div>
+<!--/header-->
+
+</div>
+
+<noscript>
+<p class="noJS">JavaScriptが無効の為、一部のコンテンツをご利用いただけません。<br>JavaScriptの設定を有効にしてからご利用いただきますようお願いいたします。※JavaScriptの設定方法は<a href="http://ichiba.faq.rakuten.co.jp/cgi-bin/rakuten_www.cfg/php/enduser/std_adp.php?p_faqid=154">楽天市場お問い合わせQ&A</a>をご覧ください。</p>
+</noscript>
+<div id="container">
+
+<div id="language" align="right">
+
+
+
+
+
+<div align="right">
+Japanese
+</div>
+
+</div>
+<div id="contents">
+
+<div id="main">
+
+
+
+  <p class="comment"><img src="https://jp.rakuten-static.com/1/im/ic/ui/rakuten_logo.gif" alt="楽天" class="logo"width="56" height="19" />このサービスをご利用になるにはログインしてください。</p>
+
+
+
+
+<div id="mainLeft">
+
+  <div class="login">
+    <form name="SecondAuthBirthForm" method="post" action="./secondauthbirth" autocomplete="off">
+    <input type="hidden" name="t" value="zObfcrpedV2wWkR79uWn/5eWWa+UQCjttKP7NgyH4Eq2Zf0bVoKqz+vu00afbBD2">
+    <input type="hidden" name="return_url" value="index.phtml"><input type="hidden" name="service_id" value="p06"><input type="hidden" name="return_url_nikki" value="http://www.nikki.ne.jp/a/login/"><input type="hidden" name="eVar22" value="www:top_limit:rakutenLogin_btn">
+    <div id="loginInner">
+    <h1><img src="/com/img/r_logo_s.gif" alt="" class="logo"/>楽天会員ログイン</h1>
+    <table class="loginBox">
+    
+    <tr>
+      <td class="loginBoxName">
+      <p class="fomName">
+        <em><label for="birthday">誕生日</label></em>
+        <span>&lt;yyyymmdd&gt;</span>
+      </p>
+      </td>
+      <td class="loginBoxValue">
+        <br/>
+        <input type="text" name="birthday" maxlength="8" size="25" value="" class="text textBox" id="loginInner" title="(例) 19700123">
+      </td>
+    </tr>
+    </table>
+
+	<p>
+	<input type="submit" name="submit" value="ログイン" class="loginButton">
+	</p>
+
+    <input type="checkbox" name="auto_logout" value="true" class="checkBox" id="auto_logout">
+    <label for="auto_logout">ブラウザを閉じるときオートログインを無効にする</label>
+    <a href="javascript:void(window.open('https://help.rakuten.co.jp/mw/?hid=57','help','location=yes,status=yes,scrollbars=yes,resizable=yes,width=410,height=300,left=10,top=10'))">詳細<img src="https://jp.rakuten-static.com/1/im/ic/ui/pop.gif" width="11" height="11" alt="新しいウィンドウが開きます" class="popUp"></a>
+    <p class="caption">(共有のコンピュータをお使いの方は選択してください)</p>
+
+    </div>
+    </form>
+
+    <ul id="userHelp">
+    <li><img src="https://jp.rakuten-static.com/1/im/ic/ui/pop.gif" width="11" height="11" alt="新しいウィンドウが開きます" class="popUp"><a href="http://ichiba.faq.rakuten.co.jp/cgi-bin/rakuten_www.cfg/php/enduser/popup_adp.php?p_faqid=9694" target="_blank">ヘルプ</a></li>
+    <li class="sslIcon"><img src="https://jp.rakuten-static.com/1/im/ic/ui/pop.gif" width="11" height="11" alt="新しいウィンドウが開きます" class="popUp"><a href="http://www.rakuten.co.jp/ssl.html" target="_blank">SSL対応</a> <span class="caption">入力された情報は暗号化して送信されます。</span></li>
+    </ul>
+  </div>
+
+</div>
+
+
+  <div id="extra">
+    <h2>まだ楽天会員登録されていない方は</h2>
+    <div id="newEntry">
+      <div class="btnChange">
+        <p>
+        <a href="../nid/registfwd?return_url=index.phtml&service_id=p06&return_url_nikki=http%3A%2F%2Fwww.nikki.ne.jp%2Fa%2Flogin%2F&eVar22=www%3Atop_limit%3ArakutenLogin_btn" id="entryBtn"><span><em class="em">楽天会員に新規登録（無料）</em>して<br/>サービスを利用する</span></a>
+        </p>
+      </div>
+      <p class="caption"><a href="http://www.rakuten.co.jp/myrakuten/help/">楽天会員とは？</a></p>
+    </div>
+
+	
+	
+	<div class="box">
+		
+
+
+
+
+
+
+
+
+
+	</div>
+	
+
+  
+  
+
+ </div>
+  
+
+</div>
+
+
+</div>
+</div>
+
+<div align="center">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<font size="-1">個人情報の取扱いについては<a href="http://privacy.rakuten.co.jp/" target="_blank">個人情報保護方針</a>をご覧ください。</font><br>
+<hr size="1" style="display:block;" />
+
+<font size="-1">Copyright &copy; Rakuten, Inc. All Rights Reserved.</font>
+
+</div>
+
+<!-- SiteCatalyst code
+Copyright Adobe, Inc. More info available at http://www.omniture.com -->
+<script type="text/javascript" src="https://jp.rakuten-static.com/1/js/anl/cmn/s_code-id.js"></script>
+<script type="text/javascript"><!--
+
+void(s.t())//--></script>
+<!-- End SiteCatalyst -->
+
+</body>
+</html>
+
+

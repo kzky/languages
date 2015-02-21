@@ -1,0 +1,289 @@
+<html lang="ja"><!--◇◇◇◇◇-->
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<title>みん就(みんなの就職活動日記) - 就活・新卒採用のクチコミサイト</title>
+<META NAME="description" CONTENT="登録者55万人、24,600社のクチコミ就職サイト「みんなの就職活動日記」。就職活動中の学生達が情報交換をする掲示板や、メンバー登録で有名企業内定者の志望動機や体験談も閲覧できる！" />
+<META NAME="keywords" CONTENT="就職,就職活動,就活,口コミ,クチコミ,掲示板,日記" />
+<META NAME="robots" CONTENT="noarchive,noodp,noydir">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="private, no-cache, no-store, max-age=0"/>
+<meta http-equiv="Expires" content="Thu, 01 Jan 1970 00:00:00 GMT"/>
+
+<BASE HREF="https://www.nikki.ne.jp/"></base>
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/css.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/normal.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/topclass.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/leftclass.css?20120401" TITLE="MINNANO">
+<script type="text/javascript" src="/js/nikki/SpryCollapsiblePanel.js?20120401"></script>
+<script type="text/javascript" src="/js/nikki/searchBbs.js?20120401"></script>
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/css/nikki/SpryCollapsiblePanel.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/css/nikki/membership.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/css/nikki/grpRakutenLinkArea.css?20120401" TITLE="MINNANO">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="/contents/mypage-center/douki.css?20120401" TITLE="MINNANO">
+
+<script type="text/javascript" src="/js/googleAnalytics.js"></script>
+<meta property="og:image" content="http://www.nikki.ne.jp/img/social_link_minshu.jpg" />
+<link rel="mixi-check-image" type="image/jpeg" href="http://www.nikki.ne.jp/img/social_link_minshu.jpg" />
+</head>
+<body bgcolor="#FFFFFF" text="#222222" link="#0000FF" vlink="#000099" alink="#FF0000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+
+
+<div id="headerText"><p id="headerCaption">登録者55万人、就活生の9割が使う24,600社のクチコミ就職サイト</p></div><table width="100%" border=0 cellspacing=0 cellpadding=0><tr valign="top"><td style="width: 551px;" nowrap><h1><a href="http://www.nikki.ne.jp/" target=_top>
+       <img src="/img/www/logo_minshu.gif" border=0 
+            alt="みんなの就職活動日記"></a></h1><!--<a href="http://corp.rakuten.co.jp/csr/heartproject/"><img src="//www.nikki.ne.jp/contents/common/logo_side/img/csr.gif" width="61" height="40" alt="思いを東北へ。" border="0" /></a>--></td><td align="right" nowrap><p class="textLink"><span id="grpNote"><noscript><a href="https://card.rakuten.co.jp/entry/">今すぐ2,000ポイント！</a></noscript></span>&nbsp;| <script type="text/javascript" src="//jp.rakuten-static.com/1/js/lib/prm_selector.js"></script><script type="text/javascript" src="//jp.rakuten-static.com/1/js/grp/hdr/prm_sender.js"></script><a href="http://rd.rakuten.co.jp/s/?R2=http%3A%2F%2Fwww.rakuten.co.jp%2F&D2=140.5283.46431.758780.11944474&C3=c762eb5d3455bf620b2308ea59cfca2deb1c1904"><strong>楽天市場へ</strong></a><br><a href="https://www.nikki.ne.jp/?action=login&SERVICE_ID=1">登録/ログイン</a> | <a href="https://www.nikki.ne.jp/d1/client_form_05">広告掲載</a> | <a href="http://www.nikki.ne.jp/d1/help/ ">ヘルプ</a> | <a href="http://www.nikki.ne.jp/rd/129981/">ご意見・ご要望</a> | <a href="http://www.nikki.ne.jp/sitemap/">サイトマップ</a></p></td></tr></table><div id="menuArea"><ul id="tabmenu"><li style =" padding-top:5px;"><a href="http://campus.nikki.ne.jp/"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_campus_off.gif" width="60" height="32" border="0" alt="大学生活"></a></li><li style =" padding-top:5px;"><a href="http://www.nikki.ne.jp/rd/108092/"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_arbeit_off.gif" width="60" height="32" border="0" alt="アルバイト"></a></li><li style =" padding-top:5px;"><a href="http://intern.nikki.ne.jp/"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_intern_off.gif" width="60" height="32" border="0" alt="インターン"></a></li><li style =" padding-top:5px;"><a href="http://kaisha.nikki.ne.jp/2013"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_company_off.gif" width="60" height="32" border="0" alt="会社探し"></a></li><li style =" padding-top:5px;"><a href="http://www.nikki.ne.jp/"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_minshu_on.gif" width="60" height="32" border="0" alt="就職活動"></a></li><li style =" padding-top:5px;"><a href="http://shigoto.nikki.ne.jp/"><img src="//www.nikki.ne.jp/contents/common/service_tab/img/tab_shigoto_off.gif" width="60" height="32" border="0" alt="仕事と会社"></a></li><!----><li><a href="http://www.nikki.ne.jp/rd/136491/"><img src="/contents/com-head/img/20120328/tab_90x37_on_ikioi.gif" width="90" height="37" border="0"></a></li><!--
+--><li><a href="http://www.nikki.ne.jp/rd/136492/"><img src="/contents/com-head/img/20120328/tab_90x37_korekara_on.gif" width="90" height="37" border="0"></a></li><!--
+--><li><a href="http://www.nikki.ne.jp/rd/136046/"><img src="/contents/com-head/img/tab_social_on.gif" width="90" height="37" border="0"></a></li><!--
+--></ul>
+</div><div id="headArea"><div id="searchArea"><div><form name="search" method="post" action="/search_all.phtml"><input type="text" name="word" id="searchBox" maxlength="63" class="text"><input type="submit" name="searchBox" value="掲示板 検索" class="btn" onclick="return checkBbsSearchBoxValue(this);"></form><ul id="siteLink"><li><a href="http://www.nikki.ne.jp/rd/129951/" target="_blank"><img src="/contents/button_banner/2013/210.gif" width="50" height="31" border="0" alt="ダイヤモンド就活ナビ" name="/contents/button_banner/2013/210.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130434/" target="_blank"><img src="/contents/button_banner/2013/207.gif" width="50" height="31" border="0" alt="PORTAM就職ナビ" name="/contents/button_banner/2013/207.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/129979/" target="_blank"><img src="/contents/button_banner/2013/17.gif" width="50" height="31" border="0" alt="文化放送就職ナビ" name="/contents/button_banner/2013/17.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130883/" target="_blank"><img src="/contents/button_banner/2013/220.gif" width="50" height="31" border="0" alt="マイナビ新卒紹介" name="/contents/button_banner/2013/220.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130199/" target="_blank"><img src="/contents/button_banner/2013/29.gif" width="50" height="31" border="0" alt="エンジャパン" name="/contents/button_banner/2013/29.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130238/" target="_blank"><img src="/contents/button_banner/2013/32.gif" width="50" height="31" border="0" alt="就職ウォーカーNet 2013" name="/contents/button_banner/2013/32.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130603/" target="_blank"><img src="/contents/button_banner/2013/2.gif" width="50" height="31" border="0" alt="日経就職ナビ" name="/contents/button_banner/2013/2.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130764/" target="_blank"><img src="/contents/button_banner/2013/216.gif" width="50" height="31" border="0" alt="就職コンサルナビ" name="/contents/button_banner/2013/216.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/131220/" target="_blank"><img src="/contents/button_banner/2013/12.gif" width="50" height="31" border="0" alt="就活ラボ" name="/contents/button_banner/2013/12.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130956/" target="_blank"><img src="/contents/button_banner/2013/34.gif" width="50" height="31" border="0" alt="リクナビ" name="/contents/button_banner/2013/34.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/130765/" target="_blank"><img src="/contents/button_banner/2013/83.gif" width="50" height="31" border="0" alt="理系のためのエージェント就活" name="/contents/button_banner/2013/83.gif"></a></li><li><a href="http://www.nikki.ne.jp/rd/131235/" target="_blank"><img src="/contents/button_banner/2013/15.gif" width="50" height="31" border="0" alt="学情ナビ" name="/contents/button_banner/2013/15.gif"></a></li></ul></div></div><div class="ad_box4"><a href="http://www.nikki.ne.jp/rd/129832/" target="_blank"><img src="/com/img/kanli_banner/2_4.gif" border="0" width="450" height="37"></a><a href="http://www.nikki.ne.jp/rd/131343/" target="_blank"><img src="/com/img/kanli_banner/2_5.gif" border="0" width="450" height="37"></a></div></div><table width=100% border=0 cellspacing=0 cellpadding=0>
+           <tr><td align=center><div style="border:1 solid #ffaaaa; background:#fff5f5; padding:3; width:80%; text-align:center;"><font size=-1><b><font color=#CC6600></b><a href=https://www.nikki.ne.jp/a/login/ style="display:block"><img src=/img/icn_wakaba.gif width=14 height=18 border=0 align=absmiddle hspace=3>ユーザー登録すると、有名企業内定者 約5万2000人の体験談を読むことができます</a></font></div></td></tr></table>
+    <table width="85%" border="0" cellspacing="0" cellpadding="0" align="center">
+    <td>
+<br>
+
+<div id="loginPage"><!--大枠-->
+    <div id="loginInner"><!--中枠-->
+    	<div id="loginLeftout"><!--左外枠-->
+        	<div id="loginLeftin"><!--左内枠-->
+        	<img src="img/blue_rakuten_member.jpg" width="523" height="45" alt="楽天会員の方はこちら" border="0" class="mb10"><br>
+<form name="LoginForm" form action="https://grp03.id.rakuten.co.jp/rms/nid/vc" method="post" autocomplete="off"  onSubmit="s.linkTrackVars='eVar22,events';s.linkTrackEvents='event31';s.eVar22='www:top_limit:rakutenLogin_btn';s.events='event31';s.tl(this,'o','resister');">        
+<input type="hidden" name="__event" value="ID01_001_001">        
+<input type="hidden" name="service_id" value="p06">        
+<input type="hidden" name="return_url" value="index.phtml">        
+<input type="hidden" name="return_url_nikki" value="http://www.nikki.ne.jp/a/login/">    
+<input type="hidden" name="eVar22" value="www:top_limit:rakutenLogin_btn"> 
+            	<div id="loginLeft01"><!--左1-->
+<strong>ユーザーID：</strong><input type="text" name="u" maxlength="100" size="25" value="" id="loginInner" class="wid250">&nbsp;<span>&lt;半角英数字&gt;</span><br><br>
+<strong>パスワード：</strong> <input type="password" name="p" maxlength="128" size="25" value="" id="loginInner" class="wid250">&nbsp;<span>&lt;半角英数字&gt;</span><br>
+                </div><!--/左1-->
+            	<div id="loginLeft02"><!--左2-->
+            	  <input type="submit" name="submit" value="ログイン" class="hei40">
+            	  <br>
+                </div><!--/左2-->
+            	<div id="loginLeft03"><!--左3-->
+<p><a href="https://member.id.rakuten.co.jp/r/upk.html" target="_blank"><img src="img/login_page_icon.gif" width="11" height="11" alt="" border="0"> ユーザID・パスワードを忘れた場合</a></p>
+<p><a href="http://www.nikki.ne.jp/d1/help/" target="_blank"><img src="img/login_page_icon.gif" width="11" height="11" alt="" border="0"> ヘルプ</a></p>
+                </div><!--/左3--></form>
+            </div><!--/左内枠-->
+        </div><!--/左外枠-->
+        
+    	<div id="loginRightout"><!--右外枠-->
+        	<div id="loginRightin"><!--右内枠-->
+        	<img src="img/red_non_rakuten_member.jpg" width="213" height="45" alt="楽天会員でない方" border="0" class="mb10"><br>
+<p>
+このサービスのご利用には<br>
+楽天の会員登録が必要です</p>
+<form action="https://grp03.id.rakuten.co.jp/rms/nid/vc" method="post" onSubmit="s.linkTrackVars='eVar22,events';s.linkTrackEvents='event31';s.eVar22='www:top_limit:rakutenRegist_btn';s.events='event31';s.tl(this,'o','resister');" style="margin:0; padding:0;">
+<input type="hidden" name="__event" value="ID01_001_002">
+<input type="hidden" name="service_id" value="p06">        
+<input type="hidden" name="return_url" value="index.phtml">
+<input type="hidden" name="return_url_nikki" value="http://www.nikki.ne.jp/a/login/">
+<input type="hidden" name="eVar22" value="www:top_limit:rakutenRegist_btn"> 
+<input type="image" value="会員登録（無料）" src="img/red_non_rakuten_btn.jpg" width="167" height="64">
+</form>
+<p>
+<a href="https://member.id.rakuten.co.jp/r/membership.html" target="_blank"><img src="img/login_page_icon.gif" width="11" height="11" alt="" border="0"> 楽天会員登録のヘルプ</a></p>
+        	</div><!--/右内枠-->
+        </div><!--/右外枠-->
+    </div><!--/中枠-->
+</div><!--/大枠-->
+<br style="clear:both;">
+
+
+<center>
+<table border=0 cellspacing=0 cellpadding=0>
+<tr valign="top">
+<td bgcolor="#ffffff" width="17" height="295"><img src="/img/dodai1.gif" width="17" height="295" galleryimg="no"></td>
+<td bgcolor="#ffffff" width="269" height="295" style="padding:0; background:url(/img/dodai2.gif) repeat-x top;">
+<img src="/img/text1.gif" width="256" height="67" galleryimg="no"><br>
+<img src="/img/merit_1_off.gif" width="256" height="70" galleryimg="no" alt="" onMouseOver="this.src='/img/merit_1_on.gif';document.images.setumei.src='/img/setumei_1.gif'" onMouseOut="this.src='/img/merit_1_off.gif'"><br>
+<img src="/img/merit_2_off.gif" width="256" height="70" galleryimg="no" alt="" onMouseOver="this.src='/img/merit_2_on.gif';document.images.setumei.src='/img/setumei_2.gif'" onMouseOut="this.src='/img/merit_2_off.gif'"><br>
+<img src="/img/merit_3_on.gif" width="256" height="70" galleryimg="no" alt="" onMouseOver="this.src='/img/merit_3_on.gif';document.images.setumei.src='/img/setumei_3.gif'" onMouseOut="this.src='/img/merit_3_off.gif'">
+</td>
+<td bgcolor="#ffffff" width="14" height="295"><img src="/img/dodai3.gif" width="14" height="295" galleryimg="no"></td>
+<td bgcolor="#ffffff" width="409" height="295" style="padding:0; background:url(/img/dodai4.gif) repeat-x top;"><img src="/img/text2.gif" width="409" height="91" galleryimg="no"><br>
+<img src="/img/setumei_3.gif" name="setumei" width="391" height="169" galleryimg="no"><br>
+</td>
+<td bgcolor="#ffffff" width="37" height="295"><img src="/img/dodai5.gif" width="37" height="295" galleryimg="no"></td>
+</tr>
+</table></center>
+
+</td></tr>
+</table><br>
+
+<center><font size=2>個人情報の取扱いについては「<a href="http://www.nikki.ne.jp/info/privacy">個人情報の取扱いについて</a>」をご覧ください。</font></center><br>
+
+
+    <img src="/img/t.gif" width="750" height="1" alt=""><br>
+    </td>
+    </tr>
+    </table>
+<div style="width:100%; border-top:1px solid #aca8a9; margin-top:10px; padding-top:10px;"><div style="width:100%; text-align:center; font-size:90%; font-weight:bold; margin-bottom:10px;"><a href="http://www.nikki.ne.jp/rd/131569/" target="_blank"><img src="/com/img/kanli_banner/1001_5.gif" width="450" height="37" border="0"><br>気になる1位はこちらから。</a></div><!-- ========== grp footer ========== -->
+<div id="grpRakutenLinkArea">
+
+<!--
+<ul id="grpSpelinlk">
+<li><a href="#">総合トップ</a></li>
+<li><a href="#">本</a></li>
+<li><a href="#">雑誌</a></li>
+<li><a href="#">DVD・Blu-ray</a></li>
+<li><a href="#">CD</a></li>
+<li><a href="#">ゲーム</a></li>
+<li><a href="#">ソフトウェア</a></li>
+<li class="grpLast"><a href="#">洋書</a></li>
+</ul>
+
+<dl id="grpKeyword">
+<dt>キーワード</dt>
+<dd>
+<ul>
+<li><a href="#">レストラン検索</a></li>
+<li><a href="#">飲み会・宴会</a></li>
+<li><a href="#">接待</a></li>
+<li><a href="#">個室</a></li>
+<li><a href="#">記念日</a></li>
+</ul>
+</dd>
+</dl>-->
+
+<div id="grpFooter">
+<div id="groupServiceFooter">
+<dl class="title">
+<dt>楽天グループのサービス</dt>
+<dd class="allService"><span><a href="http://www.rakuten.co.jp/sitemap/" onClick="s.gclick('sitemap','ftr')">全サービス一覧へ</a></span></dd>
+<dd class="csr"><a href="http://corp.rakuten.co.jp/csr/" rel="nofollow"><img src="//jp.rakuten-static.com/1/im/ci/csr/w80.gif" alt="社会的責任[CSR]" width="80" height="20"></a></dd>
+</dl>
+<ul id="selectedService" class="serviceCol3">
+<li><dl>
+<dt><a href="http://rental.rakuten.co.jp/dvd/" onClick="s.gclick('rental','ftr-rel')">DVD・CDをレンタルする</a></dt>
+<dd>楽天レンタル</dd>
+</dl></li>
+<li><dl>
+<dt><a href="http://www.showtime.jp/isp/rakuten/cinema/" onClick="s.gclick('showtime','ftr-rel')">映画・ドラマ・スポーツ動画もっと見る</a></dt>
+<dd>楽天VIDEO</dd>
+</dl></li>
+<li><dl>
+<dt><a href="http://books.rakuten.co.jp/" onClick="s.gclick('books','ftr-rel')">本・CD・DVDを購入する</a></dt>
+<dd>楽天ブックス</dd>
+</dl></li>
+<!--
+<li><dl>
+<dt><a href="#########" onclick="s.gclick('#########','ftr-rel')">○○○○○○○○○○○○</a></dt>
+<dd>○○○○○○</dd>
+</dl></li>
+-->
+</ul>
+<div id="serviceList">
+<dl>
+<dt>お買物・ポイント</dt>
+<dd><ul>
+<li><a href="http://www.rakuten.co.jp/" onClick="s.gclick('ichiba','ftr')">ショッピング</a></li>
+<li><a href="http://auction.rakuten.co.jp/" onClick="s.gclick('auction','ftr')">オークション</a></li>
+<li><a href="http://books.rakuten.co.jp/" onClick="s.gclick('books','ftr')">本・DVD・CD</a></li>
+<li><a href="http://auto.rakuten.co.jp/" onClick="s.gclick('auto','ftr')">車・バイク</a></li>
+<li><a href="https://selectgift.rakuten.co.jp/" onClick="s.gclick('gift','ftr')">セレクトギフト</a></li>
+<li><a href="http://shopping.linkshare.com/event/" onClick="s.gclick('linkshare','ftr')">個人輸入</a></li>
+<li><a href="http://netsuper.rakuten.co.jp/" onClick="s.gclick('netsuper','ftr')">ネットスーパー</a></li>
+<li><a href="https://my.rakuten.co.jp/" onClick="s.gclick('myrakuten','ftr')">my Rakuten</a></li>
+<li><a href="https://point.rakuten.co.jp/" onClick="s.gclick('point','ftr')">楽天PointClub</a></li>
+<li><a href="http://point-g.rakuten.co.jp/" onClick="s.gclick('pointgallery','ftr')">ポイント特集</a></li>
+<li><a href="http://p-store.rakuten.co.jp/event/pointget/" onClick="s.gclick('pstore','ftr')">ポイント加盟店</a></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>旅行・エンタメ</dt>
+<dd><ul>
+<li><a href="http://travel.rakuten.co.jp/" onClick="s.gclick('travel_dom','ftr')">旅行・ホテル予約・航空券</a></li>
+<li><a href="http://gora.golf.rakuten.co.jp/" onClick="s.gclick('gora','ftr')">ゴルフ場予約</a></li>
+<li><a href="http://ticket.rakuten.co.jp/" onClick="s.gclick('ticket','ftr')">イベント・チケット販売</a></li>
+<li><a href="http://www.rakuteneagles.jp/" onClick="s.gclick('eagles','ftr')">楽天イーグルス</a></li>
+<li><a href="http://rental.rakuten.co.jp/" onClick="s.gclick('rental','ftr')">DVD・CDレンタル</a></li>
+<li><a href="http://www.showtime.jp/isp/rakuten/" onClick="s.gclick('showtime','ftr')">アニメ・映画</a></li>
+<li><a href="http://dl.rakuten.co.jp/" onClick="s.gclick('download','ftr')">ダウンロード</a></li>
+<li><a href="http://keiba.rakuten.co.jp/" onClick="s.gclick('keiba','ftr')">地方競馬</a></li>
+<li><a href="http://uranai.rakuten.co.jp/" onClick="s.gclick('uranai','ftr')">占い</a></li>
+<li><a href="https://toto.rakuten.co.jp/" onClick="s.gclick('toto','ftr')">toto・BIG</a></li>
+<li><a href="http://entertainment.rakuten.co.jp/" onClick="s.gclick('entertainment','ftr')">映画・ドラマ・エンタメ情報</a></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>マネー</dt>
+<dd><ul>
+<li><a href="https://www.rakuten-sec.co.jp/" onClick="s.gclick('sec','ftr')">ネット証券（株・FX・投資信託）</a></li>
+<li><a href="http://www.rakuten-bank.co.jp/" onClick="s.gclick('ebank','ftr')">インターネット銀行</a></li>
+<li><a href="http://www.rakuten-bank.co.jp/loan/cardloan/" onClick="s.gclick('ebank','ftr')">カードローン</a></li>
+<li><a href="http://www.rakuten-kc.co.jp/" onClick="s.gclick('kc','ftr')">クレジットカード</a></li>
+<li><a href="http://mortgage.rakuten.co.jp/" onClick="s.gclick('mortgage','ftr')">住宅ローン</a></li>
+<li><a href="http://hoken.rakuten.co.jp/" onClick="s.gclick('hoken','ftr')">生命保険・損害保険</a></li>
+<li><a href="http://money.rakuten.co.jp/" onClick="s.gclick('money','ftr')">マネーサービス一覧</a></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>暮らし・情報</dt>
+<dd><ul>
+<li><a href="http://www.infoseek.co.jp/" onClick="s.gclick('is','ftr')">ニュース・検索</a></li>
+<li><a href="http://plaza.rakuten.co.jp/" onClick="s.gclick('blog','ftr')">ブログ</a></li>
+<li><a href="http://delivery.rakuten.co.jp/" onClick="s.gclick('delivery','ftr')">出前・宅配・デリバリー</a></li>
+<li><a href="http://dining.rakuten.co.jp/" onClick="s.gclick('dining','ftr')">グルメ・外食</a></li>
+<li><a href="http://recipe.rakuten.co.jp" onClick="s.gclick('recipe','ftr')">レシピ</a></li>
+<li><a href="http://www.nikki.ne.jp/" onClick="s.gclick('minshu','ftr')">就職活動</a></li>
+<li><a href="http://career.rakuten.co.jp/" onClick="s.gclick('carrer','ftr')">仕事紹介</a></li>
+<li><a href="http://onet.jp/" onClick="s.gclick('onet','ftr')">結婚相談所</a></li>
+<li><a href="http://wedding.rakuten.co.jp/" onClick="s.gclick('wedding','ftr')">結婚式場情報</a></li>
+<li><a href="http://shashinkan.rakuten.co.jp/" onClick="s.gclick('shashinkan','ftr')">写真プリント</a></li>
+<li><a href="http://nuigurumi.ynot.co.jp/" onClick="s.gclick('nuigurumi','ftr')">ぬいぐるみ電報</a></li>
+<li><a href="http://greeting.rakuten.co.jp/" onClick="s.gclick('greeting','ftr')">グリーティングカード</a></li>
+<li><a href="http://broadband.rakuten.co.jp/" onClick="s.gclick('broadband','ftr')">プロバイダ・インターネット接続</a></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>ビジネス</dt>
+<dd><ul>
+<li><a href="http://business.rakuten.co.jp/" onClick="s.gclick('business','ftr')">ビジネス見積り</a></li>
+<li><a href="http://research.rakuten.co.jp/" onClick="s.gclick('research','ftr')">リサーチ</a></li>
+<li><a href="http://affiliate.rakuten.co.jp/" onClick="s.gclick('affiliate','ftr')">アフィリエイト</a></li>
+<li><a href="http://checkout.rakuten.co.jp/biz/" onClick="s.gclick('checkout','ftr')">決済システム</a></li>
+</ul>
+</dd>
+</dl>
+</div><!-- /div#serviceList -->
+</div><!-- /div#groupServiceFooter -->
+<div id="companyFooter">
+<ul>
+<li><a href="http://corp.rakuten.co.jp/" rel="nofollow">会社概要</a></li>
+<li><a href="http://privacy.rakuten.co.jp/" rel="nofollow">個人情報保護方針</a></li>
+<li><a href="http://corp.rakuten.co.jp/csr/">社会的責任[CSR]</a></li>
+<li class="grpLast"><a href="http://www.rakuten.co.jp/recruit/">採用情報</a></li>
+</ul>
+<p id="copyright">Copyright &copy; 1997-2012 Rakuten, Inc. All Rights Reserved.</p>
+</div><!-- /div#companyFooter -->
+</div><!-- /div#grpFooter -->
+</div><!-- /div#grpRakutenLinkArea -->
+
+<!-- ========== / grp footer  ========== --></div>
+<!-- SiteCatalyst code
+Copyright Omniture, Inc. More info available at
+http://www.omniture.com -->
+<script type="text/javascript"><!--
+var scHost=(("https:"==document.location.protocol)?"https://":"http://");
+document.write(unescape("%3Cscript src='"+scHost+"jp.rakuten-static.com/1/js/anl/mns/s_code.js' type='text/javascript'%3E%3C/script%3E"))
+//-->
+</script>
+<script type="text/javascript"><!--
+s.pageName="www:mypage:top_limit"
+s.channel = "www"
+//-->
+</script>
+<!-- SiteCatalyst code -->
+<script type="text/javascript">
+<!--
+var s_code=s.t();if(s_code)document.write(s_code);
+//-->
+</script>
+
+
+<!-- FRM:  --></body></html>
