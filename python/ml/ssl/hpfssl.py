@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 
 from model import Model
+from collections import defaultdict
 import numyp as np
 
+LEARN_TYPE_BATCH = "batch"
+LEARN_TYPE_SEMI_ONLINE = "semi_online"
+LEARN_TYPE_ONLINE = "online"
+
+MULTI_CLASS_ONE_VS_ONE = "ovo"
+MULTI_CLASS_ONE_VS_REST = "ovr"
 
 class HPFSSLBinaryClassifier(Model):
     """
@@ -21,8 +28,8 @@ class HPFSSLBinaryClassifier(Model):
     S: covariance matrix
     L: graph matrix
     beta: variance
-    l: the number of labeld samples
-    u: the number of unlabeld samples
+    l: the number of labeled samples
+    u: the number of unlabeled samples
     n: the number of samples
     t: labels
     X_l: labeled samples
@@ -36,10 +43,6 @@ class HPFSSLBinaryClassifier(Model):
     d: demension of x
     """
 
-    LEARN_TYPE_BATCH = "batch"
-    LEARN_TYPE_SEMI_ONLINE = "semi_online"
-    LEARN_TYPE_ONLINE = "online"
-
     def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch"):
         """
         Arguments:
@@ -47,7 +50,7 @@ class HPFSSLBinaryClassifier(Model):
         - `threshold`: threshold for stopping criterion
         """
 
-        super(HPFSSLBinaryClassifier, self).function()
+        super(HPFSSLBinaryClassifier, self).__init__()
 
         self.max_itr = max_itr
         self.threshold = threshold
@@ -91,7 +94,7 @@ class HPFSSLBinaryClassifier(Model):
 
         # set dataset and add bias
         self.X_l = np.hstack((self.X_l, np.reshape(np.ones(self.l), (self.l, 1))))
-        self.y = y
+        self._set_y_with_check()
         self.X_u = np.hstack((self.X_u, np.reshape(np.ones(self.u), (self.u, 1))))
         self.X = np.vstack((X_l, X_u))
 
@@ -104,6 +107,16 @@ class HPFSSLBinaryClassifier(Model):
         self._compute_S()
         self._compute_m()
 
+        pass
+
+    def _set_y_with_check(self, y):
+        """
+        Set y with checking for y definition
+        """
+        if not ((1 in y) and (-1 in y)):
+            raise Exception("one which is not 1 or -1 is included in y")
+
+        self.y = y
         pass
 
     def _learn_batch(self, X_l, y, X_u):
@@ -343,19 +356,146 @@ class HPFSSLBinaryClassifier(Model):
         Arguments:
         - `x`: sample, 1-d numpy array
         """
+
+        return self.m.dot(x)
+
+class HPFSSLClassifier(Model):
+    """
+    HPFSSLClassifier handles multi-class with HPFSSLBinaryClassifier
+    """
+    
+    def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch", multi_class="ovo"):
+        """
+        """
+
+        super(HPFSSLClassifier, self).__init__()
+
+        # params
+        self.max_itr = max_itr
+        self.threshold = threshold
+
+        # pairs
+        self.pairs = list()
+
+        # classes
+        self.classes = list()
         
+        # model
+        self.models = dict()
+
+        if multi_class == MULTI_CLASS_ONE_VS_ONE:
+            self.learn = self._learn_ovo
+            self.predict = self._predict_ovo
+        elif multi_class == MULTI_CLASS_ONE_VS_REST:
+            self.learn = self._learn_ovr
+            self.predict = self._predict_ovr
+            
+    def _learn_ovo(self, X_l, y, X_u):
+        """
+        Learn with One-vs-One scheme for multiclass
+        """
+
+        # take set and sort
+        classes = set(y)
+        classes.sort()
+        self.classes = classes
+        
+        # create pairs
+        for i, c in enumerate(classes):
+            for j, k in enumerate(classes):
+                if i < j:
+                    self.pairs.append((c, k))
+                    pass
+
+        # for each pair
+        y = np.asarray(y)
+        for pair in self.pairs:
+            # retrieve indices
+            idx_1 = np.where(y == pair[0])
+            idx_1_1 = np.where(y == pair[1])
+
+            # get samples X for a pair
+            X_1 = X_l[idx_1, :]
+            X_1_1 = X_l[idx_1_1, :]
+            X_l_pair = np.vstack((X_1, X_1_1))
+            
+            # create y in {1, -1} corresponding to (c_i, c_{i+1})
+            y_1 = [1] * len(idx_1)
+            y_1_1 = [-1] * np.ones(len(idx_1_1))
+            y_pair = y_1 + y_1_1
+
+            # pass (X_l, y, X_u) to binary classifier
+            model = HPFSSLClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
+            model.learn(X_l_pair, y_pair, X_u)
+            self.models[pair] = model
+            
         pass
 
-    def _normalize(self, X):
+    def _predict_ovo(self, x):
         """
-        Nomalize dataset using some methods,
-        e.g., zero mean, unit variance.
+        Format of return is as follows sorted by values in descending order,
+        [(c0, v0), (c1, v1), ...].
 
         Arguments:
-        - `X`: all samples, 2-d numpy array
-
+        - `x`: sample, 1-d numpy array
         """
+        votes = defaultdict(int)
+        for pair, model in self.models.items():
+            target = model.predict(x)
+            if target >= 0:
+                votes[pair[0]] += 1
+            else:
+                votes[pair[1]] += 1
+
+        outputs = sorted(votes.items(), key=lambda x: x[1])
+        return outputs
+        
+    def _learn_ovr(self, X_l, y, X_u):
+        """
+        Learn with One-vs-Rest scheme for multiclass
+        """
+        # take set and sort
+        classes = set(y)
+        classes.sort()
+        self.classes = classes
+        
+        # for class
+        y = np.asarray(y)
+        for c in classes:
+            # retrieve indices
+            idx_1 = np.where(y == c)
+            idx_1_1 = np.where(y != c)
+            
+            # get samples X for a pair
+            X_1 = X_l[idx_1, :]
+            X_1_1 = X_l[idx_1_1, :]
+            X_l_pair = np.vstack((X_1, X_1_1))
+            
+            # create y in {1, -1} corresponding to (c_i, c_{i+1})
+            y_1 = [1] * len(idx_1)
+            y_1_1 = [-1] * np.ones(len(idx_1_1))
+            y_pair = y_1 + y_1_1
+
+            # pass (X_l, y, X_u) to binary classifier
+            model = HPFSSLClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
+            model.learn(X_l_pair, y_pair, X_u)
+            self.models[c] = model
+            
         pass
+
+    def _predict_ovr(self, x):
+        """
+        Format of return is as follows sorted by values in descending order,
+        [(c0, v0), (c1, v1), ...].
+
+        Arguments:
+        - `x`: sample, 1-d numpy array
+        """
+        outputs = defaultdict(int)
+        for c, model in self.models.items():
+            outputs[c] = model.predict(x)
+            
+        return sorted(outputs.items(), key=lambda x: x[1])
         
 def main():
 
