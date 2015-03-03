@@ -2,10 +2,11 @@
 
 from model import Model
 from collections import defaultdict
-import numyp as np
+from sklearn.metrics import confusion_matrix
+import numpy as np
+import logging
 
 LEARN_TYPE_BATCH = "batch"
-LEARN_TYPE_SEMI_ONLINE = "semi_online"
 LEARN_TYPE_ONLINE = "online"
 
 MULTI_CLASS_ONE_VS_ONE = "ovo"
@@ -43,6 +44,9 @@ class HPFSSLBinaryClassifier(Model):
     d: demension of x
     """
 
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger("HPFSSLBinaryClassifier")
+    
     def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch"):
         """
         Arguments:
@@ -51,9 +55,11 @@ class HPFSSLBinaryClassifier(Model):
         """
 
         super(HPFSSLBinaryClassifier, self).__init__()
-
+        
+        
         self.max_itr = max_itr
         self.threshold = threshold
+        self.learn_type = learn_type
 
         self.X_l = None
         self.y = None
@@ -61,17 +67,15 @@ class HPFSSLBinaryClassifier(Model):
         self.X = None
         self.m = None
         self.S = None
-        self.L = None
+        self.XLX = None
         self.beta = None
 
-        if learn_type == HPFSSLBinaryClassifier.LEARN_TYPE_BATCH:
+        if learn_type == LEARN_TYPE_BATCH:
             self.learn = self._learn_batch
-        elif learn_type == HPFSSLBinaryClassifier.LEARN_TYPE_SEMI_ONLINE:
-            self.learn = self._learn_semi_online
-        elif learn_type == HPFSSLBinaryClassifier.LEARN_TYPE_ONLINE:
+        elif learn_type == LEARN_TYPE_ONLINE:
             self.learn = self._learn_online
         else:
-            self.learn = self._learn_batch
+            raise Exception("learn_type %s does not exist." % learn_type)
 
     def _init_model(self, X_l, y, X_u):
         """
@@ -83,7 +87,7 @@ class HPFSSLBinaryClassifier(Model):
         - `y`: labels, 1-d numpy array, y is in {-1, 1}
         - `X_u`: unlabeled samples, 2-d numpy array
         """
-        # set the number of labeled samples and unlabeled samples
+        # set the number of labeled samples, unlabeled samples, and dimension.
         shape_l = X_l.shape
         self.d = shape_l[1] + 1
         self.l = shape_l[0]
@@ -91,123 +95,105 @@ class HPFSSLBinaryClassifier(Model):
         shape_u = X_u.shape
         self.u = shape_u[0]
         self.n = self.l + self.u
-
+        
         # set dataset and add bias
-        self.X_l = np.hstack((self.X_l, np.reshape(np.ones(self.l), (self.l, 1))))
-        self._set_y_with_check()
-        self.X_u = np.hstack((self.X_u, np.reshape(np.ones(self.u), (self.u, 1))))
-        self.X = np.vstack((X_l, X_u))
+        self.X_l = np.hstack((X_l, np.reshape(np.ones(self.l), (self.l, 1))))
+        self._check_and_set_y(y)
+        self.X_u = np.hstack((X_u, np.reshape(np.ones(self.u), (self.u, 1))))
+        self.X = np.vstack((self.X_l, self.X_u))
 
         # diagoanl matrix
         self.I = np.diag(np.ones(self.d))
 
-        # initialize L, beta, S, and m
-        self.L = self.I
-        self.beta = 1
-        self._compute_S()
-        self._compute_m()
-
         pass
 
-    def _set_y_with_check(self, y):
+    def _check_and_set_y(self, y):
         """
         Set y with checking for y definition
         """
+
         if not ((1 in y) and (-1 in y)):
             raise Exception("one which is not 1 or -1 is included in y")
 
-        self.y = y
+        self.y = np.asarray(y)
         pass
 
     def _learn_batch(self, X_l, y, X_u):
         """
-        Learn in the batch way
+        Learn in the batch fashion
         
         Arguments:
         - `X_l`: samples, 2-d numpy array
         - `y`: labels, 1-d numpy array
         - `X_u`: unlabeled samples, 2-d numpy array
         """
-
+        # init model
         self._init_model(X_l, y, X_u)
 
+        # initialize L, beta, S, and m
+        self.XLX = self.I
+        self.beta = 1
+        self.S = self._compute_S_batch()
+        self.m = self._compute_m_batch()
+        
         t = 0
-        while (t < self.max_itr):  # check stopping criteria
-
+        while (t < self.max_itr):
+            t += 1
             # update parameters
-            self.L = self._compute_L_batch()
+            self.XLX = self._compute_XLX_batch()
             self.beta = self._compute_beta_batch()
             self.S = self._compute_S_batch()
             m_old = self.m
             self.m = self._compute_m_batch()
 
             # check stopping criteria
+            if t % 100 == 0:
+                self.logger.info("itr: %d" % t)
+                pass
             if self._check_stopping_criteria_with_m(m_old):
                 break
-                
-            t += 1
+
         pass
 
-    def _learn_semi_online(self, X_l, y, X_u):
+    def _learn_online(self, X_l, y, X_u):
         """
-        Learn in the semi-online way
+        Learn in the online fashion
         
         Arguments:
         - `X_l`: samples, 2-d numpy array
         - `y`: labels, 1-d numpy array
         - `X_u`: unlabeled samples, 2-d numpy array
-
         """
 
+        # init model
         self._init_model(X_l, y, X_u)
+
+        # initialize L, beta, S, and m
+        self.XLX = self.I
+        self.beta = 1
+        self.S = self.XLX
+        self.S = self._compute_S_online()
+        self.m = self._compute_m_online()
 
         t = 0
         while (t < self.max_itr):  # outer loop
             t += 1
             
             # update parameters
-            self.L = self._compute_L_batch()
-            self.beta = self._compute_beta_batch()
-
+            self.XLX = self._compute_XLX_online()
+            self.beta = self._compute_beta_online()
             m_old = self.m
-            for x in self.X_l:
-                self.S = self._compute_S_online()
-                self.m = self._compute_m_online()
+            self.S = self._compute_S_online()
+            self.m = self._compute_m_online()
 
             # check stopping criteria
+            if t % 100 == 0:
+                self.logger.info("itr: %d" % t)
+                pass
             if self._check_stopping_criteria_with_m(m_old):
                 break
-        
         pass
 
-    def _learn_online(self, X_l, y, X_u):
-        """
-        Learn in the online way
-        
-        Arguments:
-        - `X_l`: samples, 2-d numpy array
-        - `y`: labels, 1-d numpy array
-        - `X_u`: unlabeled samples, 2-d numpy array
-        """
-        self._init_model(X_l, y, X_u)
-
-        t = 0
-        while (t < self.max_itr):  # outer loop
-            t += 1
-            m_old = self.m
-            for x in self.X_l:
-                # update parameters
-                self.L = self._compute_L_batch()
-                self.beta = self._compute_beta_batch()
-                self.S = self._compute_S_online()
-                self.m = self._compute_m_online()
-
-            # check stopping criteria
-            if self._check_stopping_criteria_with_m(m_old):
-                break
-        
-        pass
-        
     def _check_stopping_criteria_with_m(self, m_old):
         """
         
@@ -215,8 +201,7 @@ class HPFSSLBinaryClassifier(Model):
         - `m_old`:
         """
         d = self.m - m_old
-        d_L2_norm = np.sqrt(d**2)
-        
+        d_L2_norm = np.sqrt(np.sum(d**2))
         if d_L2_norm < self.threshold:
             return True
         else:
@@ -234,38 +219,33 @@ class HPFSSLBinaryClassifier(Model):
         beta = self.beta
         S = self.S
         
-        m = beta * S.dot(y).dot(X_l)
+        m = beta * S.dot(X_l.T.dot(y))
         return m
 
     def _compute_S_batch(self, ):
         """
-        Update covariance matrix
+        Compute covariance matrix
         
         """
 
         X_l = self.X_l
-        X = self.X
         beta = self.beta
-        L = self.L
+        XLX = self.XLX
 
-        S = X.T.dot(L.dot(X)) + beta * X_l.T.dot(X_l)
+        S = np.linalg.inv(XLX + beta * X_l.T.dot(X_l))
         return S
-                                    
-    def _compute_L_batch(self,):
+
+    def _compute_XLX_batch(self,):
         """
-        Update L
+        Compute L
 
         """
-        X = self.X
         m = self.m
         S = self.S
 
         # (n-by-d)-matrix
-        p_inv_X = self._compute_full_row_rank_pseudo_inverse(X)
-        inner_tem = S + m.dot(m)
-        L = p_inv_X.dot(np.linalg.inv(inner_tem)).dot(p_inv_X.T)
-        
-        return L
+        XLX = S + m.dot(m.T)
+        return XLX
 
     def _compute_full_row_rank_pseudo_inverse(self, X):
         """
@@ -285,7 +265,7 @@ class HPFSSLBinaryClassifier(Model):
 
     def _compute_beta_batch(self, ):
         """
-        Update beta
+        Compute beta
         
         Arguments:
         - `m`:
@@ -295,58 +275,57 @@ class HPFSSLBinaryClassifier(Model):
 
         X_l = self.X_l
         y = self.y
-        X = self.X
         I = self.I
         m = self.m
         S = self.S
-        L = self.L
+        XLX = self.XLX
         beta_old = self.beta
         l = self.l
         
         residual = y - X_l.dot(m)
-        inner_trace = I - S.dot(X.T.dot(L).dot(X))
+        inner_trace = I - S.dot(XLX)
 
         # Note that this is similar to RVM update rule and PSD holds.
-        beta = l / (residual ** 2 + inner_trace.trace() / beta_old)
+        beta = l / (np.sum(residual ** 2) + inner_trace.trace() / beta_old)
 
         return beta
 
-    def _compute_m_online(self, x, y):
+    def _compute_m_online(self, ):
         """
-        Compute m in an online way
+        Compute m in an online fashion
         
         Arguments:
         - `x`: sample, 1-d numpy array, where x is a labeled sample
         - `y`: label
         
         """
-        m = self.beta * self.S.dot(x) * y
-        return m
-
-    def _compute_S_online(self, x, y):
-        """
-        Compute m in an online way
         
-        Arguments:
-        - `x`: sample, 1-d numpy array, where x is a labeled sample
-        - `y`: label
+        return self._compute_m_batch()
+
+    def _compute_S_online(self, ):
+        """
+        Compute S in an online fashion
 
         """
+        
         S_t = self.S
+        beta = self.beta
+        for x in self.X_l:
+            # rank-one update
+            S = S_t - (S_t.dot(np.outer(x, x)).dot(S_t)) / (1 + beta * x.dot(S_t).dot(x))
+            S_t = S
 
-        # rank-one update
-        S = S_t - (S_t.dot(x.T.dot(x)).dot(S_t)) / (1 + self.beta * x.dot(S_t).dot(x))
         return S
         
-    def _compute_L_online(self, ):
+    def _compute_XLX_online(self, ):
         """
         """
-        self._compute_L_batch()
-
+        return self._compute_XLX_batch()
+        
     def _compute_beta_online(self, ):
         """
         """
-        self._compute_beta_batch
+        return self._compute_beta_batch()
 
         
     def predict(self, x):
@@ -357,12 +336,18 @@ class HPFSSLBinaryClassifier(Model):
         - `x`: sample, 1-d numpy array
         """
 
-        return self.m.dot(x)
+        x = np.hstack((x, 1))
+        
+        return np.sum(self.m * x)
 
 class HPFSSLClassifier(Model):
     """
-    HPFSSLClassifier handles multi-class with HPFSSLBinaryClassifier
+    HPFSSLClassifier handles multi-class with HPFSSLBinaryClassifier.
+
+    This class JUST coordinates binary classifiers for handling muti-classes.
     """
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger("HPFSSLClassifier")
     
     def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch", multi_class="ovo"):
         """
@@ -373,6 +358,8 @@ class HPFSSLClassifier(Model):
         # params
         self.max_itr = max_itr
         self.threshold = threshold
+        self.learn_type = learn_type
+        self.multi_class = multi_class
 
         # pairs
         self.pairs = list()
@@ -383,6 +370,9 @@ class HPFSSLClassifier(Model):
         # model
         self.models = dict()
 
+        self.logger.info("learn_type is %s" % self.learn_type)
+        self.logger.info("multi_class is %s" % self.multi_class)
+        
         if multi_class == MULTI_CLASS_ONE_VS_ONE:
             self.learn = self._learn_ovo
             self.predict = self._predict_ovo
@@ -396,7 +386,7 @@ class HPFSSLClassifier(Model):
         """
 
         # take set and sort
-        classes = set(y)
+        classes = list(set(y))
         classes.sort()
         self.classes = classes
         
@@ -410,9 +400,10 @@ class HPFSSLClassifier(Model):
         # for each pair
         y = np.asarray(y)
         for pair in self.pairs:
+            self.logger.info("processing class-pair (%s, %s)" % (pair[0], pair[1]))
             # retrieve indices
-            idx_1 = np.where(y == pair[0])
-            idx_1_1 = np.where(y == pair[1])
+            idx_1 = np.where(y == pair[0])[0]
+            idx_1_1 = np.where(y == pair[1])[0]
 
             # get samples X for a pair
             X_1 = X_l[idx_1, :]
@@ -421,11 +412,11 @@ class HPFSSLClassifier(Model):
             
             # create y in {1, -1} corresponding to (c_i, c_{i+1})
             y_1 = [1] * len(idx_1)
-            y_1_1 = [-1] * np.ones(len(idx_1_1))
+            y_1_1 = [-1] * len(idx_1_1)
             y_pair = y_1 + y_1_1
-
+            
             # pass (X_l, y, X_u) to binary classifier
-            model = HPFSSLClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
+            model = HPFSSLBinaryClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
             model.learn(X_l_pair, y_pair, X_u)
             self.models[pair] = model
             
@@ -434,7 +425,12 @@ class HPFSSLClassifier(Model):
     def _predict_ovo(self, x):
         """
         Format of return is as follows sorted by values in descending order,
-        [(c0, v0), (c1, v1), ...].
+
+        [(c_i, v_i), (c_i, v_j), ...],
+
+        where
+        c_i is a class,
+        v_i is a predicted values corresponding to c_i.
 
         Arguments:
         - `x`: sample, 1-d numpy array
@@ -447,7 +443,7 @@ class HPFSSLClassifier(Model):
             else:
                 votes[pair[1]] += 1
 
-        outputs = sorted(votes.items(), key=lambda x: x[1])
+        outputs = sorted(votes.items(), key=lambda x: x[1], reverse=True)
         return outputs
         
     def _learn_ovr(self, X_l, y, X_u):
@@ -455,16 +451,17 @@ class HPFSSLClassifier(Model):
         Learn with One-vs-Rest scheme for multiclass
         """
         # take set and sort
-        classes = set(y)
+        classes = list(set(y))
         classes.sort()
         self.classes = classes
         
         # for class
         y = np.asarray(y)
         for c in classes:
+            self.logger.info("processing class %s" % c)
             # retrieve indices
-            idx_1 = np.where(y == c)
-            idx_1_1 = np.where(y != c)
+            idx_1 = np.where(y == c)[0]
+            idx_1_1 = np.where(y != c)[0]
             
             # get samples X for a pair
             X_1 = X_l[idx_1, :]
@@ -473,11 +470,11 @@ class HPFSSLClassifier(Model):
             
             # create y in {1, -1} corresponding to (c_i, c_{i+1})
             y_1 = [1] * len(idx_1)
-            y_1_1 = [-1] * np.ones(len(idx_1_1))
+            y_1_1 = [-1] * len(idx_1_1)
             y_pair = y_1 + y_1_1
 
             # pass (X_l, y, X_u) to binary classifier
-            model = HPFSSLClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
+            model = HPFSSLBinaryClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
             model.learn(X_l_pair, y_pair, X_u)
             self.models[c] = model
             
@@ -486,7 +483,12 @@ class HPFSSLClassifier(Model):
     def _predict_ovr(self, x):
         """
         Format of return is as follows sorted by values in descending order,
-        [(c0, v0), (c1, v1), ...].
+
+        [(c_i, v_i), (c_i, v_j), ...],
+
+        where
+        c_i is a class,
+        v_i is a predicted values corresponding to c_i.
 
         Arguments:
         - `x`: sample, 1-d numpy array
@@ -495,11 +497,31 @@ class HPFSSLClassifier(Model):
         for c, model in self.models.items():
             outputs[c] = model.predict(x)
             
-        return sorted(outputs.items(), key=lambda x: x[1])
+        return sorted(outputs.items(), key=lambda x: x[1], reverse=True)
         
 def main():
 
-    pass
+    # data
+    data_path = "/home/kzk/datasets/uci_csv/glass.csv"
+    data = np.loadtxt(data_path, delimiter=" ")
+    y = data[:, 0]
+    X = data[:, 1:]
+    
+    # learn
+    model = HPFSSLClassifier(max_itr=100, threshold=1e-6, learn_type="online", multi_class="ovo")
+    model.learn(X, y, X)
 
+    # predict
+    outputs = []
+    for i, x in enumerate(X):
+        outputs_ = model.predict(x)
+        outputs.append(outputs_[0][0])
+
+    # confusion matrix
+    cm = confusion_matrix(y, outputs)
+    print cm
+    print 100.0 * np.sum(cm.diagonal())/len(y)
+
+    
 if __name__ == '__main__':
     main()
