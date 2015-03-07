@@ -44,7 +44,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("HPFSSLBinaryClassifier")
     
-    def __init__(self, max_itr=100, threshold=1e-6,
+    def __init__(self, max_itr=100, threshold=1e-4,
                  learn_type=model.LEARN_TYPE_ONLINE,
                  ):
         """
@@ -77,7 +77,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         self._set_data_info(X_l, y, X_u)
 
         # compute X_l.T * X_l
-        self._compute_rank_one_sum()
+        self.X_lX_l = self._compute_rank_one_sum()
 
         # learn
         if self.learn_type == model.LEARN_TYPE_BATCH:
@@ -102,7 +102,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         self.beta = 1
         self.S = self._compute_S_batch()
         self.m = self._compute_m_batch()
-        
+
         t = 0
         while (t < self.max_itr):
             t += 1
@@ -120,7 +120,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
             if self._check_stopping_criteria_with_m(m_old):
                 break
 
-        pass
+        self.w = self.m
 
     def _learn_online(self, X_l, y, X_u):
         """
@@ -155,7 +155,8 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
                 pass
             if self._check_stopping_criteria_with_m(m_old):
                 break
-        pass
+                
+        self.w = self.m
 
     def _check_stopping_criteria_with_m(self, m_old):
         """
@@ -164,8 +165,9 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         - `m_old`:
         """
         d = self.m - m_old
-        d_L2_norm = np.sqrt(np.sum(d**2))
+        d_L2_norm = np.sqrt(d.dot(d))
         if d_L2_norm < self.threshold:
+            self.logger.info("Norm of difference between the current m and previous m is %f" % d_L2_norm)
             return True
         else:
             return False
@@ -177,7 +179,9 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         Compute rank one sum.
         """
         X_l = self.X_l
-        self.X_lX_l = X_l.T.dot(X_l)
+        X_lX_l = X_l.T.dot(X_l)
+
+        return X_lX_l
 
     def _compute_m_batch(self,):
         """
@@ -332,7 +336,7 @@ class HPFSSLClassifier(Classifier):
 
     def __init__(self,
                  multi_class=model.MULTI_CLASS_ONE_VS_ONE,
-                 max_itr=100, threshold=1e-6,
+                 max_itr=100, threshold=1e-4,
                  learn_type=model.LEARN_TYPE_ONLINE,
                  ):
         """
@@ -353,7 +357,7 @@ class HPFSSLClassifier(Classifier):
         """
         """
         internal_classifier = HPFSSLBinaryClassifier(
-            max_itr=self.max_itr, threshold=self.max_itr,
+            max_itr=self.max_itr, threshold=self.threshold,
             learn_type=self.learn_type
         )
         return internal_classifier
@@ -367,7 +371,7 @@ def main():
     X = data[:, 1:]
 
     # learn
-    model = HPFSSLClassifier(max_itr=100, threshold=1e-6, learn_type="online", multi_class="ovo")
+    model = HPFSSLClassifier(max_itr=50, threshold=1e-4, learn_type="online", multi_class="ovo")
     model.learn(X, y, X)
 
     # predict
