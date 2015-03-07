@@ -103,9 +103,12 @@ class SSLRateDatasetCreator(DatasetCreator):
         n_samples = X.shape[0]
         all_indices = np.random.permutation(n_samples)
 
-        # labeled samples
+        # labeled samples and samples for validation
         l_data = None
         l_indices = None
+        v_data = None
+        v_indices = None
+        
         cnt = 0
         while True:
             self.logger.info("%d-th trial" % cnt)
@@ -115,34 +118,21 @@ class SSLRateDatasetCreator(DatasetCreator):
                 return
                 pass
 
+            # labeled samples
             indices = np.random.permutation(n_samples)
             l_indices = indices[0:int(n_samples * self.l_rate)]
             y_l_set = set(y[l_indices])
-            
-            if y_l_set == classes:
-                l_data = data[l_indices, :]
-                break
 
-        # samples for validation
-        v_data = None
-        v_indices = None
-        cnt = 0
-        while True:
-            self.logger.info("%d-th trial" % cnt)
-            cnt += 1
-
-            if cnt == self.TIRAL_THRESHOLD:
-                return
-                pass
-
-            indices = np.random.permutation(n_samples)
+            # validation samples
+            r_indices = list(set(all_indices) - set(l_indices))
             v_indices = indices[0:int(n_samples * self.v_rate)]
             y_v_set = set(y[v_indices])
             
-            if y_v_set == classes:
+            if y_l_set == classes and y_v_set == classes:
+                l_data = data[l_indices, :]
                 v_data = data[v_indices, :]
                 break
-                
+
         # unlabeled samples
         r_indices = list(set(all_indices) - set(l_indices) - set(v_indices))
         u_indices = r_indices[0:int(1.0 * n_samples * self.u_rate)]
