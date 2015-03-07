@@ -46,18 +46,14 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
     
     def __init__(self, max_itr=100, threshold=1e-6,
                  learn_type=model.LEARN_TYPE_ONLINE,
-                 **kargs):
+                 ):
         """
         Arguments:
         - `max_itr`: max iteration for stopping criterion
         - `threshold`: threshold for stopping criterion
         """
 
-        super(HPFSSLBinaryClassifier, self).__init__(
-            max_itr=max_itr, threshold=threshold,
-            learn_type=learn_type
-        )
-        
+        super(HPFSSLBinaryClassifier, self).__init__()
         
         self.max_itr = max_itr
         self.threshold = threshold
@@ -331,21 +327,33 @@ class HPFSSLClassifier(Classifier):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("HPFSSLClassifier")
 
-    def __init__(self, max_itr=100, threshold=1e-6,
-                 learn_type=model.LEARN_TYPE_ONLINE,
+    def __init__(self,
                  multi_class=model.MULTI_CLASS_ONE_VS_ONE,
-                 **kargs):
+                 max_itr=100, threshold=1e-6,
+                 learn_type=model.LEARN_TYPE_ONLINE,
+                 ):
         """
         """
         
-        super(HPFSSLClassifier, self).__init__(max_itr=max_itr, threshold=threshold,
-                                               learn_type=learn_type,
-                                               multi_class=multi_class,
-                                               )
+        super(HPFSSLClassifier, self).__init__(
+            multi_class=multi_class,
+        )
+
+        self.max_itr = max_itr
+        self.threshold = threshold
+        self.learn_type = learn_type
+        
         self.logger.info("Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
                          (self.max_itr, self.threshold, self.multi_class, self.learn_type))
 
-        self.internal_classifier = HPFSSLBinaryClassifier
+    def create_intrenal_classifier(self, ):
+        """
+        """
+        internal_classifier = HPFSSLBinaryClassifier(
+            max_itr=self.max_itr, threshold=self.max_itr,
+            learn_type=self.learn_type
+        )
+        return internal_classifier
         
 def main():
 

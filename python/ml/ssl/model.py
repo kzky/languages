@@ -15,12 +15,7 @@ class BinaryClassifier(object):
     """
     """
     
-    def __init__(self,
-                 max_itr=100, threshold=1e-6,
-                 learn_type=LEARN_TYPE_BATCH,
-                 lam=1, sigma_s=1,
-                 **kwargs):
-
+    def __init__(self,):
         """
         """
         self.X_l = None
@@ -113,23 +108,12 @@ class Classifier(object):
     """
     
     """
-    def __init__(self, multi_class=MULTI_CLASS_ONE_VS_ONE,
-                 max_itr=100, threshold=1e-6,
-                 learn_type=LEARN_TYPE_ONLINE,
-                 lam=1,
-                 sigma_s=1,
-                 **kwargs
-                 ):
+    def __init__(self, multi_class=MULTI_CLASS_ONE_VS_ONE):
         """
         """
 
         # params
         self.multi_class = multi_class
-        self.max_itr = max_itr
-        self.threshold = threshold
-        self.learn_type = learn_type
-        self.lam = lam
-        self.sigma_s = sigma_s
 
         # pairs
         self.pairs = list()
@@ -139,8 +123,6 @@ class Classifier(object):
 
         # model
         self.models = dict()
-        self.internal_classifier = BinaryClassifier
-
         
         if multi_class == MULTI_CLASS_ONE_VS_ONE:
             self.learn = self._learn_ovo
@@ -151,6 +133,13 @@ class Classifier(object):
         else:
             raise Exception("multi_class is set with %s or %s" %
                             (MULTI_CLASS_ONE_VS_ONE, MULTI_CLASS_ONE_VS_REST))
+
+    def create_intrenal_classifier(self, ):
+        """
+        Create Internal Classifier
+        """
+        
+        return BinaryClassifier()
 
     def _learn_ovo(self, X_l, y, X_u):
         """
@@ -188,10 +177,7 @@ class Classifier(object):
             y_pair = y_1 + y_1_1
             
             # pass (X_l, y, X_u) to binary classifier
-            model = self.internal_classifier(max_itr=self.max_itr,
-                                             threshold=self.threshold, learn_type=self.learn_type,
-                                             lam=self.lam,
-                                             sigma_s=self.sigma_s)
+            model = self.create_intrenal_classifier()
             model.learn(X_l_pair, y_pair, X_u)
             self.models[pair] = model
             
@@ -249,8 +235,7 @@ class Classifier(object):
             y_pair = y_1 + y_1_1
 
             # pass (X_l, y, X_u) to binary classifier
-            model = self.internal_classifier(max_itr=self.max_itr,
-                                             threshold=self.threshold, learn_type=self.learn_type)
+            model = self.create_intrenal_classifier()
             model.learn(X_l_pair, y_pair, X_u)
             self.models[c] = model
             

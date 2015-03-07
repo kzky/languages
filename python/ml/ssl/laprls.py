@@ -18,25 +18,23 @@ class LapRLSBinaryClassifier(BinaryClassifier):
     X_u: unlabeled samples
     w: weights of model
     labmda: balancing parameter between loss function and regularizer, attached to loss term
-    sigma_s: parameter of graph laplacian
+    gamma_s: parameter of graph laplacian
     """
     
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("LapRLSBinaryClassifier")
 
-    def __init__(self, lam=1, sigma_s=1, **kargs):
+    def __init__(self, lam=1, gamma_s=1, ):
         """
         Arguments:
         - `lam`: lambda, balancing parameter between loss function and regularizer, attached to loss term
-        - `sigma_s`: parameter of graph laplacian
+        - `gamma_s`: parameter of graph laplacian
 
         """
-        super(LapRLSBinaryClassifier, self).__init__(
-            lam=lam, sigma_s=sigma_s
-        )
+        super(LapRLSBinaryClassifier, self).__init__()
         
         self.lam = lam
-        self.sigma_s = sigma_s
+        self.gamma_s = gamma_s
 
         pass
 
@@ -135,10 +133,10 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         - `y`:
         """
         
-        sigma_s_2 = self.sigma_s ** 2
+        gamma_s = self.gamma_s
         diff = x - y
         norm_L2_2 = diff.dot(diff)
-        val = np.exp(- norm_L2_2 / sigma_s_2)
+        val = np.exp(- gamma_s * norm_L2_2)
 
         return val
 
@@ -156,21 +154,30 @@ class LapRLSClassifier(Classifier):
     def __init__(self,
                  multi_class=model.MULTI_CLASS_ONE_VS_ONE,
                  lam=1,
-                 sigma_s=1,
+                 gamma_s=1,
                  kernel="",
-                 **kargs):
+                 ):
         """
         """
 
         super(LapRLSClassifier, self).__init__(
             multi_class=multi_class,
-            lam=lam,
-            sigma_s=sigma_s
         )
 
-        self.logger.info("Parameters set with lambda = %f, sigma = %f, multi_class is %s" % (self.lam, self.sigma_s, self.multi_class))
+        self.lam = lam
+        self.gamma_s = gamma_s
 
-        self.internal_classifier = LapRLSBinaryClassifier
+        self.logger.info("Parameters set with lambda = %f, sigma = %f, multi_class is %s" % (self.lam, self.gamma_s, self.multi_class))
+
+
+    def create_intrenal_classifier(self, ):
+        """
+        """
+        internal_classifier = LapRLSBinaryClassifier(
+            lam=self.lam,
+            gamma_s=self.gamma_s
+        )
+        return internal_classifier
         
 def main():
 
@@ -182,8 +189,8 @@ def main():
 
     # learn
     lam = 100
-    sigma_s = 0.01
-    model = LapRLSClassifier(lam=lam, sigma_s=sigma_s, multi_class="ovo")
+    gamma_s = 0.01
+    model = LapRLSClassifier(lam=lam, gamma_s=gamma_s, multi_class="ovo")
     model.learn(X, y, X)
 
     # predict
