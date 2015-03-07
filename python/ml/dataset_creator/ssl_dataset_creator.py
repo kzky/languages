@@ -37,15 +37,15 @@ class SSLRateDatasetCreator(DatasetCreator):
 
     TIRAL_THRESHOLD = 50
     
-    def __init__(self, input_paths, output_dir_path, n=10, lrate=0.1, urate=0.5, delimiter=" "):
+    def __init__(self, input_paths, output_dir_path, n=10, l_rate=0.1, u_rate=0.5, v_rate=0.1, delimiter=" "):
         """
         
         Arguments:
         - `input_paths`: list of dataset path, a files contain a dataset, filename have to include ".", e.g., dataset.csv.
         - `output_dir_path`: used as prefix for output dataset paths and files
         - `n`: the number of datasets to be created for one dataset.
-        - `lrate`: rate at which labeled samples are generated and added as suffix.
-        - `urate`: rate at which labeled samples are generated and added as suffix.
+        - `l_rate`: rate at which labeled samples are generated and added as suffix.
+        - `u_rate`: rate at which labeled samples are generated and added as suffix.
         - `delimiter`: delimiter.
         """
         super(SSLRateDatasetCreator, self).__init__()
@@ -53,8 +53,9 @@ class SSLRateDatasetCreator(DatasetCreator):
         self.input_paths = input_paths
         self.output_dir_path = output_dir_path
         self.n = n
-        self.lrate = lrate
-        self.urate = urate
+        self.l_rate = l_rate
+        self.u_rate = u_rate
+        self.v_rate = v_rate
         self.delimiter = delimiter
 
         pass
@@ -62,11 +63,12 @@ class SSLRateDatasetCreator(DatasetCreator):
     def create_ssl_datasets(self, ):
         """
         """
-        base_dir_path = "%s_%d_%d_%d" % (
+        base_dir_path = "%s_%d_%d_%d_%d" % (
             self.output_dir_path,
-            int(self.lrate * 100),
-            int(self.urate * 100),
-            int(100 - int(self.lrate * 100) - int(self.urate * 100))
+            int(self.l_rate * 100),
+            int(self.u_rate * 100),
+            int(self.v_rate * 100),
+            int(100 - int(self.l_rate * 100) - int(self.u_rate * 100) - int(self.l_rate * 100))
         )
 
         if not os.path.exists(base_dir_path):
@@ -104,7 +106,6 @@ class SSLRateDatasetCreator(DatasetCreator):
         # labeled samples
         l_data = None
         l_indices = None
-
         cnt = 0
         while True:
             self.logger.info("%d-th trial" % cnt)
@@ -115,20 +116,40 @@ class SSLRateDatasetCreator(DatasetCreator):
                 pass
 
             indices = np.random.permutation(n_samples)
-            l_indices = indices[0:int(n_samples * self.lrate)]
+            l_indices = indices[0:int(n_samples * self.l_rate)]
             y_l_set = set(y[l_indices])
             
             if y_l_set == classes:
                 l_data = data[l_indices, :]
                 break
+
+        # samples for validation
+        v_data = None
+        v_indices = None
+        cnt = 0
+        while True:
+            self.logger.info("%d-th trial" % cnt)
+            cnt += 1
+
+            if cnt == self.TIRAL_THRESHOLD:
+                return
+                pass
+
+            indices = np.random.permutation(n_samples)
+            v_indices = indices[0:int(n_samples * self.v_rate)]
+            y_v_set = set(y[v_indices])
+            
+            if y_v_set == classes:
+                v_data = data[v_indices, :]
+                break
                 
         # unlabeled samples
-        r_indices = list(set(all_indices) - set(l_indices))
-        u_indices = r_indices[0:int(1.0 * n_samples * self.urate)]
+        r_indices = list(set(all_indices) - set(l_indices) - set(v_indices))
+        u_indices = r_indices[0:int(1.0 * n_samples * self.u_rate)]
         u_data = data[u_indices, :]
 
         # test samples
-        t_indices = list(set(all_indices) - set(l_indices) - set(u_indices))
+        t_indices = list(set(all_indices) - set(l_indices) - set(u_indices) - set(v_indices))
         t_data = data[t_indices, :]
 
         # dump data
@@ -141,15 +162,19 @@ class SSLRateDatasetCreator(DatasetCreator):
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
             
-        f_ldata_path = "%s/%d_%s_l.csv" % (dir_path, prefix, dataset_name)
+        f_ldata_path = "%s/%d_l.csv" % (dir_path, prefix)
         np.savetxt(f_ldata_path, l_data, fmt="%s")
         self.logger.debug("%s created" % f_ldata_path)
 
-        f_udata_path = "%s/%d_%s_u.csv" % (dir_path, prefix, dataset_name)
+        f_vdata_path = "%s/%d_v.csv" % (dir_path, prefix)
+        np.savetxt(f_vdata_path, v_data, fmt="%s")
+        self.logger.debug("%s created" % f_vdata_path)
+
+        f_udata_path = "%s/%d_u.csv" % (dir_path, prefix)
         np.savetxt(f_udata_path, u_data, fmt="%s")
         self.logger.debug("%s created" % f_udata_path)
         
-        f_tdata_path = "%s/%d_%s_t.csv" % (dir_path, prefix, dataset_name)
+        f_tdata_path = "%s/%d_t.csv" % (dir_path, prefix)
         np.savetxt(f_tdata_path, t_data, fmt="%s")
         self.logger.debug("%s created" % f_tdata_path)
         
