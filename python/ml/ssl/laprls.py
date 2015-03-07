@@ -48,10 +48,14 @@ class LapRLSBinaryClassifier(BinaryClassifier):
 
         """
 
-        self._init_model(X_l, y, X_u)
-        self.X_lX_l = self._compute_rank_one_sum()
-        
-        self._learn_batch(X_l, y, X_u)
+        # dataset info
+        self._set_data_info(X_l, y, X_u)
+
+        # compute X_l.T * X_l
+        self._compute_rank_one_sum()
+
+        # learn batch
+        self._learn_batch(self.X_l, self.y, self.X_u)
 
         pass
         

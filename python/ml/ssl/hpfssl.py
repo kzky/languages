@@ -73,14 +73,17 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         - `X_u`:
         """
         
-        # init model
-        self._init_model(X_l, y, X_u)
+        # dataset info
+        self._set_data_info(X_l, y, X_u)
+
+        # compute X_l.T * X_l
         self._compute_rank_one_sum()
-        
+
+        # learn
         if self.learn_type == model.LEARN_TYPE_BATCH:
-            self._learn_batch(X_l, y, X_u)
+            self._learn_batch(self.X_l, self.y, self.X_u)
         elif self.learn_type == model.LEARN_TYPE_ONLINE:
-            self._learn_online(X_l, y, X_u)
+            self._learn_online(self.X_l, self.y, self.X_u)
         else:
             raise Exception("learn_type %s does not exist." % self.learn_type)
 

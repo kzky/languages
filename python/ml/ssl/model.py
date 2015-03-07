@@ -61,7 +61,7 @@ class BinaryClassifier(object):
         pass
 
 
-    def _init_model(self, X_l, y, X_u):
+    def _set_data_info(self, X_l, y, X_u):
         """
         Initialize model.
         No need to add bias term into samples because here bias is added.
@@ -81,6 +81,7 @@ class BinaryClassifier(object):
         self.n = self.l + self.u
         
         # set dataset and add bias
+        # TODO should not add bias here, make a user using model add bias
         self.X_l = np.hstack((X_l, np.reshape(np.ones(self.l), (self.l, 1))))
         self._check_and_set_y(y)
         self.X_u = np.hstack((X_u, np.reshape(np.ones(self.u), (self.u, 1))))
