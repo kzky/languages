@@ -2,7 +2,6 @@
 
 from model import BinaryClassifier
 from model import Classifier
-from collections import defaultdict
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import logging
@@ -45,14 +44,19 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("HPFSSLBinaryClassifier")
     
-    def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch"):
+    def __init__(self, max_itr=100, threshold=1e-6,
+                 learn_type=model.LEARN_TYPE_ONLINE,
+                 **kargs):
         """
         Arguments:
         - `max_itr`: max iteration for stopping criterion
         - `threshold`: threshold for stopping criterion
         """
 
-        super(HPFSSLBinaryClassifier, self).__init__()
+        super(HPFSSLBinaryClassifier, self).__init__(
+            max_itr=max_itr, threshold=threshold,
+            learn_type=learn_type
+        )
         
         
         self.max_itr = max_itr
@@ -173,7 +177,8 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         """
         Compute rank one sum.
         """
-        self.X_lX_l = self.X_l.T.dot(self.X_l)
+        X_l = self.X_l
+        self.X_lX_l = X_l.T.dot(X_l)
 
     def _compute_m_batch(self,):
         """
@@ -315,8 +320,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
 
         x = np.hstack((x, 1))
         
-        return np.sum(self.m * x)
-
+        return self.m.dot(x)
     
 class HPFSSLClassifier(Classifier):
     """
@@ -326,156 +330,22 @@ class HPFSSLClassifier(Classifier):
     """
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("HPFSSLClassifier")
-    
-    def __init__(self, max_itr=100, threshold=1e-6, learn_type="online", multi_class="ovo"):
+
+    def __init__(self, max_itr=100, threshold=1e-6,
+                 learn_type=model.LEARN_TYPE_ONLINE,
+                 multi_class=model.MULTI_CLASS_ONE_VS_ONE,
+                 **kargs):
         """
         """
-
-        super(HPFSSLClassifier, self).__init__()
-
-        # params
-        self.max_itr = max_itr
-        self.threshold = threshold
-        self.learn_type = learn_type
-        self.multi_class = multi_class
-
-        # pairs
-        self.pairs = list()
-
-        # classes
-        self.classes = list()
         
-        # model
-        self.models = dict()
+        super(HPFSSLClassifier, self).__init__(max_itr=max_itr, threshold=threshold,
+                                               learn_type=learn_type,
+                                               multi_class=multi_class,
+                                               )
+        self.logger.info("Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
+                         (self.max_itr, self.threshold, self.multi_class, self.learn_type))
 
-        self.logger.info("learn_type is %s" % self.learn_type)
-        self.logger.info("multi_class is %s" % self.multi_class)
-        
-        if multi_class == model.MULTI_CLASS_ONE_VS_ONE:
-            self.learn = self._learn_ovo
-            self.predict = self._predict_ovo
-        elif multi_class == model.MULTI_CLASS_ONE_VS_REST:
-            self.learn = self._learn_ovr
-            self.predict = self._predict_ovr
-            
-    def _learn_ovo(self, X_l, y, X_u):
-        """
-        Learn with One-vs-One scheme for multiclass
-        """
-
-        # take set and sort
-        classes = list(set(y))
-        classes.sort()
-        self.classes = classes
-        
-        # create pairs
-        for i, c in enumerate(classes):
-            for j, k in enumerate(classes):
-                if i < j:
-                    self.pairs.append((c, k))
-                    pass
-
-        # for each pair
-        y = np.asarray(y)
-        for pair in self.pairs:
-            self.logger.info("processing class-pair (%s, %s)" % (pair[0], pair[1]))
-            # retrieve indices
-            idx_1 = np.where(y == pair[0])[0]
-            idx_1_1 = np.where(y == pair[1])[0]
-
-            # get samples X for a pair
-            X_1 = X_l[idx_1, :]
-            X_1_1 = X_l[idx_1_1, :]
-            X_l_pair = np.vstack((X_1, X_1_1))
-            
-            # create y in {1, -1} corresponding to (c_i, c_{i+1})
-            y_1 = [1] * len(idx_1)
-            y_1_1 = [-1] * len(idx_1_1)
-            y_pair = y_1 + y_1_1
-            
-            # pass (X_l, y, X_u) to binary classifier
-            model = HPFSSLBinaryClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
-            model.learn(X_l_pair, y_pair, X_u)
-            self.models[pair] = model
-            
-        pass
-
-    def _predict_ovo(self, x):
-        """
-        Format of return is as follows sorted by values in descending order,
-
-        [(c_i, v_i), (c_i, v_j), ...],
-
-        where
-        c_i is a class,
-        v_i is a predicted values corresponding to c_i.
-
-        Arguments:
-        - `x`: sample, 1-d numpy array
-        """
-        votes = defaultdict(int)
-        for pair, model in self.models.items():
-            target = model.predict(x)
-            if target >= 0:
-                votes[pair[0]] += 1
-            else:
-                votes[pair[1]] += 1
-
-        outputs = sorted(votes.items(), key=lambda x: x[1], reverse=True)
-        return outputs
-        
-    def _learn_ovr(self, X_l, y, X_u):
-        """
-        Learn with One-vs-Rest scheme for multiclass
-        """
-        # take set and sort
-        classes = list(set(y))
-        classes.sort()
-        self.classes = classes
-        
-        # for class
-        y = np.asarray(y)
-        for c in classes:
-            self.logger.info("processing class %s" % c)
-            # retrieve indices
-            idx_1 = np.where(y == c)[0]
-            idx_1_1 = np.where(y != c)[0]
-            
-            # get samples X for a pair
-            X_1 = X_l[idx_1, :]
-            X_1_1 = X_l[idx_1_1, :]
-            X_l_pair = np.vstack((X_1, X_1_1))
-            
-            # create y in {1, -1} corresponding to (c_i, c_{i+1})
-            y_1 = [1] * len(idx_1)
-            y_1_1 = [-1] * len(idx_1_1)
-            y_pair = y_1 + y_1_1
-
-            # pass (X_l, y, X_u) to binary classifier
-            model = HPFSSLBinaryClassifier(max_itr=self.max_itr, threshold=self.threshold, learn_type=self.learn_type)
-            model.learn(X_l_pair, y_pair, X_u)
-            self.models[c] = model
-            
-        pass
-
-    def _predict_ovr(self, x):
-        """
-        Format of return is as follows sorted by values in descending order,
-
-        [(c_i, v_i), (c_i, v_j), ...],
-
-        where
-        c_i is a class,
-        v_i is a predicted values corresponding to c_i.
-
-        Arguments:
-        - `x`: sample, 1-d numpy array
-        """
-        outputs = defaultdict(int)
-        for c, model in self.models.items():
-            outputs[c] = model.predict(x)
-            
-        return sorted(outputs.items(), key=lambda x: x[1], reverse=True)
+        self.internal_classifier = HPFSSLBinaryClassifier
         
 def main():
 
