@@ -1,18 +1,15 @@
 #!/usr/bin/env python
 
-from model import Model
+from model import BinaryClassifier
+from model import Classifier
 from collections import defaultdict
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import logging
+import model
 
-LEARN_TYPE_BATCH = "batch"
-LEARN_TYPE_ONLINE = "online"
 
-MULTI_CLASS_ONE_VS_ONE = "ovo"
-MULTI_CLASS_ONE_VS_REST = "ovr"
-
-class HPFSSLBinaryClassifier(Model):
+class HPFSSLBinaryClassifier(BinaryClassifier):
     """
     Hyper Parameter Free Semi-Supervised Learning Binary Classifier.
 
@@ -62,62 +59,30 @@ class HPFSSLBinaryClassifier(Model):
         self.threshold = threshold
         self.learn_type = learn_type
 
-        self.X_l = None
-        self.y = None
-        self.X_u = None
-        self.X = None
         self.m = None
         self.S = None
         self.XLX = None
         self.beta = None
 
-        if learn_type == LEARN_TYPE_BATCH:
-            self.learn = self._learn_batch
-        elif learn_type == LEARN_TYPE_ONLINE:
-            self.learn = self._learn_online
-        else:
-            raise Exception("learn_type %s does not exist." % learn_type)
-
-    def _init_model(self, X_l, y, X_u):
+    def learn(self, X_l, y, X_u):
         """
-        Initialize model.
-        No need to add bias term into samples because here bias is added.
-
-        Arguments:
-        - `X_l`: samples, 2-d numpy array
-        - `y`: labels, 1-d numpy array, y is in {-1, 1}
-        - `X_u`: unlabeled samples, 2-d numpy array
-        """
-        # set the number of labeled samples, unlabeled samples, and dimension.
-        shape_l = X_l.shape
-        self.d = shape_l[1] + 1
-        self.l = shape_l[0]
-
-        shape_u = X_u.shape
-        self.u = shape_u[0]
-        self.n = self.l + self.u
         
-        # set dataset and add bias
-        self.X_l = np.hstack((X_l, np.reshape(np.ones(self.l), (self.l, 1))))
-        self._check_and_set_y(y)
-        self.X_u = np.hstack((X_u, np.reshape(np.ones(self.u), (self.u, 1))))
-        self.X = np.vstack((self.X_l, self.X_u))
-
-        # diagoanl matrix
-        self.I = np.diag(np.ones(self.d))
-
-        pass
-
-    def _check_and_set_y(self, y):
+        Arguments:
+        - `X_l`:
+        - `y`:
+        - `X_u`:
         """
-        Set y with checking for y definition
-        """
-
-        if not ((1 in y) and (-1 in y)):
-            raise Exception("one which is not 1 or -1 is included in y")
-
-        self.y = np.asarray(y)
-        pass
+        
+        # init model
+        self._init_model(X_l, y, X_u)
+        self._compute_rank_one_sum()
+        
+        if self.learn_type == model.LEARN_TYPE_BATCH:
+            self._learn_batch(X_l, y, X_u)
+        elif self.learn_type == model.LEARN_TYPE_ONLINE:
+            self._learn_online(X_l, y, X_u)
+        else:
+            raise Exception("learn_type %s does not exist." % self.learn_type)
 
     def _learn_batch(self, X_l, y, X_u):
         """
@@ -128,9 +93,6 @@ class HPFSSLBinaryClassifier(Model):
         - `y`: labels, 1-d numpy array
         - `X_u`: unlabeled samples, 2-d numpy array
         """
-        # init model
-        self._init_model(X_l, y, X_u)
-        self._compute_rank_one_sum()
         
         # initialize L, beta, S, and m
         self.XLX = self.I
@@ -157,7 +119,6 @@ class HPFSSLBinaryClassifier(Model):
 
         pass
 
-    # TODO see more carefully
     def _learn_online(self, X_l, y, X_u):
         """
         Learn in the online fashion
@@ -168,10 +129,6 @@ class HPFSSLBinaryClassifier(Model):
         - `X_u`: unlabeled samples, 2-d numpy array
         """
 
-        # init model
-        self._init_model(X_l, y, X_u)
-        self._compute_rank_one_sum()
-        
         # initialize L, beta, S, and m
         self.XLX = self.I
         self.beta = 1
@@ -360,7 +317,8 @@ class HPFSSLBinaryClassifier(Model):
         
         return np.sum(self.m * x)
 
-class HPFSSLClassifier(Model):
+    
+class HPFSSLClassifier(Classifier):
     """
     HPFSSLClassifier handles multi-class with HPFSSLBinaryClassifier.
 
@@ -369,7 +327,7 @@ class HPFSSLClassifier(Model):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("HPFSSLClassifier")
     
-    def __init__(self, max_itr=100, threshold=1e-6, learn_type="batch", multi_class="ovo"):
+    def __init__(self, max_itr=100, threshold=1e-6, learn_type="online", multi_class="ovo"):
         """
         """
 
@@ -393,10 +351,10 @@ class HPFSSLClassifier(Model):
         self.logger.info("learn_type is %s" % self.learn_type)
         self.logger.info("multi_class is %s" % self.multi_class)
         
-        if multi_class == MULTI_CLASS_ONE_VS_ONE:
+        if multi_class == model.MULTI_CLASS_ONE_VS_ONE:
             self.learn = self._learn_ovo
             self.predict = self._predict_ovo
-        elif multi_class == MULTI_CLASS_ONE_VS_REST:
+        elif multi_class == model.MULTI_CLASS_ONE_VS_REST:
             self.learn = self._learn_ovr
             self.predict = self._predict_ovr
             

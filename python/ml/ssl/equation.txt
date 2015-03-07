@@ -6,11 +6,19 @@
 # Update rule
 \mathbf{m} = \beta S X_l t
 S = (XLX^T + \beta X_l X_l^T) ^ {-1}
+S^{-1} = (XLX^T + \beta X_l X_l^T)
 L = X^{+} (S + \mathbf{m}\mathbf{m}^T)^{-1} {X^T}^{+}
 XLX^T = (S + \mathbf{m}\mathbf{m}^T)^{-1}
+(XLX^T)^{-1} = S + \mathbf{m}\mathbf{m}^T
 \beta^{-1} = ( ||t - X_l^T \mathbf{m}||_2^2 + \beta_{old}^{-1} Tr( I - SXLX^T) ) / l
 
 \mathbf{m}_t = \mathbf{m}_{t-1} + \beta S  y_t \mathbf{x}_t
+
+(S + \mathbf{m}\mathbf{m}^T)^{-1} = S^{-1} - \frac{S^{-1}\mathbf{m}\mathbf{m}^TS^{-1}}{1 + \mathbf{m}^T S^{-1} \mathbf{m}}
+
+## S online update 
+S_1 = (XLX^T + \beta \mathbf{x}_1^l{\mathbf{x}_1^l}^T)^{-1}
+       = (XLX^T)^{-1} - \frac{\beta (XLX^T)^{-1}\mathbf{x}_1^l{\mathbf{x}_1^l}^T(XLX^T)^{-1}}{1 + \beta {\mathbf{x}_1^l}^T (XLX^T)^{-1}\mathbf{x}_1^l}
 S_t = (S_{t-1}^{-1} + \beta \mathbf{x}^{l}_t {\mathbf{x}_t^{l}}^{T})^{-1}
        = S_{t-1} - \frac{\beta S_{t-1}\mathbf{x}_{t}^l {\mathbf{x}_{t}^l}^T S_{t-1}}{1 + \beta {\mathbf{x}_{t}^l}^T S_{t-1} \mathbf{x}_{t}^l}
 
