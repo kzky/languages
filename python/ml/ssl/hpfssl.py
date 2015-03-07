@@ -20,11 +20,12 @@ class HPFSSLBinaryClassifier(Model):
     
     m = \beta S X_l t
     S = (XLX^T + \beta X_l X_l^T) ^ {-1}
-    L = X^{+} (S + mm^T) X^T^{+})
+    L = X^{+} (S + mm^T)^{-1} X^T^{+})
+    XLX^T = (S + mm^T)^{-1}
     \beta^{-1} = ( ||t - X_l^T m||_2^2 + \beta_{old}^{-1} Tr( I - SXLX^T) ) / l
 
     Notation is as follows,
-    
+
     m: mean vector
     S: covariance matrix
     L: graph matrix
@@ -129,7 +130,8 @@ class HPFSSLBinaryClassifier(Model):
         """
         # init model
         self._init_model(X_l, y, X_u)
-
+        self._compute_rank_one_sum()
+        
         # initialize L, beta, S, and m
         self.XLX = self.I
         self.beta = 1
@@ -155,6 +157,7 @@ class HPFSSLBinaryClassifier(Model):
 
         pass
 
+    # TODO see more carefully
     def _learn_online(self, X_l, y, X_u):
         """
         Learn in the online fashion
@@ -167,12 +170,12 @@ class HPFSSLBinaryClassifier(Model):
 
         # init model
         self._init_model(X_l, y, X_u)
-
+        self._compute_rank_one_sum()
+        
         # initialize L, beta, S, and m
         self.XLX = self.I
         self.beta = 1
-        self.S = self.XLX
-        self.S = self._compute_S_online()
+        self.S = self._compute_initial_S_online()
         self.m = self._compute_m_online()
 
         t = 0
@@ -209,6 +212,12 @@ class HPFSSLBinaryClassifier(Model):
 
         pass
 
+    def _compute_rank_one_sum(self, ):
+        """
+        Compute rank one sum.
+        """
+        self.X_lX_l = self.X_l.T.dot(self.X_l)
+
     def _compute_m_batch(self,):
         """
         Compute mean vector.
@@ -228,11 +237,11 @@ class HPFSSLBinaryClassifier(Model):
         
         """
 
-        X_l = self.X_l
         beta = self.beta
         XLX = self.XLX
+        X_lX_l = self.X_lX_l
 
-        S = np.linalg.inv(XLX + beta * X_l.T.dot(X_l))
+        S = np.linalg.inv(XLX + beta * X_lX_l)
         return S
 
     def _compute_XLX_batch(self,):
@@ -244,24 +253,9 @@ class HPFSSLBinaryClassifier(Model):
         S = self.S
 
         # (n-by-d)-matrix
-        XLX = S + m.dot(m.T)
+        XLX = np.linalg.inv(S + np.outer(m, m))
+
         return XLX
-
-    def _compute_full_row_rank_pseudo_inverse(self, X):
-        """
-        Compute pseudo inverse of matrix X.
-        Note in the mathmatical notation, X is (d-by-n)-matrix;
-        however X is now (n-by-d)-matirx, so take transpose of X first.
-
-        Dimension of return matrix is (n-by-d)-matrix.
-        Arguments:
-        - X: X in R^{n by d}
-        
-        """
-
-        Z = X.T
-        
-        return Z.T.dot(np.linalg.inv(Z.dot(Z.T)))
 
     def _compute_beta_batch(self, ):
         """
@@ -302,25 +296,51 @@ class HPFSSLBinaryClassifier(Model):
         
         return self._compute_m_batch()
 
+    def _compute_initial_S_online(self, ):
+        """
+        Compute S in an online fashion
+        """
+        
+        XLX_inv = self.I
+        S_t = XLX_inv
+
+        for x in self.X_l:
+            S_t = S_t - S_t.dot(np.outer(x, x)).dot(S_t) / (1 + x.dot(S_t).dot(x))
+            pass
+
+        return S_t
+
     def _compute_S_online(self, ):
         """
         Compute S in an online fashion
-
         """
-        
-        S_t = self.S
-        beta = self.beta
-        for x in self.X_l:
-            # rank-one update
-            S = S_t - (S_t.dot(np.outer(x, x)).dot(S_t)) / (1 + beta * x.dot(S_t).dot(x))
-            S_t = S
 
-        return S
-        
+        S = self.S
+        m = self.m
+        XLX_inv = S + np.outer(m, m)
+
+        S_t = XLX_inv
+        beta = self.beta
+
+        for x in self.X_l:
+            S_t = S_t - beta * S_t.dot(np.outer(x, x)).dot(S_t) / (1 + beta * x.dot(S_t).dot(x))
+            pass
+
+        return S_t
+
     def _compute_XLX_online(self, ):
         """
         """
-        return self._compute_XLX_batch()
+
+        XLX = self.XLX
+        beta = self.beta
+        X_lX_l = self.X_lX_l
+        S_inv = XLX + beta * X_lX_l
+        m = self.m
+
+        XLX = S_inv - S_inv.dot(np.outer(m, m)).dot(S_inv) / (1 + m.dot(S_inv).dot(m))
+
+        return XLX
         
     def _compute_beta_online(self, ):
         """
@@ -506,7 +526,7 @@ def main():
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]
-    
+
     # learn
     model = HPFSSLClassifier(max_itr=100, threshold=1e-6, learn_type="online", multi_class="ovo")
     model.learn(X, y, X)
