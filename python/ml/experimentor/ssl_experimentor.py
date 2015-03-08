@@ -79,7 +79,7 @@ class SSLRateDatesetEvaluator(Experimentor):
         sampled_datasets_number = len(glob.glob("%s/*" % dataset_path))
         if sampled_datasets_number != self.SAMPLED_DATASETS_NUMBER:
             self.logger.info("%s is skipped due to shortage")
-            continue
+            return
 
         self.logger.info("Run with %s" % (dataset_path))
 
