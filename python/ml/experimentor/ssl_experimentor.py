@@ -98,6 +98,7 @@ class SSLRateDatesetEvaluator(Experimentor):
         -'dataset_path': path for a dataset
         -'index' dataset index
         """
+        self.logger.info("processing %s at %d" % (dataset_path, index))
 
         # labeled dataset
         lpath = "%s/%d_%s.csv" % (
@@ -152,6 +153,11 @@ class SSLRateDatesetEvaluator(Experimentor):
         rate_pair = "%s_%s_%s_%s" % (lrate, urate, vrate, trate)
 
         for classifier_name in self.classifiers_info:
+            self.logger.info("processing %s at %d with %s" % (
+                dataset_path,
+                index,
+                classifier_name
+            ))
             param_grid = self.classifiers_info[classifier_name]["param_grid"]
             classifier_ = self.classifiers_info[classifier_name]["classifier"]
             try:
@@ -223,62 +229,62 @@ def main():
 
         "laprls": {
             "classifier": LapRLSClassifier(),
-            "param_grid": [
+            "param_grid": [  # too slowa
                 {"lam": 1e-3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
                 {"lam": 1e-3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-
-                {"lam": 1e-2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
- 
-                {"lam": 1e-1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e-1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
- 
-                {"lam": 1e0, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e0, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
- 
-                {"lam": 1e1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
- 
-                {"lam": 1e2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
- 
-                {"lam": 1e3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                {"lam": 1e3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e-2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e-1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e-1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e0, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e0, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                # 
+                #{"lam": 1e3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                #{"lam": 1e3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
                 
             ],
         },
