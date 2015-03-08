@@ -3,14 +3,20 @@
 import logging
 import glob
 import numpy as np
+import os
 
 from experimentor import Experimentor
 from collections import defaultdict
 from cloud.serialization import cloudpickle
+from ml.ssl import HPFSSL
+from ml.ssl import LapRLS
+from ml.ssl import SVM
 
 LABELED_DATASET_SUFFIX = "l"
 UNLABELED_DATASET_SUFFIX = "u"
 TEST_DATASET_SUFFIX = "t"
+
+SAMPLED_DATASET_NUMBER = 40
 
 class SSLRateDatesetEvaluator(Experimentor):
     """
@@ -20,28 +26,22 @@ class SSLRateDatesetEvaluator(Experimentor):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("SSLRateDatesetEvaluator")
 
-    def __init__(self, base_dataset_path, output_path, classifiers=[]):
+    def __init__(self, base_paths, output_path, classifiers_info):
         """
         Arguments:
         - `base_dataset_path`: path ends with _${label_rate}_${validation_rate}_${}unlabel_rate}_${test_rate}.
-        - `classifiers`: classifiers to be compared for experiments.
+        - `classifiers_info`: info for every classifiers
         """
         super(SSLRateDatesetEvaluator, self).__init__()
 
-        # dataset info
-        self.base_dataset_path = base_dataset_path
-        components = base_dataset_path.split("/")[-1].split("_")
-        self.trate = components[-1]
-        self.urate = components[-2]
-        self.vrate = components[-3]
-        self.lrate = components[-4]
-        self.rate_pair = "%d_%d_%d" % (self.lrate, self.vrate, self.urate, self.trate)
-
+        # base paths
+        self.base_paths = base_paths
+        
         # output path
         self.output_path = output_path
 
-        # classifiers
-        self.classifiers = classifiers
+        # classifiers info
+        self.classifiers_info = classifiers_info
 
         # results
         self.results = defaultdict(
@@ -54,77 +54,105 @@ class SSLRateDatesetEvaluator(Experimentor):
     def run(self, ):
         """
         Run experiments. output structure/format is as follows.
-        <dataset, <rate_pair, <classifier, <index, <{labels, preds}, {[], []}>>>>>
+        <dataset, <classifier, <rate_pair, <index, <{labels, preds}, {[], []}>>>>>
 
-        to be saved with json.
+        to be saved as pickle.
         """
 
-        dataset_paths = glob.glob("%s/*" % self.base_dataset_path)
-
-        for dataset_path in dataset_paths:  # for each dataset
-            self._run_dataset(dataset_path)
-            pass
+        for base_path in self.base_paths:
+            dataset_paths = glob.glob("%s/*" % base_path)
+            for dataset_path in dataset_paths:  # for each dataset
+                self._run_with(dataset_path)
+                pass
 
         self._save_results(self.output_path)
             
     def _run_with(self, dataset_path):
         """
+        Run experiment with dataset_path
         Arguments:
 
-        -'dataset_path': path for a dataset
+        -'dataset_path': path for a dataset directory
         """
 
-        indices = self._retrieve_indices(dataset_path)
+        # check for the num. of sampled datasets
+        sampled_datasets_number = len(glob.glob("%s/*" % dataset_path))
+        if sampled_datasets_number != self.SAMPLED_DATASETS_NUMBER:
+            self.logger.info("%s is skipped due to shortage")
+            continue
 
-        for i in indices:  # for each sampled dataset from the same dataset
+        self.logger.info("Run with %s" % (dataset_path))
+
+        indices = self._retrieve_indices(dataset_path)
+        for i in indices:  # for each dataset sampled from the same dataset
             self._run_internally_with(dataset_path, i)
             pass
                 
     def _run_internally_with(self, dataset_path, index):
         """
+        Run experiment with a dataset file index by the argument index.
         Arguments:
 
         -'dataset_path': path for a dataset
         -'index' dataset index
         """
 
-        # dataset name
-        dataset_name = dataset_path.split("/")[-1]
-
         # labeled dataset
-        lpath = "%s/%d_%s_%s.csv" % (
-            dataset_path, index, dataset_name, LABELED_DATASET_SUFFIX)
+        lpath = "%s/%d_%s.csv" % (
+            dataset_path,
+            index,
+            LABELED_DATASET_SUFFIX)
         ldata = np.loadtxt(lpath, delimiter=",")
         y_l = ldata[:, 0]
         X_l = ldata[:, 1:]
 
         # unlabeled dataset
-        upath = "%s/%d_%s_%s.csv" % (
-            dataset_path, index, dataset_name, UNLABELED_DATASET_SUFFIX)
+        upath = "%s/%d_%s.csv" % (
+            dataset_path,
+            index,
+            UNLABELED_DATASET_SUFFIX)
         udata = np.loadtxt(upath, delimiter=",")
         X_u = udata[:, 1:]
+        
+        # validation dataset
+        vpath = "%s/%d_%s.csv" % (
+            dataset_path,
+            index,
+            UNLABELED_DATASET_SUFFIX)
+        vdata = np.loadtxt(vpath, delimiter=",")
+        X_v = vdata[:, 1:]
+        y_v = vdata[:, 0]
 
         # test dataset
-        tpath = "%s/%d_%s_%s.csv" % (
-            dataset_path, index, dataset_name, TEST_DATASET_SUFFIX)
+        tpath = "%s/%d_%s.csv" % (
+            dataset_path,
+            index,
+            TEST_DATASET_SUFFIX)
         tdata = np.loadtxt(tpath, delimiter=",")
         y_t = tdata[:, 0]
         X_t = tdata[:, 1:]
 
-        # TODO
-        # should one classifier be used becuase Lap-RLS has a lot of parameters
-        # change classsifiers_info: dict
-        for classifier in self.classifiers:
+        # keys of results map
+        dataset_name = dataset_path.split("/")[-1]
+        rates = dataset_path.split("/")[-1].split("_")
+        trate = rates[-1]
+        vrate = rates[-2]
+        urate = rates[-3]
+        lrate = rates[-4]
+        rate_pair = "%s_%s_%s_%s" % (lrate, urate, vrate, trate)
 
+        for classifier_name in self.classifiers:
+            param_grid = self.classifiers_info["classifier_name"]["param_grid"]
             try:
-                classifier.learn(X_l, y_l, X_u)
-                preds = []
-                for x in X_t:
-                    preds.add(classifier.predict(x))
+                classifier = classifier_.validate_in_ssl(X_l, y_l, X_u, X_v, y_v,
+                                                         param_grid=param_grid)
+
+                preds = classifier.predict_classes(X_t)
 
                 classifier_name = classifier.__class__.__name__
-                self.results[dataset_name][self.rate_pair][classifier_name][index]["labels"] = y_t
-                self.results[dataset_name][self.rate_pair][classifier_name][index]["preds"] = preds
+                
+                self.results[dataset_name][classifier_name][rate_pair][index]["labels"] = y_t
+                self.results[dataset_name][classifier_name][rate_pair][index]["preds"] = preds
                 
             except Exception:
                 self.logger.error(
@@ -154,7 +182,106 @@ class SSLRateDatesetEvaluator(Experimentor):
         - `output_path`:
         """
 
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        
         with open(output_path, "w") as fpout:
             cloudpickle.dump(self.results, fpout)
             pass
         pass
+
+
+# Test
+def main():
+
+    # arguemnts for ssl
+    base_paths = ["/home/kzk/datasets/uci_csv_ssl_1_50_1_48"]
+    output_path = "/home/kzk/datasets/uci_csv_ssl_1_50_1_48/experiment/final_paper_2015/test/test001.pkl"
+    classifiers_info = {
+        "hpfssl": {
+            "classifier": HPFSSL(),
+            "param_grid": [{"max_itr": 50, "threshold": 1e-4, "learning": "batch"}],
+        },
+        
+        "svm": {
+            "classifier": SVM(),
+            "param_grid": [
+                {"C": 1e-3}, {"C": 1e-2}, {"C": 1e-1}, {"C": 1},
+                {"C": 1e1}, {"C": 1e2}, {"C": 1e3}],
+        },
+
+        "laprls": {
+            "classifier": LapRLS(),
+            "param_grid": [
+                {"lam": 1e-3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+
+#                {"lam": 1e-2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+# 
+#                {"lam": 1e-1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e-1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+# 
+#                {"lam": 1e0, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e0, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+# 
+#                {"lam": 1e1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+# 
+#                {"lam": 1e2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+# 
+#                {"lam": 1e3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+#                {"lam": 1e3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                
+            ],
+        },
+        
+    }
+    
+
+    experimentor = SSLRateDatesetEvaluator(
+        base_paths,
+        output_path,
+        classifiers_info)
+
+    experimentor.run()
+
+if __name__ == '__main__':
+    main()
+    
