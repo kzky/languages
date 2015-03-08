@@ -35,7 +35,6 @@ class LSVMBinaryClassifier(BinaryClassifier):
                                tol=1e-4, dual=False, fit_intercept=False)
 
         
-
     def learn(self, X_l, y, X_u):
         """
         
@@ -87,12 +86,29 @@ class LSVMClassifier(Classifier):
 
         self.logger.info("Parameters set with C=%f" % (self.C))
 
-    def create_intrenal_classifier(self, ):
+    def create_binary_classifier(self, ):
         """
         """
-        internal_classifier = LSVMBinaryClassifier(C=self.C)
+        binary_classifier = LSVMBinaryClassifier(C=self.C)
 
-        return internal_classifier
+        return binary_classifier
+
+    def _create_classifiers(self, param_grid=[{}]):
+        """
+        
+        Arguments:
+        - `param_grid`:
+        """
+        classifiers = []
+        for param in param_grid:
+            C = param["C"]
+            
+            classifier = LSVMClassifier(
+                C=C,
+            )
+            classifiers.append(classifier)
+
+        return classifiers
 
 def main():
 
@@ -101,11 +117,15 @@ def main():
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]
+    n = X.shape[0]
+    X = np.hstack((X, np.reshape(np.ones(n), (n, 1))))
+    X_l = X
+    X_u = X
 
     # learn
     C = 1
     model = LSVMClassifier(multi_class="ovo", C=C)
-    model.learn(X, y, X)
+    model.learn(X_l, y, X_u)
 
     # predict
     outputs = []

@@ -24,7 +24,8 @@ class LapRLSBinaryClassifier(BinaryClassifier):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("LapRLSBinaryClassifier")
 
-    def __init__(self, lam=1, gamma_s=1, ):
+    def __init__(self, lam=1, normalized=True,
+                 gamma_s=1, kernel=model.KERNEL_RBF):
         """
         Arguments:
         - `lam`: lambda, balancing parameter between loss function and regularizer, attached to loss term
@@ -35,6 +36,9 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         
         self.lam = lam
         self.gamma_s = gamma_s
+        self.normalized = normalized
+
+        self._set_kernel(kernel)
 
         pass
 
@@ -52,7 +56,7 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         self._set_data_info(X_l, y, X_u)
 
         # compute X_l.T * X_l
-        self._compute_rank_one_sum()
+        self.X_lX_l = self._compute_rank_one_sum()
 
         # learn batch
         self._learn_batch(self.X_l, self.y, self.X_u)
@@ -75,8 +79,7 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         X_l = self.X_l
         X = self.X
         y = self.y
-        kernel = self._rbf
-        L = self._compute_L(kernel=kernel)
+        L = self._compute_L()
         XLX = X.T.dot(L).dot(X)
         I = self.I
         lam = self.lam
@@ -86,17 +89,6 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         
         self.w = w
 
-    def predict(self, x):
-        """
-        
-        Arguments:
-        - `x`: one samples with d-dimension
-        """
-        x = np.hstack((x, 1))
-        w = self.w
-
-        return w.dot(x)
-    
     def _compute_rank_one_sum(self, ):
         """
         Compute rank one sum.
@@ -106,7 +98,7 @@ class LapRLSBinaryClassifier(BinaryClassifier):
 
         return X_lX_l
 
-    def _compute_L(self, kernel):
+    def _compute_L(self, ):
         """
         Compute graph laplacian
 
@@ -114,21 +106,48 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         """
 
         n = self.n
-        L = np.zeros((n, n))
+        W = np.zeros((n, n))
         X = self.X
+        kernel = self.kernel
 
         for i in xrange(0, n):
             x_i = X[i, :]
             for j in xrange(0, n):
                 x_j = X[j, :]
                 if i <= j:
-                    L[i, j] = kernel(x_i, x_j)
+                    W[i, j] = kernel(x_i, x_j)
                 else:
-                    L[i, j] = L[j, i]
+                    W[i, j] = W[j, i]
             pass
-        return L
-        
 
+        L = None
+        d = np.sum(W, axis=0)
+        if self.normalized:
+            I = np.ones(len(d))
+            D_norm = np.diag(1 / np.sqrt(d))
+            L = I - D_norm.dot(W).dot(D_norm)
+        else:
+            D = np.diag(d)
+            L = D - W
+
+        return L
+
+    def _set_kernel(self, kernel=model.KERNEL_RBF):
+        """
+        
+        Arguments:
+        - `kernel`:
+        """
+
+        if kernel == model.KERNEL_RBF:
+            self.kernel = self._rbf
+        elif kernel == model.KERNEL_LINEAR:
+            self.kernel = self._linear
+        else:
+            raise Exception("%s kernel does not exist" % (kernel))
+        
+        pass
+        
     def _rbf(self, x, y):
         """
         
@@ -144,6 +163,16 @@ class LapRLSBinaryClassifier(BinaryClassifier):
 
         return val
 
+    def _linear(self, x, y):
+        """
+        
+        Arguments:
+        - `x`:
+        - `y`:
+        """
+
+        val = x.dot(y)
+        return val
 
 class LapRLSClassifier(Classifier):
     """
@@ -158,8 +187,9 @@ class LapRLSClassifier(Classifier):
     def __init__(self,
                  multi_class=model.MULTI_CLASS_ONE_VS_ONE,
                  lam=1,
+                 normalized=True,
                  gamma_s=1,
-                 kernel="",
+                 kernel=model.KERNEL_RBF,
                  ):
         """
         """
@@ -170,18 +200,49 @@ class LapRLSClassifier(Classifier):
 
         self.lam = lam
         self.gamma_s = gamma_s
+        self.normalized = normalized
+        self.kernel_name = kernel
 
-        self.logger.info("Parameters set with lambda = %f, sigma = %f, multi_class is %s" % (self.lam, self.gamma_s, self.multi_class))
+        self.logger.info(
+            """
+            Parameters set with
+            lambda = %f, kernel = %s, sigma = %f, multi_class is %s""" %
+            (self.lam, self.kernel_name, self.gamma_s, self.multi_class))
 
 
-    def create_intrenal_classifier(self, ):
+    def create_binary_classifier(self, ):
         """
         """
-        internal_classifier = LapRLSBinaryClassifier(
+        binary_classifier = LapRLSBinaryClassifier(
             lam=self.lam,
             gamma_s=self.gamma_s
         )
-        return internal_classifier
+        return binary_classifier
+
+    def _create_classifiers(self, param_grid=[{}]):
+        """
+        
+        Arguments:
+        - `param_grid`:
+        """
+        classifiers = []
+        for param in param_grid:
+            lam = param["lam"]
+            gamma_s = ["gamma_s"]
+            normalized = ["normalized"]
+            kernel = ["kernel"]
+
+            classifier = LapRLSClassifier(
+                lam=lam,
+                gamma_s=gamma_s,
+                normalized=normalized,
+                kernel=kernel
+            )
+            classifiers.append(classifier)
+            pass
+        
+        return classifiers
+        
         
 def main():
 
@@ -190,12 +251,18 @@ def main():
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]
+    n = X.shape[0]
+    X = np.hstack((X, np.reshape(np.ones(n), (n, 1))))
+    X_l = X
+    X_u = X
 
     # learn
     lam = 100
-    gamma_s = 0.01
-    model = LapRLSClassifier(lam=lam, gamma_s=gamma_s, multi_class="ovo")
-    model.learn(X, y, X)
+    gamma_s = .001
+    model = LapRLSClassifier(lam=lam, normalized=False,
+                             kernel="rbf",
+                             gamma_s=gamma_s, multi_class="ovo")
+    model.learn(X_l, y, X_u)
 
     # predict
     outputs = []

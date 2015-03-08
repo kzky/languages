@@ -313,18 +313,6 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         return self._compute_beta_batch()
 
         
-    def predict(self, x):
-        """
-        Predict label for x
-        
-        Arguments:
-        - `x`: sample, 1-d numpy array
-        """
-
-        x = np.hstack((x, 1))
-        
-        return self.m.dot(x)
-    
 class HPFSSLClassifier(Classifier):
     """
     HPFSSLClassifier handles multi-class with HPFSSLBinaryClassifier.
@@ -353,15 +341,36 @@ class HPFSSLClassifier(Classifier):
         self.logger.info("Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
                          (self.max_itr, self.threshold, self.multi_class, self.learn_type))
 
-    def create_intrenal_classifier(self, ):
+    def create_binary_classifier(self, ):
         """
         """
-        internal_classifier = HPFSSLBinaryClassifier(
+        binary_classifier = HPFSSLBinaryClassifier(
             max_itr=self.max_itr, threshold=self.threshold,
             learn_type=self.learn_type
         )
-        return internal_classifier
+        return binary_classifier
         
+    def _create_classifiers(self, param_grid=[{}]):
+        """
+        
+        Arguments:
+        - `param_grid`:
+        """
+        classifiers = []
+        for param in param_grid:
+            max_itr = param["max_itr"]
+            threshold = param["threshold"]
+            learn_type = param["learn_type"]
+
+            classifier = HPFSSLClassifier(
+                max_itr=max_itr,
+                threshold=threshold,
+                learn_type=learn_type
+            )
+            classifiers.append(classifier)
+
+        return classifiers
+
 def main():
 
     # data
@@ -369,10 +378,14 @@ def main():
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]
+    n = X.shape[0]
+    X = np.hstack((X, np.reshape(np.ones(n), (n, 1))))
+    X_l = X
+    X_u = X
 
     # learn
     model = HPFSSLClassifier(max_itr=50, threshold=1e-4, learn_type="online", multi_class="ovo")
-    model.learn(X, y, X)
+    model.learn(X_l, y, X_u)
 
     # predict
     outputs = []

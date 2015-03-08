@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from collections import defaultdict
-from ml.validator import GridSearchValiator
+from ml.validator.grid_search_validator import GridSearchValidator
 import numpy as np
 
 
@@ -32,7 +32,7 @@ class BinaryClassifier(object):
 
         self.I = None
 
-        self.validator = GridSearchValiator()
+        self.validator = GridSearchValidator()
         
         pass
         
