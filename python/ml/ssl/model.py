@@ -31,8 +31,6 @@ class BinaryClassifier(object):
         self.l = None
 
         self.I = None
-
-        self.validator = GridSearchValidator()
         
         pass
         
@@ -139,6 +137,9 @@ class Classifier(object):
             raise Exception("multi_class is set with %s or %s" %
                             (MULTI_CLASS_ONE_VS_ONE, MULTI_CLASS_ONE_VS_REST))
 
+        # validator
+        self.validator = GridSearchValidator()
+
     def create_binary_classifier(self, ):
         """
         Create Binary Classifier
@@ -166,7 +167,7 @@ class Classifier(object):
         # for each class pair
         y = np.asarray(y)
         for pair in self.pairs:
-            self.logger.info("processing class-pair (%s, %s)" % (pair[0], pair[1]))
+            self.logger.debug("processing class-pair (%s, %s)" % (pair[0], pair[1]))
             # retrieve indices
             idx_1 = np.where(y == pair[0])[0]
             idx_1_1 = np.where(y == pair[1])[0]
@@ -224,7 +225,7 @@ class Classifier(object):
         # for class
         y = np.asarray(y)
         for c in classes:
-            self.logger.info("processing class %s" % c)
+            self.logger.debug("processing class %s" % c)
             # retrieve indices
             idx_1 = np.where(y == c)[0]
             idx_1_1 = np.where(y != c)[0]
@@ -327,12 +328,12 @@ class Classifier(object):
 
         # create modes themselves
         classifiers = self._create_classifiers(param_grid=param_grid)
-        
+
         # validate
         validator = self.validator
+
         validator.set_classifiers(classifiers)
-        idx = validator.validate_in_ssl(X_l, y, X_u, X_v, y_v)
-        classifier = classifiers[idx]
+        classifier = validator.validate_in_ssl(X_l, y, X_u, X_v, y_v)
 
         return classifier
         

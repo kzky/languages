@@ -17,7 +17,7 @@ class LSVMBinaryClassifier(BinaryClassifier):
     Linear SVM BinaryClassifier wrapnig Liblinear of L2-Regularizer and
     L2-Hinge Loss.
     """
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("LSVMBinaryClassifier")
     
     def __init__(self, C=1):
@@ -63,7 +63,6 @@ class LSVMBinaryClassifier(BinaryClassifier):
         Arguments:
         - `x`: sample, 1-d numpy array
         """
-        x = np.hstack((x, 1))
         val = self.model.decision_function(x)[0]
 
         return val
@@ -84,7 +83,7 @@ class LSVMClassifier(Classifier):
 
         self.C = C
 
-        self.logger.info("Parameters set with C=%f" % (self.C))
+        self.logger.debug("Parameters set with C=%f" % (self.C))
 
     def create_binary_classifier(self, ):
         """

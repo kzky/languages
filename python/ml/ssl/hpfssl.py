@@ -41,7 +41,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
     d: demension of x
     """
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("HPFSSLBinaryClassifier")
     
     def __init__(self, max_itr=100, threshold=1e-4,
@@ -115,7 +115,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
 
             # check stopping criteria
             if t % 100 == 0:
-                self.logger.info("itr: %d" % t)
+                self.logger.debug("itr: %d" % t)
                 pass
             if self._check_stopping_criteria_with_m(m_old):
                 break
@@ -151,7 +151,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
 
             # check stopping criteria
             if t % 100 == 0:
-                self.logger.info("itr: %d" % t)
+                self.logger.debug("itr: %d" % t)
                 pass
             if self._check_stopping_criteria_with_m(m_old):
                 break
@@ -167,7 +167,7 @@ class HPFSSLBinaryClassifier(BinaryClassifier):
         d = self.m - m_old
         d_L2_norm = np.sqrt(d.dot(d))
         if d_L2_norm < self.threshold:
-            self.logger.info("Norm of difference between the current m and previous m is %f" % d_L2_norm)
+            self.logger.debug("Norm of difference between the current m and previous m is %f" % d_L2_norm)
             return True
         else:
             return False
@@ -319,7 +319,7 @@ class HPFSSLClassifier(Classifier):
 
     This class JUST coordinates binary classifiers for handling muti-classes.
     """
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("HPFSSLClassifier")
 
     def __init__(self,
@@ -338,7 +338,7 @@ class HPFSSLClassifier(Classifier):
         self.threshold = threshold
         self.learn_type = learn_type
         
-        self.logger.info("Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
+        self.logger.debug("Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
                          (self.max_itr, self.threshold, self.multi_class, self.learn_type))
 
     def create_binary_classifier(self, ):
