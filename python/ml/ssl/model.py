@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from collections import defaultdict
+from ml.validator import GridSearchValiator
 import numpy as np
 
 
@@ -10,7 +11,9 @@ LEARN_TYPE_ONLINE = "online"
 MULTI_CLASS_ONE_VS_ONE = "ovo"
 MULTI_CLASS_ONE_VS_REST = "ovr"
 
-# TODO refacotr for arguments
+KERNEL_RBF = "rbf"
+KERNEL_LINEAR = "linear"
+
 class BinaryClassifier(object):
     """
     """
@@ -28,6 +31,8 @@ class BinaryClassifier(object):
         self.l = None
 
         self.I = None
+
+        self.validator = GridSearchValiator()
         
         pass
         
@@ -49,8 +54,9 @@ class BinaryClassifier(object):
         Arguments:
         - `x`: sample, 1-d numpy array
         """
-        
-        pass
+        w = self.w
+        val = w.dot(x)
+        return val
 
     def _normalize(self, X_l, X_u):
         """
@@ -73,19 +79,18 @@ class BinaryClassifier(object):
         """
         # set the number of labeled samples, unlabeled samples, and dimension.
         shape_l = X_l.shape
-        self.d = shape_l[1] + 1
+        self.d = shape_l[1]
         self.l = shape_l[0]
 
         shape_u = X_u.shape
         self.u = shape_u[0]
         self.n = self.l + self.u
         
-        # set dataset and add bias
-        # TODO should not add bias here, make a user using model add bias
-        self.X_l = np.hstack((X_l, np.reshape(np.ones(self.l), (self.l, 1))))
+        # set dataset
+        self.X_l = X_l
         self._check_and_set_y(y)
-        self.X_u = np.hstack((X_u, np.reshape(np.ones(self.u), (self.u, 1))))
-        self.X = np.vstack((self.X_l, self.X_u))
+        self.X_u = X_u
+        self.X = self.X_u
 
         # diagoanl matrix
         self.I = np.diag(np.ones(self.d))
@@ -104,7 +109,6 @@ class BinaryClassifier(object):
         pass
 
         
-# TODO refacotr for arguments
 class Classifier(object):
     """
     
@@ -135,9 +139,9 @@ class Classifier(object):
             raise Exception("multi_class is set with %s or %s" %
                             (MULTI_CLASS_ONE_VS_ONE, MULTI_CLASS_ONE_VS_REST))
 
-    def create_intrenal_classifier(self, ):
+    def create_binary_classifier(self, ):
         """
-        Create Internal Classifier
+        Create Binary Classifier
         """
         
         return BinaryClassifier()
@@ -159,7 +163,7 @@ class Classifier(object):
                     self.pairs.append((c, k))
                     pass
 
-        # for each pair
+        # for each class pair
         y = np.asarray(y)
         for pair in self.pairs:
             self.logger.info("processing class-pair (%s, %s)" % (pair[0], pair[1]))
@@ -178,7 +182,7 @@ class Classifier(object):
             y_pair = y_1 + y_1_1
             
             # pass (X_l, y, X_u) to binary classifier
-            model = self.create_intrenal_classifier()
+            model = self.create_binary_classifier()
             model.learn(X_l_pair, y_pair, X_u)
             self.models[pair] = model
             
@@ -236,7 +240,7 @@ class Classifier(object):
             y_pair = y_1 + y_1_1
 
             # pass (X_l, y, X_u) to binary classifier
-            model = self.create_intrenal_classifier()
+            model = self.create_binary_classifier()
             model.learn(X_l_pair, y_pair, X_u)
             self.models[c] = model
             
@@ -257,6 +261,78 @@ class Classifier(object):
         """
         outputs = defaultdict(int)
         for c, model in self.models.items():
-            outputs[c] = model.predict(x)
+            w = model.w
+            outputs[c] = model.predict(x) / np.sqrt(w.dot(w))
             
         return sorted(outputs.items(), key=lambda x: x[1], reverse=True)
+
+    def predicts(self, X):
+        """
+        Predict for samples.
+        Return format is [[(class, score)], [(class, score)], [(class, score)], ...]
+        each of which corresponds to output for a sample.
+        
+        Arguments:
+        - `X`: 2-d numpy array
+        """
+
+        outputs = []
+        for x in X:
+            y = self.predict(x)
+            outputs.append(y)
+            pass
+
+        return outputs
+    
+    def predict_class(self, x):
+        """
+        Predict for a class of the most confidential score.
+
+        Arguments:
+        - `x`: sample, 1-d numpy array
+        """
+
+        y = self.predict(x)[0][0]
+        return y
+
+    def predict_classes(self, X):
+        """
+        
+        Arguments:
+        - `X`: 2-d numpy array
+        """
+
+        outputs = []
+        for x in X:
+            y = self.predict_class(x)
+            outputs.append(y)
+            pass
+
+        return outputs
+        
+    def _create_classifiers(self, param_grid=[{}]):
+        pass
+        
+    def validate_in_ssl(self, X_l, y, X_u, X_v, y_v, param_grid=[{}]):
+        """
+        
+        Arguments:
+        - `X_l`:
+        - `y`:
+        - `X_u`:
+        - `X_v`:
+        - `y_v`:
+        - `param_grid`:
+        """
+
+        # create modes themselves
+        classifiers = self._create_classifiers(param_grid=param_grid)
+        
+        # validate
+        validator = self.validator
+        validator.set_classifiers(classifiers)
+        idx = validator.validate_in_ssl(X_l, y, X_u, X_v, y_v)
+        classifier = classifiers[idx]
+
+        return classifier
+        
