@@ -17,7 +17,7 @@ class RVMBinaryClassifier(BinaryClassifier):
     m = \beta S X t
     S = (\beta X X^T) ^ {-1}
     L = (S + mm^T)^{-1}
-    \beta^{-1} = ( ||t - X^T m||_2^2 + \beta_{old}^{-1} Tr( I - SXLX^T) ) / l
+    \beta^{-1} = ( ||t - X^T m||_2^2 + \beta_{old}^{-1} Tr( I - SA^T) ) / l
 
     Notation is as follows,
 
@@ -38,11 +38,12 @@ class RVMBinaryClassifier(BinaryClassifier):
     d: demension of x
     """
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.debug)
     logger = logging.getLogger("RVMBinaryClassifier")
     
     def __init__(self, max_itr=100, threshold=1e-4,
                  learn_type=model.LEARN_TYPE_ONLINE,
+                 alpha_threshold=1e-24,
                  ):
         """
         Arguments:
@@ -55,10 +56,11 @@ class RVMBinaryClassifier(BinaryClassifier):
         self.max_itr = max_itr
         self.threshold = threshold
         self.learn_type = learn_type
+        self.alpha_threshold = alpha_threshold
 
         self.m = None
         self.S = None
-        self.XLX = None
+        self.alphas = None
         self.beta = None
 
     def learn(self, X, y):
@@ -92,7 +94,7 @@ class RVMBinaryClassifier(BinaryClassifier):
         """
         
         # initialize L, beta, S, and m
-        self.XLX = self.I
+        self.alphas = np.ones(self.d)
         self.beta = 1
         self.S = self._compute_S_batch()
         self.m = self._compute_m_batch()
@@ -101,7 +103,7 @@ class RVMBinaryClassifier(BinaryClassifier):
         while (t < self.max_itr):
             t += 1
             # update parameters
-            self.XLX = self._compute_XLX_batch()
+            self.alphas = self._compute_alphas_batch()
             self.beta = self._compute_beta_batch()
             self.S = self._compute_S_batch()
             m_old = self.m
@@ -125,8 +127,8 @@ class RVMBinaryClassifier(BinaryClassifier):
         - `y`: labels, 1-d numpy array
         """
 
-        # initialize L, beta, S, and m
-        self.XLX = self.I
+        # initialize alphas, beta, S, and m
+        self.alphas = np.ones(self.d)
         self.beta = 1
         self.S = self._compute_initial_S_online()
         self.m = self._compute_m_online()
@@ -136,7 +138,7 @@ class RVMBinaryClassifier(BinaryClassifier):
             t += 1
             
             # update parameters
-            self.XLX = self._compute_XLX_online()
+            self.alphas = self._compute_alphas_online()
             self.beta = self._compute_beta_online()
             m_old = self.m
             self.S = self._compute_S_online()
@@ -196,24 +198,32 @@ class RVMBinaryClassifier(BinaryClassifier):
         """
 
         beta = self.beta
-        XLX = self.XLX
         XX = self.XX
+        alphas = self.alphas
+        A = np.diag(alphas)
 
-        S = np.linalg.inv(XLX + beta * XX)
+        S = np.linalg.inv(A + beta * XX)
         return S
 
-    def _compute_XLX_batch(self,):
+    def _compute_alphas_batch(self,):
         """
         Compute L
 
         """
-        m = self.m
         S = self.S
+        alphas_old = self.alphas
+        ses = np.diagonal(S)
+        gammas = 1 - alphas_old * ses
+        m = self.m
+        
+        alphas = gammas / (m ** 2)
 
-        # (n-by-d)-matrix
-        XLX = np.linalg.inv(S + np.outer(m, m))
-
-        return XLX
+        # numerical check
+        alpha_threshold = self.alpha_threshold
+        indices = np.where(alphas < alpha_threshold)[0]
+        alphas[indices] = alpha_threshold
+        
+        return alphas
 
     def _compute_beta_batch(self, ):
         """
@@ -227,18 +237,19 @@ class RVMBinaryClassifier(BinaryClassifier):
 
         X = self.X
         y = self.y
-        I = self.I
+        
         m = self.m
         S = self.S
-        XLX = self.XLX
+        ses = np.diagonal(S)
+        alphas = self.alphas
         beta_old = self.beta
         l = self.l
         
         residual = y - X.dot(m)
-        inner_trace = I - S.dot(XLX)
+        gammas = 1 - ses.dot(alphas)
 
         # Note that this is similar to RVM update rule and PSD holds.
-        beta = l / (np.sum(residual ** 2) + inner_trace.trace() / beta_old)
+        beta = l / (np.sum(residual ** 2) + np.sum(gammas) / beta_old)
 
         return beta
 
@@ -259,8 +270,8 @@ class RVMBinaryClassifier(BinaryClassifier):
         Compute S in an online fashion
         """
         
-        XLX_inv = self.I
-        S_t = XLX_inv
+        A_inv = self.I
+        S_t = A_inv
 
         for x in self.X:
             S_t = S_t - S_t.dot(np.outer(x, x)).dot(S_t) / (1 + x.dot(S_t).dot(x))
@@ -273,11 +284,10 @@ class RVMBinaryClassifier(BinaryClassifier):
         Compute S in an online fashion
         """
 
-        S = self.S
-        m = self.m
-        XLX_inv = S + np.outer(m, m)
+        alphas = self.alphas
+        A_inv = np.diag(1 / alphas)
 
-        S_t = XLX_inv
+        S_t = A_inv
         beta = self.beta
 
         for x in self.X:
@@ -286,19 +296,12 @@ class RVMBinaryClassifier(BinaryClassifier):
 
         return S_t
 
-    def _compute_XLX_online(self, ):
+    def _compute_alphas_online(self, ):
         """
         """
 
-        XLX = self.XLX
-        beta = self.beta
-        XX = self.XX
-        S_inv = XLX + beta * XX
-        m = self.m
-
-        XLX = S_inv - S_inv.dot(np.outer(m, m)).dot(S_inv) / (1 + m.dot(S_inv).dot(m))
-
-        return XLX
+        alphas = self._compute_alphas_batch()
+        return alphas
         
     def _compute_beta_online(self, ):
         """
@@ -319,6 +322,7 @@ class RVMClassifier(Classifier):
                  multi_class=model.MULTI_CLASS_ONE_VS_ONE,
                  max_itr=100, threshold=1e-4,
                  learn_type=model.LEARN_TYPE_ONLINE,
+                 alpha_threshold=1e-24,
                  ):
         """
         """
@@ -330,6 +334,7 @@ class RVMClassifier(Classifier):
         self.max_itr = max_itr
         self.threshold = threshold
         self.learn_type = learn_type
+        self.alpha_threshold = alpha_threshold
         
         self.logger.debug(
             "Parameters set with max_itr = %d, threshold = %f, multi_class = %s, learn_type = %s" %
@@ -368,7 +373,7 @@ class RVMClassifier(Classifier):
 def main():
 
     # data
-    data_path = "/home/kzk/datasets/uci_csv/glass.csv"
+    data_path = "/home/kzk/datasets/uci_csv/iris.csv"
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]
@@ -376,7 +381,7 @@ def main():
     X = np.hstack((X, np.reshape(np.ones(n), (n, 1))))
 
     # learn
-    model = RVMClassifier(max_itr=50, threshold=1e-4, learn_type="online", multi_class="ovo")
+    model = RVMClassifier(max_itr=50, threshold=1e-4, learn_type="batch", multi_class="ovo", alpha_threshold=1e-24,)
     model.learn(X, y)
 
     # predict
