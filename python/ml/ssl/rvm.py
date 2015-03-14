@@ -54,6 +54,29 @@ class RVMClassifier(object):
         """
         return self.wrapped_model.predict(x)
 
+    def _create_classifiers(self, param_grid=[{}]):
+        """
+        
+        Arguments:
+        - `param_grid`:
+        """
+        classifiers = []
+        for param in param_grid:
+            max_itr = param["max_itr"]
+            threshold = param["threshold"]
+            learn_type = param["learn_type"]
+            alpha_threshold = param["alpha_threshold"]
+
+            classifier = RVMClassifier(
+                max_itr=max_itr,
+                threshold=threshold,
+                learn_type=learn_type,
+                alpha_threshold=alpha_threshold
+            )
+            classifiers.append(classifier)
+
+        return classifiers
+
 def main():
 
     # data
