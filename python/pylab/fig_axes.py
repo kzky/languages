@@ -7,28 +7,32 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 # The easiest way to create a new figure is with pyplot:
-## fig = plt.figure()  # an empty figure with no axes
-## fig, ax_lst = plt.subplots(2, 2)  # a figure with a 2x2 grid of Axes
+## fig = plt.figure()  # an empty figure with no ax
+## fig, ax_lst = plt.subplots(2, 2)  # a figure with a 2x2 grid of Ax
 
 
 # sample 1
-fig, axes = plt.subplots(1, 1)  # a figure with a 1x1 grid of Axes
+fig, ax = plt.subplots(1, 1)  # a figure with a 1x1 grid of Ax
 
 x = np.array([1, 2, 3, 4, 5])
 y = np.power(x, 2)
 e = np.array([1.5, 2.6, 3.7, 4.6, 5.5])
 
 ## integer x-axias value
-axes.xaxis.set_major_locator(MaxNLocator(integer=True))
-axes.errorbar(x, y, e, linestyle='None', marker='^')
+ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+#ax.errorbar(x, y, e, linestyle='None', marker='^')
+eb = ax.errorbar(x, y, e)
+eb.lines[-1][0].set_linestyle('--')
+ax.set_xlim(0.5, 5.5)
 fig.canvas.draw()
+plt.close(fig)
 
 # sample 2
 x = np.arange(-2, 2, 0.01) * np.pi
 y1 = np.sin(x)
 y2 = np.cos(x)
 fig = plt.figure()
-axes = fig.add_subplot(111)
-axes.plot(x, y1)
-axes.plot(x, y2)
+ax = fig.add_subplot(111)
+ax.plot(x, y1)
+ax.plot(x, y2)
 fig.canvas.draw()
