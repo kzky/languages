@@ -1,0 +1,178 @@
+INFO:SSLRateDatesetEvaluator:Run with /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 0
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 0 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 0 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 0 with rvm
+/home/kzk/languages/python/ml/sl/rvm.py:218: RuntimeWarning: invalid value encountered in divide
+  alphas = gammas / (m ** 2)
+/home/kzk/languages/python/ml/sl/rvm.py:222: RuntimeWarning: invalid value encountered in less
+  indices = np.where(alphas < alpha_threshold)[0]
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 1
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 1 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 1 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 1 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 2
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 2 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 2 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 2 with rvm
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 2
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 3
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 3 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 3 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 3 with rvm
+/home/kzk/languages/python/ml/sl/rvm.py:218: RuntimeWarning: divide by zero encountered in divide
+  alphas = gammas / (m ** 2)
+/home/kzk/languages/python/ml/sl/rvm.py:215: RuntimeWarning: invalid value encountered in multiply
+  gammas = 1 - alphas_old * ses
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 3
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 4
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 4 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 4 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 4 with rvm
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 4
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 5
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 5 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 5 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 5 with rvm
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 5
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 6
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 6 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 6 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 6 with rvm
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 6
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 7
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 7 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 7 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 7 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 8
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 8 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 8 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 8 with rvm
+ERROR:SSLRateDatesetEvaluator:classifier: rvm failed with car at 8
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 9
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 9 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 9 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/car at 9 with rvm
+INFO:SSLRateDatesetEvaluator:Run with /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 0
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 0 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 0 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 0 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 1
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 1 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 1 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 1 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 2
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 2 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 2 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 2 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 3
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 3 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 3 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 3 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 4
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 4 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 4 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 4 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 5
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 5 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 5 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 5 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 6
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 6 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 6 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 6 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 7
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 7 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 7 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 7 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 8
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 8 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 8 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 8 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 9
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 9 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 9 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/iris at 9 with rvm
+INFO:SSLRateDatesetEvaluator:Run with /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 0
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 0 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 0 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 0 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 1
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 1 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 1 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 1 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 2
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 2 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 2 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 2 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 3
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 3 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 3 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 3 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 4
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 4 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 4 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 4 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 5
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 5 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 5 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 5 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 6
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 6 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 6 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 6 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 7
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 7 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 7 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 7 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 8
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 8 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 8 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 8 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 9
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 9 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 9 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/pima at 9 with rvm
+INFO:SSLRateDatesetEvaluator:Run with /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 0
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 0 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 0 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 0 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 1
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 1 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 1 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 1 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 2
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 2 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 2 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 2 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 3
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 3 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 3 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 3 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 4
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 4 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 4 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 4 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 5
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 5 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 5 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 5 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 6
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 6 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 6 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 6 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 7
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 7 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 7 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 7 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 8
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 8 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 8 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 8 with rvm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 9
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 9 with hpfssl
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 9 with svm
+INFO:SSLRateDatesetEvaluator:processing /home/kzk/datasets/uci_csv_ssl_lrate_fixed_subset_1_30_1_68/wdbcMB at 9 with rvm

@@ -8,8 +8,10 @@ from ml.ssl.svm import LSVMClassifier
 from ml.ssl.rvm import RVMClassifier
 
 # arguemnts for ssl
-base_paths = ["/home/kzk/datasets/uci_csv_ssl_1_50_1_48_subset"]
-output_path = "/home/kzk/experiment/final_paper_2015/results_test/test001.pkl"
+base_paths = [
+    "/home/kzk/datasets/uci_csv_ssl_urate_fixed_1_50_1_48",
+]
+output_path = "/home/kzk/experiment/final_paper_2015/results_test/.pkl"
 classifiers_info = {
     "hpfssl": {
         "classifier": HPFSSLClassifier(),
@@ -90,13 +92,19 @@ classifiers_info = {
             
         ],
     },
-    
 }
+blocked_datasets = [
+#    "adult",
+#    "magicGamaTelescope",
+]
+
 
 experimentor = SSLRateDatesetEvaluator(
     base_paths,
     output_path,
-    classifiers_info)
+    classifiers_info,
+    blocked_datasets
+)
 
 experimentor.run()
 
