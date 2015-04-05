@@ -4,6 +4,7 @@ import logging
 import glob
 import numpy as np
 import os
+import gc
 
 from experimentor import Experimentor
 from collections import defaultdict
@@ -26,11 +27,12 @@ class SSLRateDatesetEvaluator(Experimentor):
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("SSLRateDatesetEvaluator")
 
-    def __init__(self, base_paths, output_path, classifiers_info):
+    def __init__(self, base_paths, output_path, classifiers_info, blocked_datasets):
         """
         Arguments:
         - `base_dataset_path`: path ends with _${label_rate}_${validation_rate}_${}unlabel_rate}_${test_rate}.
         - `classifiers_info`: info for every classifiers
+        - `blocked_datasets`: datasets list to be filtered out
         """
         super(SSLRateDatesetEvaluator, self).__init__()
 
@@ -43,6 +45,9 @@ class SSLRateDatesetEvaluator(Experimentor):
 
         # classifiers info
         self.classifiers_info = classifiers_info
+
+        # blocked_datasets
+        self.blocked_datasets = blocked_datasets
 
         # results
         self.results = defaultdict(
@@ -63,9 +68,16 @@ class SSLRateDatesetEvaluator(Experimentor):
         for base_path in self.base_paths:
             dataset_paths = glob.glob("%s/*" % base_path)
             dataset_paths.sort()
-            for dataset_path in dataset_paths:  # for each dataset
+            for dataset_path in dataset_paths:   # for each dataset
+                dataset_name = dataset_path.split("/")[-1]
+                if dataset_name in self.blocked_datasets:   # filtered out
+                    self.logger.info("%s is filtered out" % dataset_name)
+                    continue
+                    pass
                 self._run_with(dataset_path)
-                pass
+                gc.collect()
+            pass
+            gc.collect()
 
         self._save_results(self.output_path)
             
@@ -88,8 +100,10 @@ class SSLRateDatesetEvaluator(Experimentor):
         indices = self._retrieve_indices(dataset_path)
         for i in indices:  # for each dataset sampled from the same dataset
             self._run_internally_with(dataset_path, i)
+            gc.collect()
             pass
-                
+
+    # TODO: this method can be parallelized to worker process.
     def _run_internally_with(self, dataset_path, index):
         """
         Run experiment with a dataset file index by the argument index.
@@ -100,58 +114,64 @@ class SSLRateDatesetEvaluator(Experimentor):
         """
         self.logger.info("processing %s at %d" % (dataset_path, index))
 
-        # labeled dataset
-        lpath = "%s/%d_%s.csv" % (
-            dataset_path,
-            index,
-            LABELED_DATASET_SUFFIX)
-        ldata = np.loadtxt(lpath, delimiter=" ")
-        y_l = ldata[:, 0]
-        X_l = ldata[:, 1:]
-        l = X_l.shape[0]
-        X_l = np.hstack((X_l, np.reshape(np.ones(l), (l, 1))))
-
-        # unlabeled dataset
-        upath = "%s/%d_%s.csv" % (
-            dataset_path,
-            index,
-            UNLABELED_DATASET_SUFFIX)
-        udata = np.loadtxt(upath, delimiter=" ")
-        X_u = udata[:, 1:]
-        u = X_u.shape[0]
-        X_u = np.hstack((X_u, np.reshape(np.ones(u), (u, 1))))
+        try:
+            
+            # labeled dataset
+            lpath = "%s/%d_%s.csv" % (
+                dataset_path,
+                index,
+                LABELED_DATASET_SUFFIX)
+            ldata = np.loadtxt(lpath, delimiter=" ")
+            y_l = ldata[:, 0]
+            X_l = ldata[:, 1:]
+            l = X_l.shape[0]
+            X_l = np.hstack((X_l, np.reshape(np.ones(l), (l, 1))))
+             
+            # unlabeled dataset
+            upath = "%s/%d_%s.csv" % (
+                dataset_path,
+                index,
+                UNLABELED_DATASET_SUFFIX)
+            udata = np.loadtxt(upath, delimiter=" ")
+            X_u = udata[:, 1:]
+            u = X_u.shape[0]
+            X_u = np.hstack((X_u, np.reshape(np.ones(u), (u, 1))))
+             
+            # validation dataset
+            vpath = "%s/%d_%s.csv" % (
+                dataset_path,
+                index,
+                UNLABELED_DATASET_SUFFIX)
+            vdata = np.loadtxt(vpath, delimiter=" ")
+            X_v = vdata[:, 1:]
+            y_v = vdata[:, 0]
+            v = X_v.shape[0]
+            X_v = np.hstack((X_v, np.reshape(np.ones(v), (v, 1))))
+             
+            # test dataset
+            tpath = "%s/%d_%s.csv" % (
+                dataset_path,
+                index,
+                TEST_DATASET_SUFFIX)
+            tdata = np.loadtxt(tpath, delimiter=" ")
+            y_t = tdata[:, 0]
+            X_t = tdata[:, 1:]
+            t = X_t.shape[0]
+            X_t = np.hstack((X_t, np.reshape(np.ones(t), (t, 1))))
+             
+            # keys of results map
+            dataset_name = dataset_path.split("/")[-1]
+            rates = dataset_path.split("/")[-2].split("_")
+            trate = rates[-1]
+            vrate = rates[-2]
+            urate = rates[-3]
+            lrate = rates[-4]
+            rate_pair = "%s_%s_%s_%s" % (lrate, urate, vrate, trate)
+        except Exception:
+            self.logger.info("dataset_path, %s at %d was not loaded."
+                             % (dataset_path, index))
+            return
         
-        # validation dataset
-        vpath = "%s/%d_%s.csv" % (
-            dataset_path,
-            index,
-            UNLABELED_DATASET_SUFFIX)
-        vdata = np.loadtxt(vpath, delimiter=" ")
-        X_v = vdata[:, 1:]
-        y_v = vdata[:, 0]
-        v = X_v.shape[0]
-        X_v = np.hstack((X_v, np.reshape(np.ones(v), (v, 1))))
-
-        # test dataset
-        tpath = "%s/%d_%s.csv" % (
-            dataset_path,
-            index,
-            TEST_DATASET_SUFFIX)
-        tdata = np.loadtxt(tpath, delimiter=" ")
-        y_t = tdata[:, 0]
-        X_t = tdata[:, 1:]
-        t = X_t.shape[0]
-        X_t = np.hstack((X_t, np.reshape(np.ones(t), (t, 1))))
-
-        # keys of results map
-        dataset_name = dataset_path.split("/")[-1]
-        rates = dataset_path.split("/")[-2].split("_")
-        trate = rates[-1]
-        vrate = rates[-2]
-        urate = rates[-3]
-        lrate = rates[-4]
-        rate_pair = "%s_%s_%s_%s" % (lrate, urate, vrate, trate)
-
         for classifier_name in self.classifiers_info:
             self.logger.info("processing %s at %d with %s" % (
                 dataset_path,
@@ -213,7 +233,7 @@ def main():
 
     # arguemnts for ssl
     base_paths = ["/home/kzk/datasets/uci_csv_ssl_1_50_1_48_subset"]
-    output_path = "/home/kzk/experiment/final_paper_2015/test/test001.pkl"
+    output_path = "/home/kzk/experiment/final_paper_2015/results_test/test001.pkl"
     classifiers_info = {
         "hpfssl": {
             "classifier": HPFSSLClassifier(),
@@ -230,61 +250,61 @@ def main():
         "laprls": {
             "classifier": LapRLSClassifier(),
             "param_grid": [  # too slowa
-                {"lam": 1e-3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-0, "gamma_s": 1e-0, "normalized": True, "kernel": "rbf"},
                 {"lam": 1e-3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e-2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e-1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e-1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e0, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e0, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
-                # 
-                #{"lam": 1e3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
-                #{"lam": 1e3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e-2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e-1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e-1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e0, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e0, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e1, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e1, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e2, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e2, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
+                 
+                {"lam": 1e3, "gamma_s": 1e-3, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e-2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e-1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e0, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e1, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e2, "normalized": True, "kernel": "rbf"},
+                {"lam": 1e3, "gamma_s": 1e3, "normalized": True, "kernel": "rbf"},
                 
             ],
         },
