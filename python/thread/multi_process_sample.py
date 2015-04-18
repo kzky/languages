@@ -18,7 +18,7 @@ class WorkerPool():
     """
     NUM_WORKERS = multiprocessing.cpu_count()
     
-    def __init__(self, num_workers=NUM_WORKERS, task_queue=Queue(), result_queue=Queue()):
+    def __init__(self, task_queue=None, result_queue=None, num_workers=NUM_WORKERS):
         """
         
         Arguments:
@@ -27,11 +27,12 @@ class WorkerPool():
         - `result_queue`: result queue
         """
 
-        self._task_queue = task_queue
-        self._result_queue = result_queue
+        self._task_queue = task_queue if task_queue is not None else Queue()
+        self._result_queue = result_queue if result_queue is not None else Queue()
 
         self._num_workers = num_workers
         self._workers = []
+        
         self._start_workers()
         
         pass
@@ -61,8 +62,8 @@ class WorkerPool():
 
         for i in xrange(0, self._num_workers):
             worker = Worker(self._task_queue, self._result_queue)
-            worker.start()
             self._workers.append(worker)
+            worker.start()
             pass
             
         pass
@@ -75,9 +76,9 @@ class WorkerPool():
             self._workers[i].terminate()
             pass
 
+        self._result_queue.close()
+        self._task_queue.close()
         pass
-        pass
-
 
 class Worker(Process):
     """
