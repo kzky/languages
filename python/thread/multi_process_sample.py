@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
+"""
+Multiprocess sample, creating WorkerPool by oneself
+
+http://docs.python.jp/2.7/library/multiprocessing.html
+"""
+
 from multiprocessing import Process
 from multiprocessing import Queue
 from multiprocessing import JoinableQueue
 
 import multiprocessing
-
 
 class WorkerPool():
     """
@@ -57,7 +62,6 @@ class WorkerPool():
         for i in xrange(0, self._num_workers):
             worker = Worker(self._task_queue, self._result_queue)
             worker.start()
-            #print worker
             self._workers.append(worker)
             pass
             
