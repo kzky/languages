@@ -17,6 +17,7 @@ def make_celery(app):
         def __call__(self, *args, **kwargs):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
+
     celery.Task = ContextTask
     return celery
 
@@ -26,14 +27,14 @@ app.config["SECRET_KEY"] = "secret_key"
 
 # Init db
 db = MongoEngine()
-db_name = "flask-login-sample"
+db_name = "flask-celery-sample00"
 app.config['MONGODB_SETTINGS'] = {
     'db': db_name,
     # 'username':'webapp',
     # 'password':'pwd123'
 }
 db.init_app(app)
-db.connection.drop_database(db_name)
+#db.connection.drop_database(db_name)
 
 # Init login manager
 lm = LoginManager()
@@ -82,17 +83,42 @@ def add_task(a, b):
 
     return ret
 
+@celery.task
+def get_user_task(name):
+    print app
+    print db
+    print db.connection
+    print User.objects(name=name)
+    print User.objects(name=name).first()
+    user = User.objects(name=name).first()
+    
+    print user.name
+     
+    return user.name
+
 # Controller
 @app.route("/add", methods=["POST"])
 def add():
-
     data = request.json
 
     import flask_celery
     flask_celery.add_task.delay(int(data["a"]), int(data["b"]))
+
     res = {"result": "received"}
     return jsonify(res)
 
+# Controller
+@app.route("/user/<name>", methods=["GET"])
+def get_uesr(name):
+    #user = User.objects(name=name).first()
+    #print "username: {}".format(user.name)
+    print name
+    
+    import flask_celery
+    flask_celery.get_user_task.delay(name)
+    
+    res = {"result": "received"}
+    return jsonify(res)
 
 if __name__ == "__main__":
 
@@ -102,6 +128,8 @@ if __name__ == "__main__":
     # Create protected user
     api_key = "03094200e64fba27239b554d879d9ca654"
     user = User(name="me", api_key=api_key)
-    user.save()
+    user_ = User.objects(name="me").first()
+    if user_ is None:
+        user.save()
     app.run()
 
