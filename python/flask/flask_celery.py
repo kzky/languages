@@ -103,6 +103,8 @@ def add():
 
     import flask_celery
     flask_celery.add_task.delay(int(data["a"]), int(data["b"]))
+    #celery.add_task.delay(int(data["a"]), int(data["b"]))
+    
 
     res = {"result": "received"}
     return jsonify(res)
@@ -131,5 +133,8 @@ if __name__ == "__main__":
     user_ = User.objects(name="me").first()
     if user_ is None:
         user.save()
+    print dir()
+
+    print add_task(10, 10)  # Can call a task here, so that we can unittest tasks without worker and broker.
     app.run()
 
