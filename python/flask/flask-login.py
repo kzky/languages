@@ -1,12 +1,32 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify
 from flask.ext.login import LoginManager, UserMixin, login_required
 from flask.ext.mongoengine import MongoEngine
 
 # Init application
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret_key"
+'''
+def login_required(func):
+    ....
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if current_app.login_manager._login_disabled:
+            return func(*args, **kwargs)
+        elif not current_user.is_authenticated(): # Here, Runtime error occur
+            return current_app.login_manager.unauthorized()
+        return func(*args, **kwargs)
+    return decorated_view
+    ....
+
+Runtime error occur
+-----
+current_user.is_authenticated()
+RuntimeError: the session is unavailable because no secret key was set.  Set the secret_key on the application to something unique and secret.
+-----
+'''
+
 
 # Init db
 db = MongoEngine()
