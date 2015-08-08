@@ -31,14 +31,14 @@ def read_with_cv2_to_pkl(n=32):
             filename = os.path.basename(filepath)
             filename = filename.split(".png")[0]
             filename = "{}_{}-{}.pkl".format(filename, i - n, i)
-            pkl.dump(I, open("{}/{}".format(base_save_dirpath, filename), "w"))
+            pkl.dump(data, open("{}/{}".format(base_save_dirpath, filename), "w"))
             del data[:]
         if (i + 1) == m:
             print i
             filename = os.path.basename(filepath)
             filename = filename.split(".png")[0]
             filename = "{}_{}-{}.pkl".format(filename, i - n, i)
-            pkl.dump(I, open("{}/{}".format(base_save_dirpath, filename), "w"))
+            pkl.dump(data, open("{}/{}".format(base_save_dirpath, filename), "w"))
 
 def read_with_cv2_to_mat(n=32):
     base_dirpath = "/home/kzk/datasets/cifar10/train"
@@ -136,9 +136,9 @@ def read_with_cv2_to_hdf5(n=32):
 def main():
     for n in [32, 64, 128]:
         read_with_cv2_to_pkl(n)
-        read_with_cv2_to_mat(n)
-        read_with_cv2_to_npy(n)
-        read_with_cv2_to_hdf5(n)
+        #read_with_cv2_to_mat(n)
+        #read_with_cv2_to_npy(n)
+        #read_with_cv2_to_hdf5(n)
 
     pass
 
