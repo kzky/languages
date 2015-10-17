@@ -27,7 +27,6 @@ def unzip(zfin):
 ## 渡したいなら，Threadクラスを継承したクラスを作る
 queue = Queue.Queue()
 
-
 # wokrer
 def worker():
     """

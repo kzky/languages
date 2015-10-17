@@ -3,6 +3,7 @@
 from ml.experimentor.ssl_experimentor import SSLRateDatesetEvaluator
 
 from ml.ssl.hpfssl import HPFSSLClassifier
+from ml.ssl.regularized_hpfssl import RegularizedHPFSSLClassifier
 from ml.ssl.laprls import LapRLSClassifier
 from ml.ssl.svm import LSVMClassifier
 from ml.ssl.rvm import RVMClassifier
@@ -16,6 +17,11 @@ classifiers_info = {
     "hpfssl": {
         "classifier": HPFSSLClassifier(),
         "param_grid": [{"max_itr": 50, "threshold": 1e-4, "learn_type": "batch"}],
+    },
+
+    "reglarized_hpfssl": {
+        "classifier": RegularizedHPFSSLClassifier(),
+        "param_grid": [{"max_itr": 0, "threshold": 1e-4, "learn_type": "batch"}],
     },
 
     "rvm": {

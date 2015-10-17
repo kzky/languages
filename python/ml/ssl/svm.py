@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-NOTE: This is NOT ssl version of SVM. For the sake of experiment, this model extis.
+NOTE: This is NOT ssl version of SVM. For the sake of experiment, this model extis and aligns interface for SSL.
 """
 
 from sklearn.svm import LinearSVC
@@ -17,7 +17,10 @@ class LSVMBinaryClassifier(BinaryClassifier):
     Linear SVM BinaryClassifier wrapnig Liblinear of L2-Regularizer and
     L2-Hinge Loss.
     """
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+    logging.basicConfig(
+        format=FORMAT,
+        level=logging.DEBUG)
     logger = logging.getLogger("LSVMBinaryClassifier")
     
     def __init__(self, C=1):
@@ -112,7 +115,7 @@ class LSVMClassifier(Classifier):
 def main():
 
     # data
-    data_path = "/home/kzk/datasets/uci_csv/glass.csv"
+    data_path = "/home/kzk/datasets/uci_csv/spam.csv"
     data = np.loadtxt(data_path, delimiter=" ")
     y = data[:, 0]
     X = data[:, 1:]

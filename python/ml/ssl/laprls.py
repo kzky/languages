@@ -6,6 +6,8 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import logging
 import model
+import time
+
 
 class LapRLSBinaryClassifier(BinaryClassifier):
     """
@@ -21,7 +23,10 @@ class LapRLSBinaryClassifier(BinaryClassifier):
     gamma_s: parameter of graph laplacian
     """
     
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+    logging.basicConfig(
+        format=FORMAT,
+        level=logging.DEBUG)
     logger = logging.getLogger("LapRLSBinaryClassifier")
 
     def __init__(self, lam=1, normalized=True,
@@ -86,8 +91,8 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         lam = self.lam
 
         inv_inner_term = lam * X_lX_l + I + XLX
+
         w = lam * np.linalg.inv(inv_inner_term).dot(X_l.T).dot(y)
-        
         self.w = w
 
     def _compute_rank_one_sum(self, ):
@@ -106,20 +111,11 @@ class LapRLSBinaryClassifier(BinaryClassifier):
         Now support only rbf kernel
         """
 
-        u = self.u
-        W = np.zeros((u, u))
         X = self.X
-        kernel = self.kernel
+        W = self._compute_L_with_rbf(X)
 
-        for i in xrange(0, u):
-            x_i = X[i, :]
-            for j in xrange(0, u):
-                x_j = X[j, :]
-                if i <= j:
-                    W[i, j] = kernel(x_i, x_j)
-                else:
-                    W[i, j] = W[j, i]
-            pass
+        self.logger.info("compute_L starts")
+        s = time.time()
 
         L = None
         d = np.sum(W, axis=0)
@@ -131,7 +127,21 @@ class LapRLSBinaryClassifier(BinaryClassifier):
             D = np.diag(d)
             L = D - W
 
+        e = time.time()
+        self.logger.info("compute_L finish with %f [s]" % (e - s))
+
         return L
+
+    def _compute_L_with_rbf(self, X):
+        """
+        """
+        H = np.tile(np.diag(np.dot(X, X.T)), (X.shape[0], 1))
+        G = np.dot(X, X.T)
+        distmat = H - 2 * G + H.T
+        gamma_s = self.gamma_s
+        
+        K = np.exp(-gamma_s * distmat)
+        return K
 
     def _set_kernel(self, kernel=model.KERNEL_RBF):
         """
@@ -182,7 +192,10 @@ class LapRLSClassifier(Classifier):
     This class JUST coordinates binary classifiers for handling muti-classes.
     """
 
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+    logging.basicConfig(
+        format=FORMAT,
+        level=logging.DEBUG)
     logger = logging.getLogger("LapRLSClassifier")
 
     def __init__(self,
@@ -233,8 +246,10 @@ class LapRLSClassifier(Classifier):
             gamma_s = param["gamma_s"]
             normalized = param["normalized"]
             kernel = param["kernel"]
+            multi_class = param["multi_class"]
 
             classifier = LapRLSClassifier(
+                multi_class=multi_class,
                 lam=lam,
                 normalized=normalized,
                 gamma_s=gamma_s,

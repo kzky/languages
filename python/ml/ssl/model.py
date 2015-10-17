@@ -2,8 +2,10 @@
 
 from collections import defaultdict
 from ml.validator.grid_search_validator import GridSearchValidator
-import numpy as np
 
+import numpy as np
+import scipy as sp
+import scipy.sparse
 
 LEARN_TYPE_BATCH = "batch"
 LEARN_TYPE_ONLINE = "online"
@@ -52,6 +54,7 @@ class BinaryClassifier(object):
         Arguments:
         - `x`: sample, 1-d numpy array
         """
+
         w = self.w
         val = w.dot(x)
         return val
@@ -156,7 +159,7 @@ class Classifier(object):
         classes = list(set(y))
         classes.sort()
         self.classes = classes
-        
+
         # create pairs
         for i, c in enumerate(classes):
             for j, k in enumerate(classes):
@@ -175,7 +178,11 @@ class Classifier(object):
             # get samples X for a pair
             X_1 = X_l[idx_1, :]
             X_1_1 = X_l[idx_1_1, :]
-            X_l_pair = np.vstack((X_1, X_1_1))
+            X_l_pair = None
+            if sp.sparse.issparse(X_1):
+                X_l_pair = sp.sparse.vstack((X_1, X_1_1)).tocsr()
+            else:
+                X_l_pair = np.vstack((X_1, X_1_1))
             
             # create y in {1, -1} corresponding to (c_i, c_{i+1})
             y_1 = [1] * len(idx_1)
@@ -233,7 +240,11 @@ class Classifier(object):
             # get samples X for a pair
             X_1 = X_l[idx_1, :]
             X_1_1 = X_l[idx_1_1, :]
-            X_l_pair = np.vstack((X_1, X_1_1))
+            X_l_pair = None
+            if sp.sparse.issparse(X_1):
+                X_l_pair = sp.sparse.vstack((X_1, X_1_1))
+            else:
+                X_l_pair = np.vstack((X_1, X_1_1))
             
             # create y in {1, -1} corresponding to (c_i, c_{i+1})
             y_1 = [1] * len(idx_1)
@@ -276,7 +287,7 @@ class Classifier(object):
         Arguments:
         - `X`: 2-d numpy array
         """
-
+        
         outputs = []
         for x in X:
             y = self.predict(x)

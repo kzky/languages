@@ -10,7 +10,6 @@ def tissue_box():
         print "yield %d !" % i
         yield i
 
-
 def main():
     for i in tissue_box():
         print "consume %d !" % i

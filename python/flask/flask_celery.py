@@ -88,6 +88,7 @@ def get_user_task(name):
     print app
     print db
     print db.connection
+    print dir(db.connection)
     print User.objects(name=name)
     print User.objects(name=name).first()
     user = User.objects(name=name).first()

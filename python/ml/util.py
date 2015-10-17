@@ -9,7 +9,7 @@ class Utility(object):
         """
 
     @staticmethod
-    def get_class(kls):
+    def get_instance(kls):
         parts = kls.split('.')
         module = ".".join(parts[:-1])
         m = __import__(module)

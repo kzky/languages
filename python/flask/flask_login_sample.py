@@ -73,11 +73,11 @@ def load_user_from_request(request):
 
     return None
 
-#@lm.unauthorized_handler
-#def unauthorized():
-#    # do stuff
-#    data = {"result": "You need login"}
-#    return jsonify(data)
+@lm.unauthorized_handler
+def unauthorized():
+    # do stuff
+    data = {"result": "You need login"}
+    return jsonify(data)
 
 # Controllers
 @app.route("/hello")

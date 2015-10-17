@@ -23,14 +23,13 @@ class RVMBinaryClassifier(BinaryClassifier):
 
     m: mean vector
     S: covariance matrix
-    L: graph matrix
+    alphas: covariances for normal distributions
     beta: variance
     l: the number of labeled samples
     n: the number of samples
     t: labels
     X: labeled samples
     I: identity matrix
-    X^{+}: pseudo-inverse of X
     X^T: transopse of X
     Tr(X): trace of XS
     ||x||_2: L-2 norm
@@ -38,7 +37,10 @@ class RVMBinaryClassifier(BinaryClassifier):
     d: demension of x
     """
 
-    logging.basicConfig(level=logging.debug)
+    FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+    logging.basicConfig(
+        format=FORMAT,
+        level=logging.DEBUG)
     logger = logging.getLogger("RVMBinaryClassifier")
     
     def __init__(self, max_itr=100, threshold=1e-4,
@@ -215,9 +217,13 @@ class RVMBinaryClassifier(BinaryClassifier):
         ses = np.diagonal(S)
         gammas = 1 - alphas_old * ses
         m = self.m
-        
-        alphas = gammas / (m ** 2)
 
+        alphas = None
+        try:
+            alphas = gammas / (m ** 2)
+        except Exception:
+            alphas = alphas_old
+        
         # numerical check
         alpha_threshold = self.alpha_threshold
         indices = np.where(alphas < alpha_threshold)[0]
@@ -315,7 +321,10 @@ class RVMClassifier(Classifier):
 
     This class JUST coordinates binary classifiers for handling muti-classes.
     """
-    logging.basicConfig(level=logging.INFO)
+    FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+    logging.basicConfig(
+        format=FORMAT,
+        level=logging.DEBUG)
     logger = logging.getLogger("RVMClassifier")
 
     def __init__(self,
@@ -348,27 +357,7 @@ class RVMClassifier(Classifier):
             learn_type=self.learn_type
         )
         return binary_classifier
-        
-    def _create_classifiers(self, param_grid=[{}]):
-        """
-        
-        Arguments:
-        - `param_grid`:
-        """
-        classifiers = []
-        for param in param_grid:
-            max_itr = param["max_itr"]
-            threshold = param["threshold"]
-            learn_type = param["learn_type"]
 
-            classifier = RVMClassifier(
-                max_itr=max_itr,
-                threshold=threshold,
-                learn_type=learn_type
-            )
-            classifiers.append(classifier)
-
-        return classifiers
 
 def main():
 
