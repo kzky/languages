@@ -86,8 +86,8 @@ parser.add_argument('--gpu', '-g', default=-1, type=int,
 
 args = parser.parse_args()
 #cuda.check_cuda_available()
-#xp = cuda.cupy if args.gpu >= 0 else np
-xp = np
+xp = cuda.cupy if args.gpu >= 0 else np
+#xp = np
 
 # params
 batchsize = 100
