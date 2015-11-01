@@ -1,21 +1,22 @@
 from flask import Flask, request
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
 api = Api(app)
 
 # Hello World
 class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world by get'}
-
+    
+    parser = reqparse.RequestParser()
+    parser.add_argument('rate', type=int, help='Rate cannot be converted')
+    parser.add_argument('name')
+    parser.add_argument('name_relocated', dest="name_dest")
+        
     def post(self):
-        return {'hello': 'world by post'}
+        args = self.parser.parse_args()
 
-    def put(self):
-        return {'hello': 'world by put'}
+        print args
+        return args
 
-    def delete(self):
-        return {'hello': 'world by delete'}
 api.add_resource(HelloWorld, '/hello')
 
