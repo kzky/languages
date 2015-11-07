@@ -27,11 +27,11 @@ class Worker(Process):
 
         self._task_queue = task_queue
         self._result_queue = result_queue
-        
+
+        # not actually copied as long as passed as sharedctypes
         self.X = ctypeslib.as_array(X_ctypes)
         self.X.shape = shape
-
-        print self.X.shape
+        self.n = shape[0]
 
     def run(self, ):
         """
@@ -47,11 +47,10 @@ class Worker(Process):
     def _compute(self, s, e):
         st = time.time()
         for i in xrange(s, e):
-            for j in xrange(s, e):
+            for j in xrange(0, self.n):
                 self.X[i, :].dot(self.X[j, :])
 
         et = time.time()
-
         return et - st
         
 def main():
@@ -71,8 +70,8 @@ def main():
     X.shape = size
 
     X_ctypes = sharedctypes.RawArray(ctypes.c_double, X)
-    X = np.frombuffer(X_ctypes, dtype=np.float64, count=size)
-    X.shape = shape
+    #X = np.frombuffer(X_ctypes, dtype=np.float64, count=size)
+    #X.shape = shape
 
     # create worker and start
     for i in xrange(concurrency):
@@ -99,7 +98,7 @@ def main():
         workers[i].terminate()
 
     # do math for elapsed time
-    print "Elapsed time {} [s]".format(np.sum(elapsed_times))
+    print "Elapsed time {} [s]".format(np.max(elapsed_times))
 
 
 if __name__ == '__main__':

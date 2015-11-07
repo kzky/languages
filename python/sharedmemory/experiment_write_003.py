@@ -1,37 +1,39 @@
 # -*- coding: utf-8 -*-
 
 """
-3. [https://pypi.python.org/pypi/sharedmem/0.3:title=sharedmem]を使う
+3. [https://pypi.python.org/pypi/sharedmem/0.3:title=sharedmem]で書き込まれるobjectを作る
 """
 
 import numpy as np
 import time
-import sharedmem
+import ctypes
 from multiprocessing import Queue, Process
-
-n = 10000
-m = 100
-X = sharedmem.empty((n, m))
-     
+from multiprocessing import sharedctypes
+from numpy import ctypeslib
+import sharedmem
 
 class Worker(Process):
     """
     Worker process.
     """
     
-    def __init__(self, task_queue, result_queue):
+    def __init__(self, task_queue, result_queue,
+                 X_ctypes_in, shape_in,
+                 X_out):
         """
         
-        Arguments:
-        - `task_queue`:
-        - `result_queue`:
         """
         super(Worker, self).__init__()  # this must be necessary.
 
         self._task_queue = task_queue
         self._result_queue = result_queue
-        self.X = X
-        print self.X.shape
+        
+        self.X_in = ctypeslib.as_array(X_ctypes_in)
+        self.X_in.shape = shape_in
+
+        self.X_out = X_out
+
+        self.n = shape_in[0]
 
     def run(self, ):
         """
@@ -47,8 +49,8 @@ class Worker(Process):
     def _compute(self, s, e):
         st = time.time()
         for i in xrange(s, e):
-            for j in xrange(s, e):
-                self.X[i, :].dot(self.X[j, :])
+            for j in xrange(0, self.n):
+                self.X_out[i, j] = self.X_in[i, :].dot(self.X_in[j, :])
 
         et = time.time()
 
@@ -60,12 +62,29 @@ def main():
     task_queue = Queue()
     result_queue = Queue()
 
-    concurrency = 4
-    unit = n / 4
+    # input data
+    n = 10000
+    m = 100
+    X_in = np.random.rand(n, m)
+     
+    size_in = X_in.size
+    shape_in = X_in.shape
+    X_in.shape = size_in
+
+    X_ctypes_in = sharedctypes.RawArray(ctypes.c_double, X_in)
+    #X_in = np.frombuffer(X_ctypes_in, dtype=np.float64, count=size_in)
+    #X_in.shape = shape_in
+
+    # output data
+    X_out = sharedmem.empty((n, n))
 
     # create worker and start
+    concurrency = 4
+    unit = n / 4
     for i in xrange(concurrency):
-        worker = Worker(task_queue, result_queue)
+        worker = Worker(task_queue, result_queue,
+                        X_ctypes_in, shape_in,
+                        X_out)
         worker.start()
         workers.append(worker)
         
@@ -88,8 +107,7 @@ def main():
         workers[i].terminate()
 
     # do math for elapsed time
-    print "Elapsed time {} [s]".format(np.sum(elapsed_times))
-
+    print "Elapsed time {} [s]".format(np.max(elapsed_times))
 
 if __name__ == '__main__':
     main()
