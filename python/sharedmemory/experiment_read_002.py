@@ -51,6 +51,7 @@ class Worker(Process):
                 self.X[i, :].dot(self.X[j, :])
 
         et = time.time()
+
         return et - st
         
 def main():
