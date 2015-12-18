@@ -51,4 +51,9 @@ def main():
     
 if __name__ == '__main__':
     main()
-    
+
+"""
+remainder_zero: elapsed time: 1828.39505982 [s]
+remainder_zero_of_list: elapsed time: 0.113119125366 [s]
+remainder_zero_of_array: elapsed time: 0.113519906998 [s]
+"""
