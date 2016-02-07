@@ -57,8 +57,8 @@ class Worker(Process):
             session.commit()
 
         except gevent.Timeout as e:
-            #session.invalidate()
-            session.close()
+            session.invalidate()
+            #session.close()
             #print e
         except Exception as e:
             session.rollback()

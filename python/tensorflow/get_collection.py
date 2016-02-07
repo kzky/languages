@@ -20,6 +20,7 @@ x = tf.Variable(np.random.rand(5, 5, 5), name="x")
 y = tf.Variable(np.random.rand(5, 5, 5), name="y")
 c = tf.constant(np.random.rand(5, 5, 5), name="c")
 init_op = tf.initialize_all_variables()
+w = tf.get_variable("w", shape=(5, 5), initializer=tf.random_normal_initializer())
 
 print "VARIABLES", tf.get_collection(tf.GraphKeys.VARIABLES)
 print "TRAINABLE_VARIABLES", tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
