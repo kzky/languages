@@ -35,8 +35,10 @@ z_segment_mean = tf.segment_mean(x, segment_ids)
 # tf.unsorted_segment_sum
 x = np.random.rand(10, 4, 3)
 segment_ids = [5, 0, 0, 2, 1, 2, 3, 4, 0, 5]
-z_unsorted_segment_sum = tf.unsorted_segment_sum(x, segment_ids, num_segments=6)
-
+num_segments = np.max(segment_ids) + 1
+z_unsorted_segment_sum = tf.unsorted_segment_sum(x,
+                                                 segment_ids,
+                                                 num_segments)
 
 # tf.sparse_segment_sum
 x = np.random.rand(10, 4, 3)
