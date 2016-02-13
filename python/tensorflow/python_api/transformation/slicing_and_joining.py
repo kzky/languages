@@ -69,10 +69,10 @@ num_partitions = np.max(partitions) + 1
 z_dynamic_partition = tf.dynamic_partition(x, partitions, num_partitions)
 
 # tf.dynamic_stitch
-data = [np.random.rand(3, 5, 5)] * 4
-indices = np.arange(12)
+data = [np.random.rand(5, 5, 5)] * 10
+indices = np.arange(50)
 np.random.shuffle(indices)
-indices = np.split(indices, 4) # result is 3d list of 1d-array
+indices = np.split(indices, 10) # result is 3d list of 1d-array
 z_dynamic_stitch = tf.dynamic_stitch(indices, data)
 
 
