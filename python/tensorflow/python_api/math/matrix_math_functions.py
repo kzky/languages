@@ -57,25 +57,36 @@ z_batch_self_adjoint_eig = tf.batch_self_adjoint_eig(batch_x)
 with tf.Session() as sess:
     print "tf.diag"
     print sess.run(z_diag)
+    
     print "tf.transpose"
     print sess.run(z_transpose)
+    
     print "tf.matmul"
     print sess.run(z_matmul)
+    
     print "tf.batch_matmul"
     print sess.run(z_batch_matmul)
+    
     print "tf.matrix_determinant"
     print sess.run(z_matrix_determinant)
+    
     print "tf.batch_matrix_determinant"
     print sess.run(z_batch_matrix_determinant)
+    
     print "tf.matrix_inverse"
     print sess.run(z_matrix_inverse)
+    
     print "tf.batch_matrix_inverse"
     print sess.run(z_batch_matrix_inverse)
+    
     print "tf.cholesky"
     print sess.run(z_cholesky)
+    
     print "tf.batch_cholesky"
     print sess.run(z_batch_cholesky)
+    
     print "tf.self_adjoint_eig"
     print sess.run(z_self_adjoint_eig)
+    
     print "tf.batch_self_adjoint_eig"
     print sess.run(z_batch_self_adjoint_eig)
