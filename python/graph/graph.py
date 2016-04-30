@@ -37,8 +37,8 @@ class Edge(object):
     def __init__(self, name=None):
         self._graph = dag
 
-        self.input_vertices = []
-        self.output_vertex = None
+        self.in_vertices = []
+        self.out_vertex = None
         self.name = name
 
         # Add to graph
@@ -53,41 +53,41 @@ class Edge(object):
         # Create a new vertex,
         # then add an edge as input and add the vertex as output
         new_vertex = Vertex(name="output-{}".format(self.name))
-        new_vertex.input_edge = self
-        self.output_vertex = new_vertex
+        new_vertex.in_edge = self
+        self.out_vertex = new_vertex
 
         # Add vertices as input and add edges as output
         for vertex in vertices:
-            vertex.output_edges.append(self)
-            self.input_vertices.append(vertex)
+            vertex.out_edges.append(self)
+            self.in_vertices.append(vertex)
 
         return new_vertex
 
     def forward(self, inputs):
         # Concatenation case
-        if len(self.input_vertices) > 1:
-            if not hasattr(self, "input_cnt"):
-                self.input_cnt = len(self.input_vertices)
+        if len(self.in_vertices) > 1:
+            if not hasattr(self, "in_cnt"):
+                self.in_cnt = len(self.in_vertices)
                 self.inputs = []
-            self.input_cnt -= 1
+            self.in_cnt -= 1
 
             # Return inputs itself
-            if self.input_cnt != 0:
+            if self.in_cnt != 0:
                 self.inputs.append(inputs)
                 return inputs
 
             # Compute something for each here, just elemwise-sum now
-            del self.input_cnt
+            del self.in_cnt
             self.inputs.append(inputs)
             output = self.infer(self.inputs)
             logger.debug("edge({}).forward".format(self.name))
-            return self.output_vertex.forward(output)
+            return self.out_vertex.forward(output)
 
         # Compute Inference
         output = self.infer(inputs)
 
         logger.debug("edge({}).forward".format(self.name))
-        return self.output_vertex.forward(output)
+        return self.out_vertex.forward(output)
 
     def infer(self, inputs):
         """Infer given inputs
@@ -110,11 +110,11 @@ class Edge(object):
         logger.debug("edge({}).backword".format(self.name))
 
         # Compute Gradients
-        grads = self.grads(grad, [v.value for v in self.input_vertices])
+        grads = self.grads(grad, [v.value for v in self.in_vertices])
 
-        grad_ = self.input_vertices[0].backward(grads[0])
-        for grad__, input_vertex in zip(grads[1:], self.input_vertices[1:]):
-            grad_ += input_vertex.backward(grad__)
+        grad_ = self.in_vertices[0].backward(grads[0])
+        for grad__, in_vertex in zip(grads[1:], self.in_vertices[1:]):
+            grad_ += in_vertex.backward(grad__)
 
         return grad_
 
@@ -129,7 +129,7 @@ class Edge(object):
         -----------
         list of ndarray
         """
-        return [grad * input_ for input_ in inputs]
+        return [grad * in_ for in_ in inputs]
         
 class Vertex(object):
     """Vertex
@@ -138,8 +138,8 @@ class Vertex(object):
     def __init__(self, name=None):
         self._graph = dag
 
-        self.input_edge = None
-        self.output_edges = []
+        self.in_edge = None
+        self.out_edges = []
         self.name = name
         self.value = None
         self.grad = None
@@ -147,46 +147,46 @@ class Vertex(object):
         # Add to graph
         self._graph.vertices.add(self)
 
-    def forward(self, input_):
+    def forward(self, in_):
         logger.debug("vertex({}).forward".format(self.name))
 
-        output_ = input_
-        self.value = output_
-        if self.output_edges != []:
+        out_ = in_
+        self.value = out_
+        if self.out_edges != []:
             return reduce(lambda x, y: x + y,
-                          [e.forward(output_) for e in self.output_edges])
+                          [e.forward(out_) for e in self.out_edges])
 
-        return input_
+        return in_
         
     def backward(self, grad):
         # Concatenation case
-        if len(self.output_edges) > 1:
-            self.output_cnt = len(self.output_edges) \
-                              if not hasattr(self, "output_cnt") else self.output_cnt
-            self.output_cnt -= 1
+        if len(self.out_edges) > 1:
+            self.out_cnt = len(self.out_edges) \
+                              if not hasattr(self, "out_cnt") else self.out_cnt
+            self.out_cnt -= 1
 
             # Return grad itself
-            if self.output_cnt != 0:
+            if self.out_cnt != 0:
                 self.grad = grad
                 return grad
 
             # Call backward
-            del self.output_cnt
+            del self.out_cnt
             self.grad += grad
             grad_ = self.grad
 
-            if self.input_edge is not None:
+            if self.in_edge is not None:
                 logger.debug("vertex({}).backward".format(self.name))
-                return self.input_edge.backward(grad_)
+                return self.in_edge.backward(grad_)
 
             # Input vertex case
             return grad
 
         self.grad = grad
 
-        if self.input_edge is not None:
+        if self.in_edge is not None:
             logger.debug("vertex({}).backward".format(self.name))
-            return self.input_edge.backward(grad)
+            return self.in_edge.backward(grad)
 
         return grad
 
