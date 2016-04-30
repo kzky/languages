@@ -1,6 +1,13 @@
 """Graph module is not thread safe due to state.
 """
 import numpy as np
+import logging
+
+FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
+logging.basicConfig(
+    format=FORMAT,
+    level=logging.DEBUG)
+logger = logging.getLogger("LoggingTest")
 
 class Graph(object):
     
@@ -64,34 +71,30 @@ class Edge(object):
             self.input_cnt = len(self.input_vertices) \
                              if not hasattr(self, "input_cnt") else self.input_cnt
             self.input_cnt -= 1
-            self.inputs_past = [] \
-                                if not hasattr(self, "inputs_past") else self.inputs_past
-            if self.input_cnt == 0:
-                self.inputs_past.append(inputs)
 
-                # Compute something here
-                outputs = list(self.inputs_past)
-
-                del self.input_cnt
-                del self.inputs_past
-                
-                print "edge({}).forward".format(self.name)
-                return self.output_vertex.forward(outputs)
-            else:
-                self.inputs_past.append(inputs)
+            # Return inputs itself
+            if self.input_cnt != 0:
+                self.inputs = inputs
                 return inputs
+
+            # Compute something for each here
+            del self.input_cnt
+            self.inputs += inputs
+            outputs = self.inputs
+            logger.debug("edge({}).forward".format(self.name))
+            return self.output_vertex.forward(outputs)
 
         # Compute something here
         outputs = inputs
 
-        print "edge({}).forward".format(self.name)        
+        logger.debug("edge({}).forward".format(self.name))
         return self.output_vertex.forward(outputs)
         
     def backward(self, grads):
-        # Compute something foreach here
+        # Compute something for each here
         grads_ = np.sum([v.backward(grads) for v in self.input_vertices])
 
-        print "edge({}).forward".format(self.name)
+        logger.debug("edge({}).forward".format(self.name))
         return grads_
         
 class Vertex(object):
@@ -116,7 +119,7 @@ class Vertex(object):
         outputs_ = inputs
         self.value = outputs_
 
-        print "vertex({}).forward".format(self.name)
+        logger.debug("vertex({}).forward".format(self.name))
         return np.sum([e.forward(outputs_) for e in self.output_edges])
         
     def backward(self, grads):
@@ -125,27 +128,24 @@ class Vertex(object):
             self.output_cnt = len(self.output_edges) \
                               if not hasattr(self, "output_cnt") else self.output_cnt
             self.output_cnt -= 1
-            self.grads_past = [] \
-                                if not hasattr(self, "grads_past") else self.grads_past
-            if self.output_cnt == 0:
-                self.grads_past.append(grads)
-                grads_ = list(self.grads_past)
-                self.grads = grads_
-                grads_ = np.sum(grads_)
-                
-                del self.output_cnt
-                del self.grads_past
 
-                print "vertex({}).backward".format(self.name)
-                return self.input_edge.backward(grads_)
-            else:
-                self.grads_past.append(grads)
+
+            # Return grads itself
+            if self.output_cnt != 0:
+                self.grads = grads
                 return grads
 
-        self.grads = grads
+            # Call backward
+            del self.output_cnt
+            self.grads += grads
+            grads_ = self.grads
 
-        print "vertex({}).backward".format(self.name)
-        return self.input_edge.backward(grads)                
+            logger.debug("vertex({}).backward".format(self.name))
+            return self.input_edge.backward(grads_)
+
+        self.grads = grads
+        logger.debug("vertex({}).backward".format(self.name))
+        return self.input_edge.backward(grads)
         
 def main():
 
