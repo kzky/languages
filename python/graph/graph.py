@@ -7,7 +7,7 @@ FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
 logging.basicConfig(
     format=FORMAT,
     level=logging.DEBUG)
-logger = logging.getLogger("LoggingTest")
+logger = logging.getLogger("DAG")
 
 class Graph(object):
     
@@ -35,8 +35,6 @@ class Edge(object):
     """
     
     def __init__(self, name=None):
-        """
-        """
         self._graph = dag
 
         self.input_vertices = []
@@ -74,14 +72,15 @@ class Edge(object):
 
             # Return inputs itself
             if self.input_cnt != 0:
-                self.inputs = inputs
+                self.inputs = [inputs]
                 return inputs
 
-            # Compute something for each here
+            # Compute something for each here, just elewise-sum now
             del self.input_cnt
-            self.inputs += inputs
-            outputs = self.inputs
+            self.inputs.append(inputs)
+            outputs = reduce(lambda x, y: x + y, self.inputs)
             logger.debug("edge({}).forward".format(self.name))
+
             return self.output_vertex.forward(outputs)
 
         # Compute something here
@@ -91,10 +90,12 @@ class Edge(object):
         return self.output_vertex.forward(outputs)
         
     def backward(self, grads):
-        # Compute something for each here
-        grads_ = np.sum([v.backward(grads) for v in self.input_vertices])
+        # Compute something for each here, just elewise-sum now
+        grads_ = reduce(lambda x, y: x + y,
+                        [v.backward(grads) for v in self.input_vertices])
 
         logger.debug("edge({}).forward".format(self.name))
+        
         return grads_
         
 class Vertex(object):
@@ -102,8 +103,6 @@ class Vertex(object):
     """
     
     def __init__(self, name=None):
-        """
-        """
         self._graph = dag
 
         self.input_edge = None
@@ -120,7 +119,11 @@ class Vertex(object):
         self.value = outputs_
 
         logger.debug("vertex({}).forward".format(self.name))
-        return np.sum([e.forward(outputs_) for e in self.output_edges])
+        if self.output_edges != []:
+            return reduce(lambda x, y: x + y,
+                          [e.forward(outputs_) for e in self.output_edges])
+
+        return inputs
         
     def backward(self, grads):
         # Concatenation case
@@ -129,23 +132,31 @@ class Vertex(object):
                               if not hasattr(self, "output_cnt") else self.output_cnt
             self.output_cnt -= 1
 
-
             # Return grads itself
             if self.output_cnt != 0:
                 self.grads = grads
                 return grads
 
-            # Call backward
+            # Call backward, 
             del self.output_cnt
             self.grads += grads
             grads_ = self.grads
 
             logger.debug("vertex({}).backward".format(self.name))
-            return self.input_edge.backward(grads_)
+
+            if self.input_edge is not None:
+                return self.input_edge.backward(grads_)
+
+            # Input vertex case
+            return grads
 
         self.grads = grads
+
         logger.debug("vertex({}).backward".format(self.name))
-        return self.input_edge.backward(grads)
+        if self.input_edge is not None:
+            return self.input_edge.backward(grads)
+
+        return grads
         
 def main():
 
@@ -161,10 +172,12 @@ def main():
     print len(dag.edges)
 
     print "----- Forward pass -----"
-    print v0.forward()
+    inputs = np.random.rand(10, 5)
+    print v0.forward(inputs)
 
     print "----- Backward pass -----"
-    print v5.backward()
+    grads = np.random.rand(10, 5)
+    print v5.backward(grads)
 
 if __name__ == '__main__':
     main()
