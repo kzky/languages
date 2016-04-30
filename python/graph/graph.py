@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-
+"""Graph module is not thread safe due to state.
+"""
+import numpy as np
 
 class Graph(object):
     
@@ -9,6 +10,16 @@ class Graph(object):
         """
         self.vertices = set()
         self.edges = set()
+
+    def find_vertices(self, name=None):
+        """Find
+        """
+        pass
+        
+    def find_edges(self, name=None):
+        """Find
+        """
+        pass
 
 dag = Graph()
 
@@ -21,8 +32,8 @@ class Edge(object):
         """
         self._graph = dag
 
-        self.parent_vertices = []
-        self.child_vertex = None
+        self.input_vertices = []
+        self.output_vertex = None
         self.name = name
 
         # Add to graph
@@ -34,17 +45,54 @@ class Edge(object):
     def add(self, *vertex):
         """Add vertices and return a new vertex
         """
-        # Create new vertex, then add edge as parent and add vertex as child
-        new_vertex = Vertex()
-        new_vertex.parent_edge = self
-        self.child_vertex = new_vertex
+        # Create a new vertex,
+        # then add an edge as input and add the vertex as output
+        new_vertex = Vertex(name="output-{}".format(self.name))
+        new_vertex.input_edge = self
+        self.output_vertex = new_vertex
 
-        # Add vertices as parent and add edges as child
+        # Add vertices as input and add edges as output
         for vertex_ in vertex:
-            vertex_.child_edges.append(self)
-            self.parent_vertices.append(vertex_)
+            vertex_.output_edges.append(self)
+            self.input_vertices.append(vertex_)
 
         return new_vertex
+
+    def forward(self, inputs):
+        # Concatenation case
+        if len(self.input_vertices) > 1:
+            self.input_cnt = len(self.input_vertices) \
+                             if not hasattr(self, "input_cnt") else self.input_cnt
+            self.input_cnt -= 1
+            self.inputs_past = [] \
+                                if not hasattr(self, "inputs_past") else self.inputs_past
+            if self.input_cnt == 0:
+                self.inputs_past.append(inputs)
+
+                # Compute something here
+                outputs = list(self.inputs_past)
+
+                del self.input_cnt
+                del self.inputs_past
+                
+                print "edge({}).forward".format(self.name)
+                return self.output_vertex.forward(outputs)
+            else:
+                self.inputs_past.append(inputs)
+                return inputs
+
+        # Compute something here
+        outputs = inputs
+
+        print "edge({}).forward".format(self.name)        
+        return self.output_vertex.forward(outputs)
+        
+    def backward(self, grads):
+        # Compute something foreach here
+        grads_ = np.sum([v.backward(grads) for v in self.input_vertices])
+
+        print "edge({}).forward".format(self.name)
+        return grads_
         
 class Vertex(object):
     """Vertex
@@ -55,34 +103,69 @@ class Vertex(object):
         """
         self._graph = dag
 
-        self.parent_edge = None
-        self.child_edges = []
+        self.input_edge = None
+        self.output_edges = []
         self.name = name
-
+        self.value = None
+        self.grads = None
+        
         # Add to graph
         self._graph.vertices.add(self)
 
-    def forward():
-        pass
+    def forward(self, inputs):
+        outputs_ = inputs
+        self.value = outputs_
 
-    def backward():
-        pass
+        print "vertex({}).forward".format(self.name)
+        return np.sum([e.forward(outputs_) for e in self.output_edges])
+        
+    def backward(self, grads):
+        # Concatenation case
+        if len(self.output_edges) > 1:
+            self.output_cnt = len(self.output_edges) \
+                              if not hasattr(self, "output_cnt") else self.output_cnt
+            self.output_cnt -= 1
+            self.grads_past = [] \
+                                if not hasattr(self, "grads_past") else self.grads_past
+            if self.output_cnt == 0:
+                self.grads_past.append(grads)
+                grads_ = list(self.grads_past)
+                self.grads = grads_
+                grads_ = np.sum(grads_)
+                
+                del self.output_cnt
+                del self.grads_past
+
+                print "vertex({}).backward".format(self.name)
+                return self.input_edge.backward(grads_)
+            else:
+                self.grads_past.append(grads)
+                return grads
+
+        self.grads = grads
+
+        print "vertex({}).backward".format(self.name)
+        return self.input_edge.backward(grads)                
         
 def main():
 
-    v0 = Vertex("input")
-    v1 = Edge()(v0)
-    v2 = Edge()(v1)
-    v3 = Edge()(v2, v1)
-    v4 = Edge()(v3)
-    v5 = Edge()(v4)
-    
-    print len(dag.vertices), dag.vertices
-    print len(dag.edges), dag.edges
+    v0 = Vertex("x")
+    v1 = Edge(name="e0")(v0)
+    v2 = Edge(name="e1")(v1)
+    v3 = Edge(name="e2")(v2, v1)
+    v4 = Edge(name="e3")(v3)
+    v5 = Edge(name="e4")(v4)
+
+    print "----- Vertices and Edges in Graph -----"
+    print len(dag.vertices)
+    print len(dag.edges)
+
+    print "----- Forward pass -----"
+    print v0.forward()
+
+    print "----- Backward pass -----"
+    print v5.backward()
 
 if __name__ == '__main__':
-    main()        
+    main()
 
-        
-
-        
