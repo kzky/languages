@@ -90,8 +90,20 @@ class Edge(object):
         return self.output_vertex.forward(output)
 
     def infer(self, inputs):
-        """Infer given input
+        """Infer given inputs
+
+        Parameters
+        -----------------
+        inputs: ndarray or list of ndarray
+
+        Returns
+        -----------
+        ndarray
+        
         """
+        if inputs == []:
+            return reduce(lambda x, y: x + y, inputs)
+
         return inputs
         
     def backward(self, grad):
@@ -108,6 +120,14 @@ class Edge(object):
 
     def grads(self, grad, inputs):
         """Grad given input and grad
+        Parameters
+        -----------------
+        grad: ndarray
+        inputs: ndarray or list of ndarray
+
+        Returns
+        -----------
+        list of ndarray
         """
         return [grad * input_ for input_ in inputs]
         
