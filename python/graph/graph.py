@@ -74,20 +74,23 @@ class Edge(object):
             # Return inputs itself
             if self.in_cnt != 0:
                 self.inputs.append(inputs)
-                return inputs
+                return
 
             # Compute something for each here, just elemwise-sum now
             del self.in_cnt
             self.inputs.append(inputs)
             output = self.infer(self.inputs)
             logger.debug("edge({}).forward".format(self.name))
-            return self.out_vertex.forward(output)
+            self.out_vertex.forward(output)
+            return
 
+        # Sequence case
         # Compute Inference
         output = self.infer(inputs)
 
         logger.debug("edge({}).forward".format(self.name))
-        return self.out_vertex.forward(output)
+        self.out_vertex.forward(output)
+        return
 
     def infer(self, inputs):
         """Infer given inputs
@@ -101,7 +104,7 @@ class Edge(object):
         ndarray
         
         """
-        if inputs == []:
+        if type(inputs) == list:
             return reduce(lambda x, y: x + y, inputs)
 
         return inputs
@@ -112,11 +115,8 @@ class Edge(object):
         # Compute Gradients
         grads = self.grads(grad, [v.value for v in self.in_vertices])
 
-        grad_ = None
         for grad__, in_vertex in zip(grads, self.in_vertices):
-            grad_ = in_vertex.backward(grad__)
-
-        return grad_
+            in_vertex.backward(grad__)
 
     def grads(self, grad, inputs):
         """Grad given input and grad
@@ -170,7 +170,7 @@ class Vertex(object):
             # Return grad itself
             if self.out_cnt != 0:
                 self.grad = grad
-                return grad
+                return
 
             # Call backward
             del self.out_cnt
@@ -178,18 +178,20 @@ class Vertex(object):
 
             if self.in_edge is not None:
                 logger.debug("vertex({}).backward".format(self.name))
-                return self.in_edge.backward(self.grad)
+                self.in_edge.backward(self.grad)
+                return 
 
             # Input vertex case
-            return grad
+            return
 
+        # Sequence case
         self.grad = grad
-
         if self.in_edge is not None:
             logger.debug("vertex({}).backward".format(self.name))
-            return self.in_edge.backward(grad)
+            self.in_edge.backward(grad)
+            return
 
-        return grad
+        return
 
 class SquareLoss(Edge):
     
@@ -221,7 +223,7 @@ def main():
     v4 = Edge(name="e3")(v3)
     v5 = Edge(name="e4")(v4)
     y = Vertex("y")
-    y.value = np.random.rand(10, 5)
+    y.value = np.random.rand(4, 3)
     v_out = SquareLoss(name="square-loss")(v5, y)
 
     print "----- Vertices and Edges in Graph -----"
@@ -229,16 +231,19 @@ def main():
     print len(dag.edges)
 
     print "----- Forward pass (Inference) -----"
-    inputs = np.random.rand(10, 5)
+    inputs = np.random.rand(4, 3)
     v_in.forward(inputs)
-    print v5
+    print v1.value
+    print v5.value
 
     print "----- Backward pass (from the middle) -----"
-    grad = np.random.rand(10, 5)
-    print v5.backward(grad)
-
+    grad = np.random.rand(4, 3)
+    v3.backward(grad)
+    print v1.grad
+     
     print "----- Compute Loss -----"
     v_out.backward(1)
+    print v1.grad
 
 if __name__ == '__main__':
     main()
