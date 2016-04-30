@@ -66,21 +66,24 @@ class Edge(object):
     def forward(self, inputs):
         # Concatenation case
         if len(self.input_vertices) > 1:
-            self.input_cnt = len(self.input_vertices) \
-                             if not hasattr(self, "input_cnt") else self.input_cnt
+            if not hasattr(self, "input_cnt"):
+                self.input_cnt = len(self.input_vertices)
+                self.inputs = []
             self.input_cnt -= 1
 
             # Return inputs itself
             if self.input_cnt != 0:
-                self.inputs = [inputs]
+                self.inputs.append(inputs)
                 return inputs
 
-            # Compute something for each here, just elewise-sum now
+            # Compute something for each here, just elemwise-sum now
             del self.input_cnt
             self.inputs.append(inputs)
-            outputs = reduce(lambda x, y: x + y, self.inputs)
+            outputs = self.infer(self.inputs[0])
+            for input_ in self.inputs[1:]:
+                outputs += self.infer(input_)
+            
             logger.debug("edge({}).forward".format(self.name))
-
             return self.output_vertex.forward(outputs)
 
         # Compute something here
@@ -88,15 +91,22 @@ class Edge(object):
 
         logger.debug("edge({}).forward".format(self.name))
         return self.output_vertex.forward(outputs)
-        
-    def backward(self, grads):
-        # Compute something for each here, just elewise-sum now
-        grads_ = reduce(lambda x, y: x + y,
-                        [v.backward(grads) for v in self.input_vertices])
 
-        logger.debug("edge({}).forward".format(self.name))
+    def infer(self, input_):
+        return input_
         
-        return grads_
+    def backward(self, grad):
+        grad_ = self.input_vertices[0].backward(
+            self.grad(self.input_vertices[0].value, grad))
+        for input_vertex in self.input_vertices[1:]:
+            grad_ += input_vertex.backward(
+                self.grad(input_vertex.value, grad))
+            
+        logger.debug("edge({}).backword".format(self.name))
+        return grad_
+
+    def grad(self, input_, grad):
+        return input_ * grad
         
 class Vertex(object):
     """Vertex
@@ -109,7 +119,7 @@ class Vertex(object):
         self.output_edges = []
         self.name = name
         self.value = None
-        self.grads = None
+        self.grad = None
         
         # Add to graph
         self._graph.vertices.add(self)
@@ -125,38 +135,38 @@ class Vertex(object):
 
         return inputs
         
-    def backward(self, grads):
+    def backward(self, grad):
         # Concatenation case
         if len(self.output_edges) > 1:
             self.output_cnt = len(self.output_edges) \
                               if not hasattr(self, "output_cnt") else self.output_cnt
             self.output_cnt -= 1
 
-            # Return grads itself
+            # Return grad itself
             if self.output_cnt != 0:
-                self.grads = grads
-                return grads
+                self.grad = grad
+                return grad
 
-            # Call backward, 
+            # Call backward
             del self.output_cnt
-            self.grads += grads
-            grads_ = self.grads
+            self.grad += grad
+            grad_ = self.grad
 
             logger.debug("vertex({}).backward".format(self.name))
 
             if self.input_edge is not None:
-                return self.input_edge.backward(grads_)
+                return self.input_edge.backward(grad_)
 
             # Input vertex case
-            return grads
+            return grad
 
-        self.grads = grads
+        self.grad = grad
 
         logger.debug("vertex({}).backward".format(self.name))
         if self.input_edge is not None:
-            return self.input_edge.backward(grads)
+            return self.input_edge.backward(grad)
 
-        return grads
+        return grad
         
 def main():
 
@@ -176,8 +186,8 @@ def main():
     print v0.forward(inputs)
 
     print "----- Backward pass -----"
-    grads = np.random.rand(10, 5)
-    print v5.backward(grads)
+    grad = np.random.rand(10, 5)
+    print v5.backward(grad)
 
 if __name__ == '__main__':
     main()
