@@ -93,19 +93,23 @@ class Edge(object):
         return self.output_vertex.forward(outputs)
 
     def infer(self, input_):
+        """Infer given input
+        """
         return input_
         
     def backward(self, grad):
+        logger.debug("edge({}).backword".format(self.name))
         grad_ = self.input_vertices[0].backward(
             self.grad(self.input_vertices[0].value, grad))
         for input_vertex in self.input_vertices[1:]:
             grad_ += input_vertex.backward(
                 self.grad(input_vertex.value, grad))
-            
-        logger.debug("edge({}).backword".format(self.name))
+
         return grad_
 
     def grad(self, input_, grad):
+        """Grad given input and grad
+        """
         return input_ * grad
         
 class Vertex(object):
@@ -125,10 +129,10 @@ class Vertex(object):
         self._graph.vertices.add(self)
 
     def forward(self, inputs):
+        logger.debug("vertex({}).forward".format(self.name))
+
         outputs_ = inputs
         self.value = outputs_
-
-        logger.debug("vertex({}).forward".format(self.name))
         if self.output_edges != []:
             return reduce(lambda x, y: x + y,
                           [e.forward(outputs_) for e in self.output_edges])
@@ -152,9 +156,8 @@ class Vertex(object):
             self.grad += grad
             grad_ = self.grad
 
-            logger.debug("vertex({}).backward".format(self.name))
-
             if self.input_edge is not None:
+                logger.debug("vertex({}).backward".format(self.name))
                 return self.input_edge.backward(grad_)
 
             # Input vertex case
@@ -162,8 +165,8 @@ class Vertex(object):
 
         self.grad = grad
 
-        logger.debug("vertex({}).backward".format(self.name))
         if self.input_edge is not None:
+            logger.debug("vertex({}).backward".format(self.name))
             return self.input_edge.backward(grad)
 
         return grad
