@@ -44,10 +44,10 @@ class Edge(object):
         # Add to graph
         self._graph.edges.add(self)
 
-    def __call__(self, *vertex):
-        return self.add(*vertex)
+    def __call__(self, *vertices):
+        return self.add(*vertices)
         
-    def add(self, *vertex):
+    def add(self, *vertices):
         """Add vertices and return a new vertex
         """
         # Create a new vertex,
@@ -57,9 +57,9 @@ class Edge(object):
         self.output_vertex = new_vertex
 
         # Add vertices as input and add edges as output
-        for vertex_ in vertex:
-            vertex_.output_edges.append(self)
-            self.input_vertices.append(vertex_)
+        for vertex in vertices:
+            vertex.output_edges.append(self)
+            self.input_vertices.append(vertex)
 
         return new_vertex
 
@@ -79,38 +79,37 @@ class Edge(object):
             # Compute something for each here, just elemwise-sum now
             del self.input_cnt
             self.inputs.append(inputs)
-            outputs = self.infer(self.inputs[0])
-            for input_ in self.inputs[1:]:
-                outputs += self.infer(input_)
-            
+            output = self.infer(self.inputs)
             logger.debug("edge({}).forward".format(self.name))
-            return self.output_vertex.forward(outputs)
+            return self.output_vertex.forward(output)
 
-        # Compute something here
-        outputs = inputs
+        # Compute Inference
+        output = self.infer(inputs)
 
         logger.debug("edge({}).forward".format(self.name))
-        return self.output_vertex.forward(outputs)
+        return self.output_vertex.forward(output)
 
-    def infer(self, input_):
+    def infer(self, inputs):
         """Infer given input
         """
-        return input_
+        return inputs
         
     def backward(self, grad):
         logger.debug("edge({}).backword".format(self.name))
-        grad_ = self.input_vertices[0].backward(
-            self.grad(self.input_vertices[0].value, grad))
-        for input_vertex in self.input_vertices[1:]:
-            grad_ += input_vertex.backward(
-                self.grad(input_vertex.value, grad))
+
+        # Compute Gradients
+        grads = self.grads(grad, [v.value for v in self.input_vertices])
+
+        grad_ = self.input_vertices[0].backward(grads[0])
+        for grad__, input_vertex in zip(grads[1:], self.input_vertices[1:]):
+            grad_ += input_vertex.backward(grad__)
 
         return grad_
 
-    def grad(self, input_, grad):
+    def grads(self, grad, inputs):
         """Grad given input and grad
         """
-        return input_ * grad
+        return [grad * input_ for input_ in inputs]
         
 class Vertex(object):
     """Vertex
@@ -128,16 +127,16 @@ class Vertex(object):
         # Add to graph
         self._graph.vertices.add(self)
 
-    def forward(self, inputs):
+    def forward(self, input_):
         logger.debug("vertex({}).forward".format(self.name))
 
-        outputs_ = inputs
-        self.value = outputs_
+        output_ = input_
+        self.value = output_
         if self.output_edges != []:
             return reduce(lambda x, y: x + y,
-                          [e.forward(outputs_) for e in self.output_edges])
+                          [e.forward(output_) for e in self.output_edges])
 
-        return inputs
+        return input_
         
     def backward(self, grad):
         # Concatenation case
@@ -170,6 +169,16 @@ class Vertex(object):
             return self.input_edge.backward(grad)
 
         return grad
+
+class SquareLoss(Edge):
+    
+    def __init__(self,  name=None):
+        super.__init__(SquareLoss, name=name)
+        
+    def infer():
+        pass
+            
+
         
 def main():
 
