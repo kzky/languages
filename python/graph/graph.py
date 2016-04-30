@@ -10,6 +10,8 @@ class Graph(object):
         self.vertices = set()
         self.edges = set()
 
+dag = Graph()
+
 class Edge(object):
     """Edge
     """
@@ -17,11 +19,14 @@ class Edge(object):
     def __init__(self, name=None):
         """
         """
-        self._graph = None
+        self._graph = dag
 
         self.parent_vertices = []
         self.child_vertex = None
         self.name = name
+
+        # Add to graph
+        self._graph.edges.add(self)
 
     def __call__(self, *vertex):
         return self.add(*vertex)
@@ -29,19 +34,15 @@ class Edge(object):
     def add(self, *vertex):
         """Add vertices and return a new vertex
         """
+        # Create new vertex, then add edge as parent and add vertex as child
         new_vertex = Vertex()
         new_vertex.parent_edge = self
         self.child_vertex = new_vertex
 
-        print len(vertex)
-        
-        if len(vertex) > 1:
-            for vertex_ in vertex:
-                vertex_.child_edges.append(self)
-                self.parent_vertices.append(vertex_)
-        else:
-            vertex[0].child_edges.append(self)
-            self.parent_vertices.append(vertex[0])
+        # Add vertices as parent and add edges as child
+        for vertex_ in vertex:
+            vertex_.child_edges.append(self)
+            self.parent_vertices.append(vertex_)
 
         return new_vertex
         
@@ -52,11 +53,20 @@ class Vertex(object):
     def __init__(self, name=None):
         """
         """
-        self._graph = None
+        self._graph = dag
 
         self.parent_edge = None
         self.child_edges = []
         self.name = name
+
+        # Add to graph
+        self._graph.vertices.add(self)
+
+    def forward():
+        pass
+
+    def backward():
+        pass
         
 def main():
 
@@ -64,10 +74,11 @@ def main():
     v1 = Edge()(v0)
     v2 = Edge()(v1)
     v3 = Edge()(v2, v1)
-
-    print v3.parent_edge
+    v4 = Edge()(v3)
+    v5 = Edge()(v4)
     
-    pass
+    print len(dag.vertices), dag.vertices
+    print len(dag.edges), dag.edges
 
 if __name__ == '__main__':
     main()        
