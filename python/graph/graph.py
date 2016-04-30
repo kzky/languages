@@ -112,9 +112,9 @@ class Edge(object):
         # Compute Gradients
         grads = self.grads(grad, [v.value for v in self.in_vertices])
 
-        grad_ = self.in_vertices[0].backward(grads[0])
-        for grad__, in_vertex in zip(grads[1:], self.in_vertices[1:]):
-            grad_ += in_vertex.backward(grad__)
+        grad_ = None
+        for grad__, in_vertex in zip(grads, self.in_vertices):
+            grad_ = in_vertex.backward(grad__)
 
         return grad_
 
@@ -153,10 +153,12 @@ class Vertex(object):
         out_ = in_
         self.value = out_
         if self.out_edges != []:
-            return reduce(lambda x, y: x + y,
-                          [e.forward(out_) for e in self.out_edges])
+            out__ = None
+            for e in self.out_edges:
+                e.forward(out_)
+            return out__
 
-        return in_
+        return out_
         
     def backward(self, grad):
         # Concatenation case
@@ -173,11 +175,10 @@ class Vertex(object):
             # Call backward
             del self.out_cnt
             self.grad += grad
-            grad_ = self.grad
 
             if self.in_edge is not None:
                 logger.debug("vertex({}).backward".format(self.name))
-                return self.in_edge.backward(grad_)
+                return self.in_edge.backward(self.grad)
 
             # Input vertex case
             return grad
@@ -195,11 +196,22 @@ class SquareLoss(Edge):
     def __init__(self,  name=None):
         super.__init__(SquareLoss, name=name)
         
-    def infer():
-        pass
-            
+    def infer(inputs):
 
-        
+        if len(inputs) != 2:
+            raise ValueError("Input have to be 2")
+
+        return (inputs[0] - inputs[1]) ** 2
+
+
+    def grads(grad, inputs):
+        grads = []
+        grads0 = 2 * (inputs[0] - inputs[1])
+        grads1 = 2 * (inputs[1] - inputs[0])
+        grads.append(grads0)
+        grads.append(grads1)
+        return grads
+
 def main():
 
     v0 = Vertex("x")
