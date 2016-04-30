@@ -193,9 +193,9 @@ class Vertex(object):
 
 class SquareLoss(Edge):
     
-    def __init__(self,  name=None):
-        super.__init__(SquareLoss, name=name)
-        
+    def __init__(self, name=None):
+        super(SquareLoss, self).__init__(name=name)
+
     def infer(inputs):
 
         if len(inputs) != 2:
@@ -203,35 +203,42 @@ class SquareLoss(Edge):
 
         return (inputs[0] - inputs[1]) ** 2
 
-
-    def grads(grad, inputs):
+    def grads(self, grad, inputs):
         grads = []
         grads0 = 2 * (inputs[0] - inputs[1])
         grads1 = 2 * (inputs[1] - inputs[0])
         grads.append(grads0)
         grads.append(grads1)
+
         return grads
 
 def main():
 
-    v0 = Vertex("x")
-    v1 = Edge(name="e0")(v0)
+    v_in = Vertex("x")
+    v1 = Edge(name="e0")(v_in)
     v2 = Edge(name="e1")(v1)
     v3 = Edge(name="e2")(v2, v1)
     v4 = Edge(name="e3")(v3)
     v5 = Edge(name="e4")(v4)
+    y = Vertex("y")
+    y.value = np.random.rand(10, 5)
+    v_out = SquareLoss(name="square-loss")(v5, y)
 
     print "----- Vertices and Edges in Graph -----"
     print len(dag.vertices)
     print len(dag.edges)
 
-    print "----- Forward pass -----"
+    print "----- Forward pass (Inference) -----"
     inputs = np.random.rand(10, 5)
-    print v0.forward(inputs)
+    v_in.forward(inputs)
+    print v5
 
-    print "----- Backward pass -----"
+    print "----- Backward pass (from the middle) -----"
     grad = np.random.rand(10, 5)
     print v5.backward(grad)
+
+    print "----- Compute Loss -----"
+    v_out.backward(1)
 
 if __name__ == '__main__':
     main()
