@@ -198,7 +198,7 @@ class SquareLoss(Edge):
     def __init__(self, name=None):
         super(SquareLoss, self).__init__(name=name)
 
-    def infer(inputs):
+    def infer(self, inputs):
 
         if len(inputs) != 2:
             raise ValueError("Input have to be 2")
