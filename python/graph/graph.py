@@ -10,6 +10,7 @@ logging.basicConfig(
 logger = logging.getLogger("CG")
 
 class ComputationalGraph(object):
+    #TODO: add forward/backword function in graph
     
     def __init__(self, ):
         """Directed Acyclic Computational Graph
@@ -29,107 +30,6 @@ class ComputationalGraph(object):
         pass
 
 cg = ComputationalGraph()
-
-class Edge(object):
-    """Edge
-    """
-    
-    def __init__(self, name=None):
-        self._graph = cg
-
-        self.in_vertices = []
-        self.out_vertex = None
-        self.name = name
-
-        # Add to graph
-        self._graph.edges.add(self)
-
-    def __call__(self, *vertices):
-        return self.add(*vertices)
-        
-    def add(self, *vertices):
-        """Add vertices and return a new vertex
-        """
-        # Create a new vertex,
-        # then add an edge as input and add the vertex as output
-        new_vertex = Vertex(name="output-{}".format(self.name))
-        new_vertex.in_edge = self
-        self.out_vertex = new_vertex
-
-        # Add vertices as input and add edges as output
-        for vertex in vertices:
-            vertex.out_edges.append(self)
-            self.in_vertices.append(vertex)
-
-        return new_vertex
-
-    def forward(self, inputs):
-        # Concatenation case
-        if len(self.in_vertices) > 1:
-            if not hasattr(self, "in_cnt"):
-                self.in_cnt = len(self.in_vertices)
-                self.inputs = []
-            self.in_cnt -= 1
-
-            # Return inputs itself
-            if self.in_cnt != 0:
-                self.inputs.append(inputs)
-                return
-
-            # Compute something for each here, just elemwise-sum now
-            del self.in_cnt
-            self.inputs.append(inputs)
-            output = self.infer(self.inputs)
-            logger.debug("edge({}).forward".format(self.name))
-            self.out_vertex.forward(output)
-            return
-
-        # Sequence case
-        # Compute Inference
-        output = self.infer(inputs)
-
-        logger.debug("edge({}).forward".format(self.name))
-        self.out_vertex.forward(output)
-        return
-
-    def infer(self, inputs):
-        """Infer given inputs
-
-        Parameters
-        -----------------
-        inputs: ndarray or list of ndarray
-
-        Returns
-        -----------
-        ndarray
-        
-        """
-        if type(inputs) == list:
-            return reduce(lambda x, y: x + y, inputs)
-
-        return inputs
-        
-    def backward(self, grad):
-        logger.debug("edge({}).backword".format(self.name))
-
-        # Compute Gradients
-        grads = self.grads(grad, [v.value for v in self.in_vertices])
-
-        for grad__, in_vertex in zip(grads, self.in_vertices):
-            in_vertex.backward(grad__)
-
-    def grads(self, grad, inputs):
-        """Grad given input and grad
-        Parameters
-        -----------------
-        grad: ndarray
-        inputs: ndarray or list of ndarray
-
-        Returns
-        -----------
-        list of ndarray
-        """
-        return [grad * in_ for in_ in inputs]
         
 class Vertex(object):
     """Vertex
@@ -169,7 +69,7 @@ class Vertex(object):
         # Concatenation case
         if len(self.out_edges) > 1:
             self.out_cnt = len(self.out_edges) \
-                              if not hasattr(self, "out_cnt") else self.out_cnt
+                           if not hasattr(self, "out_cnt") else self.out_cnt
             self.out_cnt -= 1
 
             # Return grad itself
@@ -184,7 +84,7 @@ class Vertex(object):
             if self.in_edge is not None:
                 logger.debug("vertex({}).backward".format(self.name))
                 self.in_edge.backward(self.grad)
-                return 
+                return
 
             # Input vertex case
             return
@@ -209,7 +109,7 @@ class Vertex(object):
         v = Sub(name="sub-{}-{}".format(self.name, other.name))(self, other)
         return v
         
-    def __iadd__(self, other):
+    def __isub__(self, other):
         return NotImplementedError("iterat")
         
     def __mul__(self, other):
@@ -225,6 +125,108 @@ class Vertex(object):
 
     def __idiv__(self, other):
         return NotImplementedError("iterat")
+
+class Edge(object):
+    """Edge
+    """
+    
+    def __init__(self, name=None):
+        self._graph = cg
+
+        self.in_vertices = []
+        self.out_vertex = None
+        self.name = name
+
+        # Add to graph
+        self._graph.edges.add(self)
+
+    def __call__(self, *vertices):
+        return self.add(*vertices)
+        
+    def add(self, *vertices):
+        """Add vertices and return a new vertex
+        """
+        # Create a new vertex,
+        # then add an edge as input and add the vertex as output
+        new_vertex = Vertex(name="output-{}".format(self.name))
+        new_vertex.in_edge = self
+        self.out_vertex = new_vertex
+
+        # Add vertices as input and add edges as output
+        for vertex in vertices:
+            vertex.out_edges.append(self)
+            self.in_vertices.append(vertex)
+
+        return new_vertex
+
+    def forward(self, input_):
+        # Concatenation case
+        if len(self.in_vertices) > 1:
+            if not hasattr(self, "in_cnt"):
+                self.in_cnt = len(self.in_vertices)
+                self.inputs = []
+            self.in_cnt -= 1
+
+            # Return inputs itself
+            if self.in_cnt != 0:
+                self.inputs.append(input_)
+                return
+
+            # Compute something for each here, just elemwise-sum now
+            del self.in_cnt
+            self.inputs.append(input_)
+            output = self.infer(self.inputs)
+            logger.debug("edge({}).forward".format(self.name))
+            self.out_vertex.forward(output)
+            return
+
+        # Sequence case
+        # Compute Inference
+        output = self.infer(input_)
+
+        logger.debug("edge({}).forward".format(self.name))
+        self.out_vertex.forward(output)
+        return
+
+    def infer(self, inputs):
+        """Infer given inputs
+
+        Parameters
+        -----------------
+        inputs: ndarray or list of ndarray
+
+        Returns
+        ------------
+        ndarray
+        
+        """
+        # Default infer is addition
+        if type(inputs) == list:
+            return reduce(lambda x, y: x + y, inputs)
+
+        return inputs
+        
+    def backward(self, grad):
+        logger.debug("edge({}).backword".format(self.name))
+
+        # Compute Gradients
+        grads = self.grads(grad, [v.value for v in self.in_vertices])
+
+        for grad__, in_vertex in zip(grads, self.in_vertices):
+            in_vertex.backward(grad__)
+
+    def grads(self, grad, inputs):
+        """Grad given input and grad
+        Parameters
+        -----------------
+        grad: ndarray
+        inputs: ndarray or list of ndarray
+
+        Returns
+        ------------
+        list of ndarray
+        """
+        return [grad * in_ for in_ in inputs]
 
 class Add(Edge):
     def __init__(self, name=None):
@@ -305,7 +307,45 @@ class Div(Edge):
         grads.append(grad1)
 
         return grads
-                
+
+class Affine(Edge):
+    def __init__(self, name=None):
+        super(Affine, self).__init__(name=name)
+
+    def infer(self, inputs):
+
+        if len(inputs) != 2:
+            msg = "Input have to be 2"
+            raise ValueError(msg)
+
+        # Get shape
+        shape0 = inputs[0].shape
+        shape1 = inputs[1].shape
+
+        # Check param shape
+        if len(shape0) != 2 and len(shape1) != 2:
+            msg = "Tensor dimension of Affine parameter have to be 2"
+            raise ValueError(msg)
+
+        input0 = inputs[0]
+        if len(shape0) > 2:
+            input0 = input0.reshape((shape0, np.prod(shape0[1:])))
+
+        input1 = inputs[1]
+        if len(shape1) > 2:
+            input1 = input1.reshape((shape1, np.prod(shape1[1:])))
+            
+        if input0.shape[1] == input1.shape[0]:
+            output = input0.dot(input1)
+        else:
+            output = input1.dot(input0)
+
+        return output
+
+    def grads(self, grad, inputs):
+        grads = []
+        
+        
 class SquareLoss(Edge):
     
     def __init__(self, name=None):
