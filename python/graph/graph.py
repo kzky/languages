@@ -214,37 +214,3 @@ class SquareLoss(Edge):
 
         return grads
 
-def main():
-
-    v_in = Vertex("x")
-    v1 = Edge(name="e0")(v_in)
-    v2 = Edge(name="e1")(v1)
-    v3 = Edge(name="e2")(v2, v1)
-    v4 = Edge(name="e3")(v3)
-    v5 = Edge(name="e4")(v4)
-    y = Vertex("y")
-    y.value = np.random.rand(4, 3)
-    v_out = SquareLoss(name="square-loss")(v5, y)
-
-    print "----- Vertices and Edges in Graph -----"
-    print len(dag.vertices)
-    print len(dag.edges)
-
-    print "----- Forward pass (Inference) -----"
-    inputs = np.random.rand(4, 3)
-    v_in.forward(inputs)
-    print v1.value
-    print v5.value
-
-    print "----- Backward pass (from the middle) -----"
-    grad = np.random.rand(4, 3)
-    v3.backward(grad)
-    print v1.grad
-     
-    print "----- Compute Loss -----"
-    v_out.backward(1)
-    print v1.grad
-
-if __name__ == '__main__':
-    main()
-
