@@ -5,15 +5,12 @@ from graph import Edge, Vertex, SquareLoss, dag
 
 def main():
     # Fork and concate
-    v_in = Vertex("x")  # single source as sample
+    v_in = Vertex("x")  # single source
     v1 = Edge(name="e0")(v_in)
     v2 = Edge(name="e1")(v1)
     v3 = Edge(name="e2")(v2, v1)  # fork and concate
     v4 = Edge(name="e3")(v3)
     v5 = Edge(name="e4")(v4)
-    y = Vertex("y")  # single source as label
-    y.value = np.random.rand(4, 3)
-    v_out = SquareLoss(name="square-loss")(v5, y)  # single distination
 
     print "----- Vertices and Edges in Graph -----"
     print len(dag.vertices)
@@ -30,10 +27,5 @@ def main():
     v3.backward(grad)
     print v1.grad
      
-    print "----- Compute Loss -----"
-    v_out.backward(1)
-    print v1.grad
-    
-
 if __name__ == '__main__':
     main()
