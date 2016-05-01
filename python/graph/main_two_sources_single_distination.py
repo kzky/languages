@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import numpy as np
-from graph import Edge, Vertex, SquareLoss, dag
+from graph import Edge, Vertex, SquareLoss, cg
 
 def main():
-    # Fork and concate
-    v_in = Vertex("x")  # single source
+    # Two sources and single distination
+    v_in = Vertex("x")  # one source
     v1 = Edge(name="e0")(v_in)
     v2 = Edge(name="e1")(v1)
     v3 = Edge(name="e2")(v2, v1)  # fork and concate
@@ -16,8 +16,8 @@ def main():
     v_out = SquareLoss(name="square-loss")(v5, y)  # single distination
 
     print "----- Vertices and Edges in Graph -----"
-    print len(dag.vertices)
-    print len(dag.edges)
+    print len(cg.vertices)
+    print len(cg.edges)
 
     print "----- Forward pass (Inference) -----"
     inputs = np.random.rand(4, 3)

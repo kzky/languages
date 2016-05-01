@@ -7,13 +7,13 @@ FORMAT = '%(asctime)s::%(levelname)s::%(name)s::%(funcName)s::%(message)s'
 logging.basicConfig(
     format=FORMAT,
     level=logging.DEBUG)
-logger = logging.getLogger("DAG")
+logger = logging.getLogger("CG")
 
-class Graph(object):
+class ComputationalGraph(object):
     
     def __init__(self, ):
-        """Directed Acyclic Graph
-        Graph represents a set of Vertex and Edge, or G = (V, E).
+        """Directed Acyclic Computational Graph
+        DAG represents a set of Vertex and Edge, or G = (V, E).
         """
         self.vertices = set()
         self.edges = set()
@@ -28,14 +28,14 @@ class Graph(object):
         """
         pass
 
-dag = Graph()
+cg = ComputationalGraph()
 
 class Edge(object):
     """Edge
     """
     
     def __init__(self, name=None):
-        self._graph = dag
+        self._graph = cg
 
         self.in_vertices = []
         self.out_vertex = None
@@ -135,21 +135,23 @@ class Vertex(object):
     """Vertex
     """
     
-    def __init__(self, name=None):
-        self._graph = dag
+    def __init__(self, name=None, value=None):
+        self._graph = cg
 
         self.in_edge = None
         self.out_edges = []
         self.name = name
-        self.value = None
+        self.value = value
         self.grad = None
         
         # Add to graph
         self._graph.vertices.add(self)
 
-    def forward(self, in_):
+    def forward(self, in_=None):
         logger.debug("vertex({}).forward".format(self.name))
 
+        if in_ is None:
+            in_ = self.value
         out_ = in_
         self.value = out_
         if self.out_edges != []:
@@ -160,7 +162,10 @@ class Vertex(object):
 
         return out_
         
-    def backward(self, grad):
+    def backward(self, grad=None):
+        if grad is None:
+            grad = 1
+            
         # Concatenation case
         if len(self.out_edges) > 1:
             self.out_cnt = len(self.out_edges) \
@@ -193,6 +198,114 @@ class Vertex(object):
 
         return
 
+    def __add__(self, other):
+        v = Add(name="add-{}-{}".format(self.name, other.name))(self, other)
+        return v
+        
+    def __iadd__(self, other):
+        return NotImplementedError("iterat")
+
+    def __sub__(self, other):
+        v = Sub(name="sub-{}-{}".format(self.name, other.name))(self, other)
+        return v
+        
+    def __iadd__(self, other):
+        return NotImplementedError("iterat")
+        
+    def __mul__(self, other):
+        v = Mul(name="mul-{}-{}".format(self.name, other.name))(self, other)
+        return v
+        
+    def __imul__(self, other):
+        return NotImplementedError("iterat")
+
+    def __div__(self, other):
+        v = Div(name="div-{}-{}".format(self.name, other.name))(self, other)
+        return v
+
+    def __idiv__(self, other):
+        return NotImplementedError("iterat")
+
+class Add(Edge):
+    def __init__(self, name=None):
+        super(Add, self).__init__(name=name)
+
+    def infer(self, inputs):
+
+        if len(inputs) != 2:
+            raise ValueError("Input have to be 2")
+
+        return inputs[0] + inputs[1]
+
+    def grads(self, grad, inputs):
+        grads = []
+        grad0 = np.ones_like(inputs[0])
+        grad1 = np.ones_like(inputs[1])
+        grads.append(grad0)
+        grads.append(grad1)
+
+        return grads
+
+class Sub(Edge):
+    def __init__(self, name=None):
+        super(Sub, self).__init__(name=name)
+
+    def infer(self, inputs):
+
+        if len(inputs) != 2:
+            raise ValueError("Input have to be 2")
+
+        return inputs[0] - inputs[1]
+
+    def grads(self, grad, inputs):
+        grads = []
+        grad0 = np.ones_like(inputs[0])
+        grad1 = - np.ones_like(inputs[1])
+        grads.append(grad0)
+        grads.append(grad1)
+
+        return grads
+
+class Mul(Edge):
+    def __init__(self, name=None):
+        super(Mul, self).__init__(name=name)
+
+    def infer(self, inputs):
+
+        if len(inputs) != 2:
+            raise ValueError("Input have to be 2")
+
+        return inputs[0] * inputs[1]
+
+    def grads(self, grad, inputs):
+        grads = []
+        grad0 = inputs[1]
+        grad1 = inputs[0]
+        grads.append(grad0)
+        grads.append(grad1)
+
+        return grads
+
+class Div(Edge):
+    def __init__(self, name=None):
+        super(Div, self).__init__(name=name)
+
+    def infer(self, inputs):
+
+        if len(inputs) != 2:
+            raise ValueError("Input have to be 2")
+
+        return inputs[0] / inputs[1]
+
+    def grads(self, grad, inputs):
+        grads = []
+        grad0 = np.ones_like(inputs[0]) / inputs[1]
+        grad1 = - inputs[0] / (inputs[1] ** 2)
+        grads.append(grad0)
+        grads.append(grad1)
+
+        return grads
+                
 class SquareLoss(Edge):
     
     def __init__(self, name=None):
@@ -207,10 +320,9 @@ class SquareLoss(Edge):
 
     def grads(self, grad, inputs):
         grads = []
-        grads0 = 2 * (inputs[0] - inputs[1])
-        grads1 = 2 * (inputs[1] - inputs[0])
-        grads.append(grads0)
-        grads.append(grads1)
+        grad0 = 2 * (inputs[0] - inputs[1])
+        grad1 = 2 * (inputs[1] - inputs[0])
+        grads.append(grad0)
+        grads.append(grad1)
 
         return grads
-
