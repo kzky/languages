@@ -169,10 +169,12 @@ class Edge(object):
 
             # Return inputs itself
             if self.in_cnt != 0:
+                input_ = self.in_vertices[len(self.in_vertices) - self.in_cnt - 1].value
                 self.inputs.append(input_)
                 return
 
             # Compute something for each here, just elemwise-sum now
+            input_ = self.in_vertices[len(self.in_vertices) - self.in_cnt - 1].value
             del self.in_cnt
             self.inputs.append(input_)
             output = self.infer(self.inputs)
@@ -313,6 +315,11 @@ class Affine(Edge):
         super(Affine, self).__init__(name=name)
 
     def infer(self, inputs):
+        """Infer
+
+        inputs: list of ndarray
+        Size of list have to be 2 and first element is parameter.
+        """
 
         if len(inputs) != 2:
             msg = "Input have to be 2"
@@ -323,28 +330,32 @@ class Affine(Edge):
         shape1 = inputs[1].shape
 
         # Check param shape
-        if len(shape0) != 2 and len(shape1) != 2:
+        if len(shape0) != 2:
             msg = "Tensor dimension of Affine parameter have to be 2"
             raise ValueError(msg)
 
         input0 = inputs[0]
-        if len(shape0) > 2:
-            input0 = input0.reshape((shape0, np.prod(shape0[1:])))
-
         input1 = inputs[1]
+        
         if len(shape1) > 2:
             input1 = input1.reshape((shape1, np.prod(shape1[1:])))
-            
-        if input0.shape[1] == input1.shape[0]:
-            output = input0.dot(input1)
-        else:
-            output = input1.dot(input0)
+
+        output = input1.dot(input0)
 
         return output
 
     def grads(self, grad, inputs):
         grads = []
-        
+        input0 = inputs[0]
+        input1 = inputs[1]
+
+        grad0 = np.asarray([np.outer(in1, g) for in1, g in zip(input1, grad)])
+        grad1 = grad.dot(input0.T)
+
+        grads.append(grad0)
+        grads.append(grad1)
+
+        return grads
         
 class SquareLoss(Edge):
     
