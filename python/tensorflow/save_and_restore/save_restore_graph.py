@@ -12,8 +12,9 @@ def main():
     v2 = tf.Variable(initial_v2)
 
     # Ops
-    prod = tf.matmul(v1, v2)
-    init_ops = tf.initialize_all_variables()
+    op_name = "prod"
+    prod = tf.matmul(v1, v2, name=op_name)
+    init_op = tf.initialize_all_variables()
 
     # Get graph (default graph)
     default_graph = tf.get_default_graph()
@@ -27,13 +28,15 @@ def main():
     tf.train.write_graph(default_graph.as_graph_def(),
                          "/tmp", dst_fname,
                          as_text=False)
-    
+    print "Graph saved in /tmp/{}".format(dst_fname)
+            
     # Restore graph to another graph (not default graph)
     graph = tf.Graph()
     with graph.as_default():
         with open("/tmp/{}".format(dst_fname), "rb") as fpin:
             graph_def = graph.as_graph_def()
             graph_def.ParseFromString(fpin.read())
+
             tf.import_graph_def(graph_def)
 
     print "----- Graph operations of another graph -----"
@@ -52,6 +55,6 @@ def main():
 
     print default_graph_op_names
     print default_graph_op_names == graph_op_names
-        
+
 if __name__ == '__main__':
     main()
