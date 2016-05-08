@@ -29,9 +29,9 @@ def main():
                          as_text=False)
     
     # Restore graph to another graph (not default graph)
-    with open("/tmp/{}".format(dst_fname), "rb") as fpin:
-        graph = tf.Graph()
-        with graph.as_default():
+    graph = tf.Graph()
+    with graph.as_default():
+        with open("/tmp/{}".format(dst_fname), "rb") as fpin:
             graph_def = graph.as_graph_def()
             graph_def.ParseFromString(fpin.read())
             tf.import_graph_def(graph_def)
@@ -50,6 +50,7 @@ def main():
         graph_op_names.append(op.name.split("import/")[-1])
     graph_op_names.sort()
 
+    print default_graph_op_names
     print default_graph_op_names == graph_op_names
         
 if __name__ == '__main__':
