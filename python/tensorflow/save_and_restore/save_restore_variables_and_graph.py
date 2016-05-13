@@ -39,30 +39,8 @@ def main():
         print "Model saved in {}".format(save_path)
         print ""
         
-    # Get graph (default graph)
-    default_graph = tf.get_default_graph()
-
-    # Save graph
-    now = datetime.datetime.now()
-    dst_fname = "graph-{}.pbtxt".format(now)
-    tf.train.write_graph(default_graph.as_graph_def(),
-                         "/tmp", dst_fname,
-                         as_text=False)
-    print "Graph saved in /tmp/{}".format(dst_fname)
-    print ""
-        
-    # Restore graph to another graph (not default graph)
+    # Restore graph to another graph (not default graph) and variables
     graph = tf.Graph()
-    with graph.as_default():
-        with open("/tmp/{}".format(dst_fname), "rb") as fpin:
-            graph_def = graph.as_graph_def()
-            graph_def.ParseFromString(fpin.read())
-            tf.import_graph_def(graph_def)
-
-    print "Graph restored to another graph (not default graph)"
-    print ""
-    
-    # Restore variables
     with graph.as_default():
         saver = tf.train.import_meta_graph("{}.meta".format(save_path))
 
