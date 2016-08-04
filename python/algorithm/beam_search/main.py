@@ -7,7 +7,6 @@ from beam_search import Node
 from beam_search import BeamSearch
 import numpy as np
 
-
 def main():
 
     # T=5
@@ -49,7 +48,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-
-
-    
-    

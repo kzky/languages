@@ -54,8 +54,14 @@ class BeamSearch(object):
         ----------------
         node: Node
           Node is usually the root node.
+
+        Return
+        ----------
+        seqs: list of list
+           the result of search.
         """
-        
+
+        # Set as true because this method is destructive
         if self._used == True:
             raise Exception("You can not use this object again")
 
@@ -78,5 +84,4 @@ class BeamSearch(object):
             self._seqs.append(seq)
             self._seq.pop()
             return
-        
         
