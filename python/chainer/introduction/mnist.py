@@ -38,6 +38,12 @@ class Classifier(Chain):
 if __name__ == '__main__':
     # Model and Optimizer
     model = Classifier(MLP())
+    try: 
+        model.to_gpu()
+    except Exception as e:
+        print(e)
+
+    # Optimizer
     optimizer = optimizers.SGD()
     optimizer.setup(model)
      
