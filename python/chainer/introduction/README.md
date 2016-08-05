@@ -4,6 +4,10 @@ This introduction is based on [this page](http://docs.chainer.org/en/stable/tuto
 
 Core concept of Chainer is *Define-by-Run*. When the computational graph created, forward computation also runs at the same time, so that it is called *Define-by-Run*, or referred to as imperative.
 
+# Installation
+
+See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04, take care to use gcc-4.9 and g++-4.0, also the environment variables.
+
 # Main Components
 ### Variable
 - Namely, a variable.
