@@ -20,6 +20,8 @@ print("# Backward")
 y.backward()
 print(y.grad)
 print(x.grad)
+y.backward()
+print(x.grad)  ## gradient is accumulated
 
 # Forward/Backward with retain_grad
 print("Forward/Backward with retain_grad")
@@ -63,15 +65,15 @@ class MyChain(Chain):
 # Optimizer
 model = MyChain()
 optimizer = optimizers.SGD()
-optimizer.setup()
+optimizer.setup(model)
 optimizer.add_hook(chainer.optimizer.WeightDecay(0.0005))
 
-## one way to use
-models.zerograds()
-# call backward for objective function.
-optimizer.update()
+## One way to use in the training loop
+###model.zerograds()
+#### call backward for objective function.
+###optimizer.update()
 
-## the other way to use
+## The other way to use
 def lossfunc():
     loss = None
     # ...
@@ -81,10 +83,4 @@ def lossfunc():
 
 # Trainer
 ## ...
-
-# Example of MNIST
-
-
-
-
 
