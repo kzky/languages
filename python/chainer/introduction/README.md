@@ -66,7 +66,7 @@ This is a hello world example in Deep Learning.
 See the code [here]().
 
 # Review
-When comparing with previous versions where only low-level APIs are published without high-level APIs, it became confusing to me, especillay the optimization loop, Trainer, Updater, Evaluator, *Report, etc, which is normally out of scope of minimum components of what deep learning library is.
+When comparing with previous versions where only low-level APIs are published without high-level APIs, it became confusing to me, especillay the optimization loop, Trainer, Updater, Evaluator, *Report, etc.
 
 # Reference
 - http://docs.chainer.org/en/stable/tutorial/basic.html
