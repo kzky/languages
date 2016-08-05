@@ -11,10 +11,10 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 # Main Components
 ### Variable
 - Namely, a variable.
-- It can call backward function, note gradients are not overwritten, but accumulated.
+- It can call the backward function, note gradients are not overwritten, but accumulated.
 - For multi-element array, set the initial values for the gradient of the last variable which calls the backward function.
 - Gradients are stored in the w.r.t.-variables, e.g., y = 2*x, dy/dx is stored in x.grad.
-- Usually, Chainer releases intermediate gradients. To hold, pass retain_grad=True to backward.
+- Usually, Chainer releases intermediate gradients. To hold, pass retain_grad=True to the backward.
 
 ### Link
 - Parameterized function, where the parameters are optimized.
@@ -26,7 +26,7 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 - Usually, forward computation is coded in the *\_\_call\_\_* method.
 - Chain is the child class of Link.
 - ChainList can hold the arbitrary number of Link, if the number of links is fixed, simply use Chain, and it namely seems like a list of links in order to add a link at the end of ChainList.
-- A typical usage of Chain is the following, pass paramerized functions to *super.\_\_init\_\_* and implement forward pass in *\_\_call\_\_*.
+- A typical usage of Chain is the following, pass paramerized functions to *super.\_\_init\_\_* and implement the forward pass in *\_\_call\_\_*.
 
 ```python
 class MyChain(Chain):
