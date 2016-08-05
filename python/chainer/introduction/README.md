@@ -23,10 +23,10 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 
 ### Chain
 - To make a model (DNN) as a class, inherite chain. it support parameter management, CPU/GPU migration support, robust and flexible save/load features, etc.
-- Usually, forward computation is coded in the *__call__* method.
+- Usually, forward computation is coded in the *\_\_call\_\_* method.
 - Chain is the child class of Link.
 - ChainList can hold the arbitrary number of Link, if the number of links is fixed, simply use Chain, and it namely seems like a list of links in order to add a link at the end of ChainList.
-- A typical usage of Chain is the following, pass paramerized functions to *super.__init__* and implement forward pass in *__call__*.
+- A typical usage of Chain is the following, pass paramerized functions to *super.__init__* and implement forward pass in *\_\_call\_\_*.
 
 ```python
 class MyChain(Chain):
