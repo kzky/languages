@@ -20,6 +20,7 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 - Parameterized function, where the parameters are optimized.
 - Parameters of a function is hidden in Link, so this is a high-level api.
 - The low-level corresponding api, for e.g., Linaer, is linear, which tasks a, W, b.
+- Input to Link is nomally mini-batch, so the shape of the input is like (N, d1, d2, ...), where N is the mini-batch size.
 
 ### Chain
 - To make a model (DNN) as a class, inherite chain. it support parameter management, CPU/GPU migration support, robust and flexible save/load features, etc.
