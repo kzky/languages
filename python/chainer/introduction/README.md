@@ -26,7 +26,7 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 - Usually, forward computation is coded in the *\_\_call\_\_* method.
 - Chain is the child class of Link.
 - ChainList can hold the arbitrary number of Link, if the number of links is fixed, simply use Chain, and it namely seems like a list of links in order to add a link at the end of ChainList.
-- A typical usage of Chain is the following, pass paramerized functions to *super.__init__* and implement forward pass in *\_\_call\_\_*.
+- A typical usage of Chain is the following, pass paramerized functions to *super.\_\_init\_\_* and implement forward pass in *\_\_call\_\_*.
 
 ```python
 class MyChain(Chain):
