@@ -136,7 +136,7 @@ def main():
     test_iter = ParallelSequentialIterator(test, 1, repeat=False)
 
     # Updater
-    updater = BPTTUpdater(train_iter, optimizer, bprop_len=35)
+    updater = BPTTUpdater(train_iter, optimizer, bprop_len=35, device=device)
     trainer = training.Trainer(updater, (10, "epoch"), out="result")
 
     # Add extensions
