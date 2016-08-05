@@ -14,6 +14,7 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 - It can call backward function, note gradients are not overwritten, but accumulated.
 - For multi-element array, set the initial values for the gradient of the last variable which calls the backward function.
 - Gradients are stored in the w.r.t.-variables, e.g., y = 2*x, dy/dx is stored in x.grad.
+- Usually, Chainer releases intermediate gradients. To hold, pass retain_grad=True to backward.
 
 ### Link
 - Parameterized function, where the parameters are optimized.
