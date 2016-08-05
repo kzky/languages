@@ -19,8 +19,8 @@ class MLP(Chain):
         )
 
     def __call__(self, x):
-        h1 = F.relue(self.l1(x))
-        h2 = F.relue(self.l2(x))
+        h1 = F.relu(self.l1(x))
+        h2 = F.relu(self.l2(h1))
         y = self.l3(h2)
         return y
                     
@@ -56,9 +56,9 @@ if __name__ == '__main__':
     # Add extensions
     trainer.extend(extensions.Evaluator(test_iter, model))
     trainer.extend(extensions.LogReport())
-    trainer.extend(extenstion.PrintReport(
+    trainer.extend(extensions.PrintReport(
         ["epoch", "main/accuracy", "validation/main/accuracy"]))
-    trainer.extend(extenstion.ProgressBar())
+    trainer.extend(extensions.ProgressBar())
      
     # Run
     trainer.run()
