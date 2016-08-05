@@ -69,8 +69,51 @@ This is a hello world example in Deep Learning.
 
 See the code [here]().
 
+
 # Review
 When comparing with previous versions where only low-level APIs are published without high-level APIs, it became confusing to me, especillay the optimization loop, Trainer, Updater, Evaluator, *Report, etc.
+
+# Note
+
+## Device ids are reverted or randomed
+
+The following is the result of *nvidia-smi* on my ubuntu16.04.
+
+```sh
+Fri Aug  5 21:13:15 2016
++------------------------------------------------------+
+| NVIDIA-SMI 352.79     Driver Version: 352.79         |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GT 610      Off  | 0000:01:00.0     N/A |                  N/A |
+| 40%   36C    P8    N/A /  N/A |    196MiB /  1023MiB |     N/A      Default |
++-------------------------------+----------------------+----------------------+
+|   1  GeForce GTX 780     Off  | 0000:02:00.0     N/A |                  N/A |
+| 30%   39C    P8    N/A /  N/A |     11MiB /  3071MiB |     N/A      Default |
++-------------------------------+----------------------+----------------------+
+```
+
+When I set device\_id=1, I got the error "CUDNN\_STATUS\_ARCH\_MISMATCH", which indicates the compute capability is mismatching so that a user can not use the CUDNN in my case; however, I set devide\_id=0, my code can run.
+
+Ispecting more with "chainer.cuda.Device(device\_id)" shows.
+
+```python
+In [1]: import chainer.cuda
+
+In [2]: d0 = chainer.cuda.Device(0)                                                                                                           
+
+In [3]: d0.compute_capability
+Out[3]: '35'
+
+In [4]: d1 = chainer.cuda.Device(1)                                                                                                           
+
+In [5]: d1.compute_capability
+Out[5]: '21'
+```
+
+Comparing the "nvidia-smi" results with this result indicates the difference between device ids of nvidia-smi and ones indexed by Chainer because [Wikipedia](https://en.wikipedia.org/wiki/CUDA) says that GTX 750 has cc=35 and GeForce GT 610 has cc=21.
 
 # Reference
 - http://docs.chainer.org/en/stable/tutorial/basic.html
