@@ -69,11 +69,12 @@ while ...:  ## data-loop
 
 This is a hello world example in Deep Learning.
 
-See the code [here]().
-
+See the code [here](https://github.com/kzky/languages/blob/master/python/chainer/introduction/mnist.py).
 
 # Review
 When comparing with previous versions where only low-level APIs are published without high-level APIs, it became confusing to me, especillay the optimization loop, Trainer, Updater, Evaluator, *Report, etc.
+
+I guess that Updater depends on Iterator and Optimizer and compute one-step optimization, and Trainer depends on Updater, looping one-step computation.
 
 # Note
 
