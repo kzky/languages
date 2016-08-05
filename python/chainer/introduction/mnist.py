@@ -56,11 +56,11 @@ if __name__ == '__main__':
                                          repeat=False, shuffle=False)
      
     # Updater and Trainer
-    updater = training.StandardUpdater(train_iter, optimizer, device=0)
+    updater = training.StandardUpdater(train_iter, optimizer)
     trainer = training.Trainer(updater, (20, "epoch"), out="result")
      
     # Add extensions
-    trainer.extend(extensions.Evaluator(test_iter, model, devide=0))
+    trainer.extend(extensions.Evaluator(test_iter, model))
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.PrintReport(
         ["epoch", "main/accuracy", "validation/main/accuracy"]))
