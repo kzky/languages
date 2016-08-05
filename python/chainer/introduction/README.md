@@ -70,5 +70,4 @@ When comparing with previous versions where only low-level APIs are published wi
 
 # Reference
 - http://docs.chainer.org/en/stable/tutorial/basic.html
-- http://docs.chainer.org/en/stable/tutorial/index.html
-
+- http://docs.chainer.org/en/stable/tutorial/gpu.html#run-neural-networks-on-a-single-gpu
