@@ -8,6 +8,10 @@ import chainer.functions as F
 import chainer.links as L
 from chainer.training import extensions
 
+
+# Config
+device = -1
+
 class RNN(Chain):
     def __init__(self, train=True):
         super(RNN, self).__init__(
@@ -68,7 +72,7 @@ class ParallelSequentialIterator(chainer.dataset.Iterator):
 
 # Custom updater for truncated BackProp Through Time (BPTT)
 class BPTTUpdater(training.StandardUpdater):
-    def __init__(self, train_iter, optimizer, bprop_len, device=None):
+    def __init__(self, train_iter, optimizer, bprop_len, device=-1):
         super(BPTTUpdater, self).__init__(
             train_iter, optimizer, device=device)
         self.bprop_len = bprop_len
@@ -112,6 +116,8 @@ def main():
     rnn = RNN()
     model = L.Classifier(rnn)
     model.compute_accuracy = False  # we only want the perplexity
+    if device != -1:
+        model.to_gpu(device)
     eval_model = model.copy()  # Model with shared params and distinct states
     eval_rnn = eval_model.predictor
     eval_rnn.train = False
@@ -136,7 +142,7 @@ def main():
     # Add extensions
     interval = 10
     trainer.extend(extensions.Evaluator(
-        val_iter, eval_model, device=None,
+        val_iter, eval_model, device=device,
         # Reset the RNN state at the beginning of each evaluation
         eval_hook=lambda _: eval_rnn.reset_state()))
     trainer.extend(extensions.LogReport(postprocess=compute_perplexity,
@@ -156,7 +162,7 @@ def main():
     # Evaluate the final model
     print('test')
     eval_rnn.reset_state()
-    evaluator = extensions.Evaluator(test_iter, eval_model, device=None)
+    evaluator = extensions.Evaluator(test_iter, eval_model, device=device)
     result = evaluator()
     print('test perplexity:', np.exp(float(result['main/loss'])))
 
