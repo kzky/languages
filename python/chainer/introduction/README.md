@@ -75,6 +75,10 @@ When comparing with previous versions where only low-level APIs are published wi
 
 # Note
 
+## gcc, g++, cpp
+
+Use 4.9 with CUDA 7.5 before installing chainer.
+
 ## Device ids are reverted or randomed
 
 The following is the result of *nvidia-smi* on my ubuntu16.04.
