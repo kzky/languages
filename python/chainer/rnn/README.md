@@ -33,3 +33,9 @@ y.backword()
 ## Making it with Trainer
 - If data is represented as very long sequence, use a customized iterator.
 - Actually, the implementation is up to one, and if one wants to use Iterator, inherite chainer.dataset.Iterator and overwrite necessary functions.
+
+See [ptb example](https://github.com/pfnet/chainer/blob/master/examples/ptb/train_ptb.py) because Turorial is not enough to run the ptb example.
+
+
+# Reference
+- http://docs.chainer.org/en/stable/tutorial/recurrentnet.html#network-evaluation-without-storing-the-computation-history
