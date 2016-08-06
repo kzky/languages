@@ -28,7 +28,7 @@ def main():
     st = time.time()
     print(integrate_cdef_v2_cython.integrate_f(a, b, N))
     et_cdef_v2_cython = time.time() - st
-    print("cdef Cython: {} [s]".format(et_cdef_v2_cython))
+    print("cdef v2 Cython: {} [s]".format(et_cdef_v2_cython))
 
     print("\n### Ratio Comparison### ")
     print("Python: {} [s]".format(et_python/et_python))
