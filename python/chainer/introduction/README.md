@@ -21,6 +21,7 @@ See [this](https://github.com/pfnet/chainer) for enabling cudnn. For ubuntu16.04
 - Parameters of a function is hidden in Link, so this is a high-level api.
 - The low-level corresponding api, for e.g., Linaer, is linear, which tasks a, W, b.
 - Input to Link is nomally mini-batch, so the shape of the input is like (N, d1, d2, ...), where N is the mini-batch size.
+- To create your own Link class and if you want to specify trainable parameters of the class, use *add_param* or give those to *\_\_init\_\_*.
 
 ### Chain
 - To make a model (DNN) as a class, inherite chain. it support parameter management, CPU/GPU migration support, robust and flexible save/load features, etc.
@@ -125,3 +126,4 @@ Comparing the "nvidia-smi" results with this result indicates the difference bet
 # Reference
 - http://docs.chainer.org/en/stable/tutorial/basic.html
 - http://docs.chainer.org/en/stable/tutorial/gpu.html#run-neural-networks-on-a-single-gpu
+- http://docs.chainer.org/en/stable/reference/core/link.html
