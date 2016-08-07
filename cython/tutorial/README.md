@@ -67,7 +67,7 @@ cdef extern from "math.h"
 - (おそらく)*pip install numpy*でインストールしていると，/usr/includeにヘッダもろもろが存在しないので，*/usr/local/lib/python2.7/dist-packages/numpy/core/include/numpy/*からコピーする．
 - numpyで片付け可能, e.g., *np.ndarray obj*
 - numpy objectの中身に対する型付けnp.ndarry[*type*, *ndim*]を行う
-- [サンプル]()を書いてみたが，sliceとさらなる最適化では早くなったり早くならなかったりする．なぜ？
+- [サンプル](https://github.com/kzky/languages/tree/master/cython/tutorial/numpy)を書いてみたが，sliceとさらなる最適化では早くなったり早くならなかったりする．なぜ?
 
 # Cython に関係のあるソフトウェア
 - Pyrex: Cythonの前進
