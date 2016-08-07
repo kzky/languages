@@ -18,7 +18,7 @@ cdef extern from "math.h"
 
 - headerの内容を*c{header_filename}.pxd*に，ほぼコピー
 - cでのboolは，cythonで*bint*を使う
-- .pdxは，各ライブラリで１つ，または，ヘッダ毎，機能毎に作る
+- .pxdは，各ライブラリで１つ，または，ヘッダ毎，機能毎に作る
 - cython提供の.pxdファイル一覧は，cythonソースの*Cython/Includes*をみる
 - *{filename}.pxd*は，*{filename}.pyx*の宣言を書く，cythonは自動的に関連付ける
 - headerラップに使った*c{header_filename}.pxd*にはCライブラリの宣言が入っているので，*c{header_filename}.pyx*というファイルは作らない
