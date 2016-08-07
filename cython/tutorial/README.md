@@ -16,7 +16,7 @@ cdef extern from "math.h"
 
 外部のCライブラリを使う話．自作ライブラリとかサードパーティのライブラリ．
 
-- headerの内容を*c{header_filename}.pxd*に，ほぼコピー
+- headerの内容を*c{header_filename}.pxd*に，ほぼコピー. これでC/C++の実装が.pyxで使えるようになる．
 - cでのboolは，cythonで*bint*を使う
 - .pxdは，各ライブラリで１つ，または，ヘッダ毎，機能毎に作る
 - cython提供の.pxdファイル一覧は，cythonソースの*Cython/Includes*をみる
