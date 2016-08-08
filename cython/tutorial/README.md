@@ -24,7 +24,7 @@ cdef extern from "math.h"
 - headerラップに使った*c{header_filename}.pxd*にはCライブラリの宣言が入っているので，*c{header_filename}.pyx*というファイルは作らないで，*{header_filename}.pyx*という名前にする．
 - *cdef*フィールドの初期値化には*\_\_cinit\_\_*を利用する
 - *\_\_cinit\_\_*は，*\_\_init\_\_*よりも先に呼び出される
-- *\_\_cinit\_\_*の中では，通常のフィールドは*self*でアクセスしてはならない
+- *\_\_cinit\_\_*の中では，通常のフィールドへは*self*でアクセスしてはならない
 - *\_\_cinit\_\_*のシグニチャは，*\_\_init\_\_*と一緒にする
 - 必要な場合は，*\_\_dealloc\_\_*でメモリ解放を行う
 - C API/pyhon APIの両方を持たせたいなら，*cdef*を *cpdef*にする
