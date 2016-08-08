@@ -47,9 +47,9 @@ def main():
     print("\n# Ratio Comparison")
     print("python: {}".format(et_py / et_py))
     print("cython: {}".format(et_pyx / et_py))
-    print("cython (typed): {}".format(et_pyx_v2 / et_py))
-    print("cython (slice typed): {}".format(et_pyx_v3 / et_py))
-    print("cython (slice typed and more): {}".format(et_pyx_v4 / et_py))
+    print("cython (typed): {}".format(et_py / et_pyx_v2))
+    print("cython (slice typed): {}".format(et_py / et_pyx_v3))
+    print("cython (slice typed and more): {}".format(et_py / et_pyx_v4))
 
 if __name__ == '__main__':
     main()
