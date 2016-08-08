@@ -16,12 +16,12 @@ cdef extern from "math.h"
 
 外部のCライブラリを使う話．自作ライブラリとかサードパーティのライブラリ．
 
-- headerの内容を*c{header_filename}.pxd*に，ほぼコピー. これでC/C++の実装が.pyxで使えるようになる．
+- headerの内容を*c{header_filename}.pxd*に，ほぼコピー. これでC/C++の実装が.pyxで使える
 - cでのboolは，cythonで*bint*を使う
 - .pxdは，各ライブラリで１つ，または，ヘッダ毎，機能毎に作る
 - cython提供の.pxdファイル一覧は，cythonソースの*Cython/Includes*をみる
 - *{filename}.pxd*は，*{filename}.pyx*の宣言を書く，cythonは自動的に関連付ける
-- headerラップに使った*c{header_filename}.pxd*にはCライブラリの宣言が入っているので，*c{header_filename}.pyx*というファイルは作らない
+- headerラップに使った*c{header_filename}.pxd*にはCライブラリの宣言が入っているので，*c{header_filename}.pyx*というファイルは作らないで，*{header_filename}.pyx*という名前にする．
 - *cdef*フィールドの初期値化には*\_\_cinit\_\_*を利用する
 - *\_\_cinit\_\_*は，*\_\_init\_\_*よりも先に呼び出される
 - *\_\_cinit\_\_*の中では，通常のフィールドは*self*でアクセスしてはならない
