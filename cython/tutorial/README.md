@@ -28,7 +28,6 @@ cdef extern from "math.h"
 - *\_\_cinit\_\_*のシグニチャは，*\_\_init\_\_*と一緒にする
 - 必要な場合は，*\_\_dealloc\_\_*でメモリ解放を行う
 - C API/pyhon APIの両方を持たせたいなら，*cdef*を *cpdef*にする
-- python定義の型と互換性のない型が引数にある場合は，*cpdef*は使えない
 
 # 拡張型の定義 (cdef クラスの定義)
 - cdef classで拡張型(cdef classそのもの)の定義ができる
