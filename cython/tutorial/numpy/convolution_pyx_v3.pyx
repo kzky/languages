@@ -7,7 +7,10 @@ cimport numpy as np
 DTYPE = np.int
 ctypedef np.int_t DTYPE_t
 
-def naive_convolve(np.ndarray[DTYPE_t, ndim=2] f, np.ndarray[DTYPE_t, ndim=2] g):
+def naive_convolve(
+        np.ndarray[DTYPE_t, ndim=2] f,
+        np.ndarray[DTYPE_t, ndim=2] g):
+    
     if g.shape[0] % 2 != 1 or g.shape[1] % 2 != 1:
         raise ValueError("Only odd dimensions on filter supported")
     assert f.dtype == DTYPE and g.dtype == DTYPE
