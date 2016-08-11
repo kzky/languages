@@ -31,10 +31,10 @@ def main():
     print("cdef v2 Cython: {} [s]".format(et_cdef_v2_cython))
 
     print("\n### Ratio Comparison### ")
-    print("Python: {} [s]".format(et_python/et_python))
-    print("Cython: {} [s]".format(et_python/et_cython))
-    print("cdef Cython: {} [s]".format(et_python/et_cdef_cython))
-    print("cdef v2 Cython: {} [s]".format(et_python/et_cdef_v2_cython))
+    print("Python: {}".format(et_python/et_python))
+    print("Cython: {}".format(et_python/et_cython))
+    print("cdef Cython: {}".format(et_python/et_cdef_cython))
+    print("cdef v2 Cython: {}".format(et_python/et_cdef_v2_cython))
     
 
 if __name__ == "__main__":
