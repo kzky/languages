@@ -1,4 +1,4 @@
-# 概要
+## 概要
 - pythonぽく書けて高生産性
 - 型付けすることによる高速化
 - C/C++の中間言語的な感じ
@@ -6,10 +6,10 @@
 - C/C++のコードをcythonで使える．
 - すなわち，pythonで利用可能
 
-# チュートリアル基礎編
+## チュートリアル基礎編
 - [ここ](https://github.com/kzky/languages/blob/master/cython/README.md)の内容と一緒．
 
-#  基本の言語仕様
+##  基本の言語仕様
 - cdefは，Cの変数を宣言するのに使用する
 - e.g., *cdef int *name, *cdef struct* name, *cdef union* name, *cdef enum* name
 - *ctypedef* type ailasも使える
@@ -48,7 +48,7 @@ cdef int fucn(...) except -1:
 - 文と式は，基本的にpythonと同じ
 - キャストは*<type>val*
 
-#  拡張型
+##  拡張型
 - *extension type class*と呼ばれ，cythonのクラスのこと
 - *cdef*を使ってアトリビュートを定義できる
 - 拡張型のアトリビュートはコンパイル時に決まっていないとならないので，拡張型では動的に追加できない
@@ -107,7 +107,7 @@ cdef extern from "complexobject.h":
     ctypedef class __builtin__.complex [object PyComplexObject]:
         cdef Py_complex cval
 
-# 上記を使う関数
+## 上記を使う関数
 def spam(complex c):
     print "Real: ", c.cval.real
     print "Imag", c.cval.imag
@@ -121,7 +121,7 @@ def spam(complex c):
 - この場合はモジュールロード時に，暗黙で*from module_name import class_name*としている
 - public拡張型*cdef public class class_name*を使うと.hファイルができて外部のCコードからcython定義の拡張型が使える．
 
-#  拡張型の特殊メソッド
+##  拡張型の特殊メソッド
 - *\_\_cinit\_\_*は必ず1度だけ呼び出される
 - オブジェクトアトリビュートはメモリ領域が確保されて，Cの型のアトリビュートは0かNULLで初期値化されている．pythonオブジェクトはNoneで初期値化されている
 - 継承がある場合，*\_\_cinit\_\_*は親から呼ばれ，親クラスの*\_\_cinit\_\_*は小クラスで明示的に呼べない
@@ -130,47 +130,47 @@ def spam(complex c):
 - *\_\_dealloc\_\_*で *\_\_cinit\_\_*
 - 細かい話は[doc](http://omake.accense.com/static/doc-ja/cython/src/userguide/special_methods.html)参照
 
-#  Cython モジュール間で宣言を共有する
+##  Cython モジュール間で宣言を共有する
 - *.pxd*のこと
 - Cの型定義，externのC関数や変数の宣言，モジュールで定義したC関数の宣言，拡張型の定義部分が入る
 - 他のモジュールから定義ファイルを使いたい場合は定義ファイルの*.pxd*を作る
 - *.pxd*ファイルのimportは*cimport module_name*と書く
 - コンパイル時には*-I*オプションを使ってファイルを指定する
 
-#  外部の C のコードにインタフェースする
+##  外部の C のコードにインタフェースする
 - externでCコードを利用できる
 - publicでcythonコードをCで利用できる
 - publicを使うことはあまりないかも
-- externでは，*cdef extern from "header_name.h"*と書いてCのヘッダの内容をほぼコピペすればいい．詳細は(ドキュメント)[http://omake.accense.com/static/doc-ja/cython/src/userguide/external_C_code.html]を見ながらやったほうがいい
+- externでは，*cdef extern from "header_name.h"*と書いてCのヘッダの内容をほぼコピペすればいい．詳細は[ドキュメント](http://omake.accense.com/static/doc-ja/cython/src/userguide/external_C_code.html)を見ながらやったほうがいい
 
-#  ソースファイルとコンパイル
+##  ソースファイルとコンパイル
 - [ここ](https://github.com/kzky/languages/tree/master/cython)にまとめたのとほぼ同じ
 
-#  アーリーバインディングによる高速化
+##  アーリーバインディングによる高速化
 - 高速化したいならちゃんと型付きで宣言，アーリーバインディングしましょうという話．
 
-#  Cython から C++ を使う
+##  Cython から C++ を使う
 
 
-#  融合型 (テンプレート)
+##  融合型 (テンプレート)
 - v0.25 (20160810時点で最新)でも実験的なのでbugがあるかも
 
-#  Cython コードを PyPy に移植する
+##  Cython コードを PyPy に移植する
 - とりあえずskip
 
-#  Cython の制約
+##  Cython の制約
 - とりあえずskip
 
-#  Cython と Pyrex の違い
+##  Cython と Pyrex の違い
 - とりあえずskip
 
-#  型付きメモリビュー (Typed Memoryview)
+##  型付きメモリビュー (Typed Memoryview)
 
-#  並列化
+##  並列化
 
-#  Cython プログラムのデバッグ
+##  Cython プログラムのデバッグ
 - GILの開放が可能
 
 
-# Reference
+## Reference
 - http://omake.accense.com/static/doc-ja/cython/index.html
