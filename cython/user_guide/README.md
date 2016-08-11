@@ -165,6 +165,10 @@ def spam(complex c):
 - とりあえずskip
 
 ##  型付きメモリビュー (Typed Memoryview)
+- numpy arrayのようなバッファに高速にpython overheadを伴わずにアクセス可能
+- numpyのアレイバッファーサポート(np.ndarray[np.int_t, ndim=2])に似ているが，より機能が豊富でクリーンなコードが書ける
+- C Array, Cython Array, Numpy Arrayがあって，実体を相互にそれぞれのViewに入れられる．
+- 詳細は[ドキュメント](http://omake.accense.com/static/doc-ja/cython/src/userguide/memoryviews.html#view-cython-arrays)参考．
 
 ##  並列化
 
