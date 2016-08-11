@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+"""
+1. Do not check boundary.
+2. Do not use int but unsigned int and cast int to unsiged int.
+"""
 from __future__ import division
 import numpy as np
 cimport numpy as np

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Type the inside of numpy ndarray.
+"""
 
 from __future__ import division
 import numpy as np
