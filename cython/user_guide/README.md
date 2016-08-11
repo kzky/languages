@@ -122,24 +122,46 @@ def spam(complex c):
 - public拡張型*cdef public class class_name*を使うと.hファイルができて外部のCコードからcython定義の拡張型が使える．
 
 #  拡張型の特殊メソッド
+- *\_\_cinit\_\_*は必ず1度だけ呼び出される
+- オブジェクトアトリビュートはメモリ領域が確保されて，Cの型のアトリビュートは0かNULLで初期値化されている．pythonオブジェクトはNoneで初期値化されている
+- 継承がある場合，*\_\_cinit\_\_*は親から呼ばれ，親クラスの*\_\_cinit\_\_*は小クラスで明示的に呼べない
+- コンストラクタに渡した引数は*\_\_cinit\_\_*と *\_\_init\_\_*両方に渡される
+- 設計として*\_\_cinit\_\_*に *\*args, \*\*kwargs*を用意しておいたほうがいい
+- *\_\_dealloc\_\_*で *\_\_cinit\_\_*
+- 細かい話は[doc](http://omake.accense.com/static/doc-ja/cython/src/userguide/special_methods.html)参照
 
 #  Cython モジュール間で宣言を共有する
+- *.pxd*のこと
+- Cの型定義，externのC関数や変数の宣言，モジュールで定義したC関数の宣言，拡張型の定義部分が入る
+- 他のモジュールから定義ファイルを使いたい場合は定義ファイルの*.pxd*を作る
+- *.pxd*ファイルのimportは*cimport module_name*と書く
+- コンパイル時には*-I*オプションを使ってファイルを指定する
 
 #  外部の C のコードにインタフェースする
+- externでCコードを利用できる
+- publicでcythonコードをCで利用できる
+- publicを使うことはあまりないかも
+- externでは，*cdef extern from "header_name.h"*と書いてCのヘッダの内容をほぼコピペすればいい．詳細は(ドキュメント)[http://omake.accense.com/static/doc-ja/cython/src/userguide/external_C_code.html]を見ながらやったほうがいい
 
 #  ソースファイルとコンパイル
+- [ここ](https://github.com/kzky/languages/tree/master/cython)にまとめたのとほぼ同じ
 
 #  アーリーバインディングによる高速化
+- 高速化したいならちゃんと型付きで宣言，アーリーバインディングしましょうという話．
 
 #  Cython から C++ を使う
 
 #  融合型 (テンプレート)
+- v0.25 (20160810時点で最新)でも実験的なのでbugがあるかも
 
 #  Cython コードを PyPy に移植する
+- とりあえずskip
 
 #  Cython の制約
+- とりあえずskip
 
 #  Cython と Pyrex の違い
+- とりあえずskip
 
 #  型付きメモリビュー (Typed Memoryview)
 
