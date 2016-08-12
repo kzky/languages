@@ -147,16 +147,93 @@ def spam(complex c):
 - [ここ](https://github.com/kzky/languages/tree/master/cython)にまとめたのとほぼ同じ
 
 ##  アーリーバインディングによる高速化
-- 高速化したいならちゃんと型付きで宣言，アーリーバインディングしましょうという話．
+- 高速化したいならちゃんと型付きで宣言，アーリーバインディングしましょうという
+- 高速化のために，関数/メソッドなら，パラメータおよび戻り値にに型をつける
+-  高速化のために，ローカル変数にも型をつける．特にloopの時
+- numpyのndarrayでも型をつけられる．さらに，numpy ndarray objectの中身に対しても型付けが可能
 
 ##  Cython から C++ を使う
+- v0.13からさらに[機能](http://omake.accense.com/static/doc-ja/cython/src/userguide/wrapping_CPlusPlus.html#c-cython-v0-13)が追加された
+- C++のラップ手順は，Cのラップにかなり似ている
+  - setup.pyスクリプト全体か，ソースファイル指定オプションで言語をC++に指定する
+  - *.pxd*フィアルを作成し, *cdef extern from {header\_name}.h namespace {name}*を指定
+  - *cdef cppclass:*ブロックでクラスの宣言
+  - *public*にする変数，コンストラクタ，メソッドを宣言
+  - 拡張モジュールを書いて*.pxd*を *cimport*する
+- setup.pyの書き方は基本以下のとおり, cythonize関数を使う
+```python
+from distutils.core import setup
+from Cython.Build import cythonize
+
+setup(
+    ext_modules = cythonize(
+        "rect.pyx",                                 # cython module
+        sources=["Rectangle.cpp"],  # c code
+        language="c++",                      # lang-specified
+))
+```
+- この場合は，*rect.cpp*というソースファイルを生成してからコンパイルし，次に*Rectanble.cpp*をコンパイルしてから，2つのオブジェクトファイルを*rect.so*にリンクする
+- 他に勘弁な記述も可能
+```python
+from distutils.core import setup
+from Cython.Build.import cythonize
+
+setup(
+    name="rectangleapp"
+    ext_module= cythonize("*.pyx")
+```
+- ただしこの場合は，*.pyx*ファイルにコメントブロックを書かなければならない
+```
+# distutils language = c++
+# distutils sources = Rectangle.cpp
+```
+- ラップするには，まずC++のクラスインターフェース宣言をする
+```cython
+# rect.pxd
+cdef extern from "Rectangle.h" namespace "shapes":
+  cdef cppclass Rectangle:
+    Rectanble(int, int, int, int) except +
+    int x0, y0, x1, y1
+    int getLength()
+    int getHeight()
+    int getArea()
+    void move(int, int)
+```
+- コンストラクタででた例外を伝播させるために*except +*って書くのがポイント
+- 次にCythonでラッパークラスをつくる．*cdef class*でラップする. 
+- *\_\_cinit\_\_*でC++のクラスをつくり，*\_\_dealloc\_\_*でdeleteするのが鉄板のやり方．アトリビュートに直接アクセスしたかったら*property var:*ブロックをつくる．
+```
+# rect.pyx
+#from rect cimport Rectangle  # なくてもいい
+
+cdef class PyRectangle:
+    cdef Rectangle *thisptr # ラップ対象の C++ インスタンスを保持する
+    def __cinit__(self, int x0, int y0, int x1, int y1):
+        self.thisptr = new Rectangle(x0, y0, x1, y1)
+    def __dealloc__(self):
+        del self.thisptr
+    def getLength(self):
+        return self.thisptr.getLength()
+    def getHeight(self):
+        return self.thisptr.getHeight()
+    def getArea(self):
+        return self.thisptr.getArea()
+    def move(self, dx, dy):
+        self.thisptr.move(dx, dy)
+
+    property x0:
+        def __get__(self): return self.thisptr.x0
+        def __set__(self, x0): self.thisptr.x0 = x0
+```
+- もっと細かい話(オーバーロード，演算子のオーバーロード，入れ子クラス，テンプレート，例外翻訳表，静的メンバメソッド)は[ドキュメント](http://omake.accense.com/static/doc-ja/cython/src/userguide/wrapping_CPlusPlus.html#id3)参照．
 
 
 ##  融合型 (テンプレート)
 - v0.25 (20160810時点で最新)でも実験的なのでbugがあるかも
+- なので，とりあえずskip
 
 ##  Cython コードを PyPy に移植する
-- とりあえずskip
+- PyPyを使う予定は今のところないので，とりあえずskip
 
 ##  Cython の制約
 - とりあえずskip
