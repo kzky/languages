@@ -163,17 +163,19 @@ def spam(complex c):
 - setup.pyの書き方は基本以下のとおり, cythonize関数を使う
 ```python
 from distutils.core import setup
+from distutils.core import Extension
 from Cython.Build import cythonize
 
 setup(
     ext_modules = cythonize(
-        "rect.pyx",                                 # cython module
-        sources=["Rectangle.cpp"],  # c code
-        language="c++",                      # lang-specified
-))
+        Extension(
+            "rect",                                                             # cython module
+            sources=["rect.pyx", "Rectangle.cpp"],  # pyx/c++ codes
+            language="c++",                                           # lang-specified
+)))
 ```
 - この場合は，*rect.cpp*というソースファイルを生成してからコンパイルし，次に*Rectanble.cpp*をコンパイルしてから，2つのオブジェクトファイルを*rect.so*にリンクする
-- 他に勘弁な記述も可能
+- 他に勘弁な記述も可能 (未確認)
 ```python
 from distutils.core import setup
 from Cython.Build.import cythonize
@@ -248,6 +250,7 @@ cdef class PyRectangle:
 - 詳細は[ドキュメント](http://omake.accense.com/static/doc-ja/cython/src/userguide/memoryviews.html#view-cython-arrays)参考．
 
 ##  並列化
+- とりあえずskip
 
 ##  Cython プログラムのデバッグ
 - GILの開放が可能
@@ -255,3 +258,4 @@ cdef class PyRectangle:
 
 ## Reference
 - http://omake.accense.com/static/doc-ja/cython/index.html
+- http://stackoverflow.com/questions/29168575/wrap-c-class-with-cython-getting-the-basic-example-to-work
