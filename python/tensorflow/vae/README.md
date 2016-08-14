@@ -12,7 +12,7 @@ In my work, the followings are the setting of VAE.
 - Datataset: permutation invariant MNIST (binarized)
 - Network details: see the [code](), this might be a bit different from the origin.
 
-The inference model and  prior are both Gaussian, so KL divergence can be computed analytically, and the generative model is Bernoulli, as such, the dataset; MNIST is binaized.
+The inference model and  prior are both Gaussian, so KL divergence can be computed analytically, and the generative model is Bernoulli. As such, the dataset MNIST should be binaized.
 
 
 # References
