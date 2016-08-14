@@ -57,11 +57,10 @@ def main():
         x_ = np.random.rand(batch_size, in_dim)
         y_ = np.random.rand(batch_size, out_dim)
 
-        loss = sess.run(loss_op, feed_dict={x: x_, y: y_})
+        #loss = sess.run(loss_op, feed_dict={x: x_, y: y_})
+        loss = loss_op.eval(feed_dict={x: x_, y: y_})
         print loss
 
 if __name__ == '__main__':
     main()
     
-
-
