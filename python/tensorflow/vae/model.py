@@ -23,8 +23,9 @@ class VAE(object):
 
         self._variables = set()
         
-        self._mean = None
-        self._std = None
+        self._mu = None
+        self._sigma = None
+        self._log_sigma_square = None
 
         # Build Graph 
         self._build_graph()
@@ -67,8 +68,9 @@ class VAE(object):
 
         # MLP for sigma
         enc_scope = tf.variable_scope("encoder")
-        sigma = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope)
-        self._sigma = sigma
+        log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope)
+        self._sigma_square = tf.exp(log_sigma_square)
+        self._sigma = tf.sqrt(self._sigma_square)
             
     def _decode(self):
         # MLP
@@ -84,7 +86,7 @@ class VAE(object):
     def _compute_loss(self, ):
         # Encoder loss
         mu_square = self._mu**2
-        sigma_square = self._sigma**2
+        sigma_square = self._sigma_square
         kl_divergence = \
           tf.reduce_sum(1 + tf.log(sigma_square) - mu_square - sigma_square, 
               reduction_indices=[1]) / 2
