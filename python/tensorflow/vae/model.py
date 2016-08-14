@@ -17,6 +17,8 @@ class VAE(object):
         
         self.encode = None
         self.decode = None
+
+        # Objctive function is maximazed
         self.obj = None
 
         self._variables = set()
@@ -85,7 +87,7 @@ class VAE(object):
         sigma_square = self._sigma**2
         kl_divergence = \
           tf.reduce_sum(1 + tf.log(sigma_square) - mu_square - sigma_square, 
-              reduction_indices=[1])
+              reduction_indices=[1]) / 2
         encoder_loss = tf.reduce_mean(kl_divergence)
 
         # Decoder loss
