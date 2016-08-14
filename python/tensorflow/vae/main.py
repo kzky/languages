@@ -26,7 +26,7 @@ def main():
 
     # Run training and test
     init_op = tf.initialize_all_variables()
-    with tf.Session() as sess:
+    with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Init
         sess.run(init_op)
 
