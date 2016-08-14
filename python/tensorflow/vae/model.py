@@ -88,18 +88,16 @@ class VAE(object):
               reduction_indices=[1])
         encoder_loss = tf.reduce_mean(kl_divergence)
 
-        self.encoder_loss = encoder_loss
-        
         # Decoder loss
         x = self._x
         y = self.decode
         #binary_cross_entropy = \  # this code will be overflow
         #  tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y), reduction_indices=[1])
-        binary_cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(y, x)
+
+        # Note tf.nn.sigmoid_cross_entropy_with_logits returns `minus`
+        binary_cross_entropy = - tf.nn.sigmoid_cross_entropy_with_logits(y, x)
         decoder_loss = tf.reduce_mean(binary_cross_entropy)
         
-        self.decoder_loss = decoder_loss
-                
         self.obj = encoder_loss + decoder_loss
 
     def _build_graph(self):
