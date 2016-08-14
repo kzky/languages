@@ -54,8 +54,8 @@ class VAE(object):
         # Compute stats
         self._compute_stats(h)
 
-        # Reparamiterization trick
-        noise = tf.truncated_normal(shape=[self._mid_dim], stddev=0.05)
+        # Sampling with reparamiterization trick
+        noise = tf.truncated_normal(shape=[self._mid_dim], stddev=1)
         z = self._mu + self._sigma * noise
 
         self.encode = z
@@ -69,16 +69,20 @@ class VAE(object):
         # MLP for sigma
         enc_scope = tf.variable_scope("encoder")
         log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope)
-        self._sigma_square = tf.exp(log_sigma_square)
+        self._log_sigma_square = log_sigma_square
+        max_log_sigma_square = tf.reduce_max(log_sigma_square,
+                                                 reduction_indices=[1],
+                                                 keep_dims=True)
+        self._sigma_square = tf.exp(log_sigma_square - max_log_sigma_square)
         self._sigma = tf.sqrt(self._sigma_square)
             
     def _decode(self):
         # MLP
-        dec_scopea = tf.variable_scope("decoder")
-        h0 = self._MLP(self.encode, self._mid_dim, self._mid_dim, dec_scopea)
+        dec_scope = tf.variable_scope("decoder")
+        h0 = self._MLP(self.encode, self._mid_dim, self._mid_dim, dec_scope)
 
-        dec_scopea = tf.variable_scope("decoder")
-        h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scopea)
+        dec_scope = tf.variable_scope("decoder")
+        h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scope)
         y = tf.nn.sigmoid(h1)
 
         self.decode = y
@@ -87,8 +91,9 @@ class VAE(object):
         # Encoder loss
         mu_square = self._mu**2
         sigma_square = self._sigma_square
+        log_sigma_squre = self._log_sigma_square
         kl_divergence = \
-          tf.reduce_sum(1 + tf.log(sigma_square) - mu_square - sigma_square, 
+          tf.reduce_sum(1 + log_sigma_squre  - mu_square - sigma_square, 
               reduction_indices=[1]) / 2
         encoder_loss = tf.reduce_mean(kl_divergence)
 
