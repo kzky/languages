@@ -28,7 +28,6 @@ class DataReader(object):
         self._next_position_train += self._batch_size
         if self._next_position_train >= self._n_train_data:
             self._next_position_train = 0
-            return "EOD", "EOD"
         
         return batch_data_x, batch_data_y
             
@@ -43,7 +42,6 @@ class DataReader(object):
         self._next_position_test += self._batch_size
         if self._next_position_test >= self._n_test_data:
             self._next_position_test = 0
-            return "EOD", "EOD"
 
         return batch_data_x, batch_data_y
 

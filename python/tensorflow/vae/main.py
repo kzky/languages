@@ -42,7 +42,7 @@ def main():
                 objs = []
                 while True:
                     x_data, y_data = data_reader.get_test_batch()
-                    if type(x_data) == str:
+                    if data_reader._next_position_test == 0:
                         obj_mean = np.mean(obj)
                         print("Iter={},Objective={}".format(i, obj))
                         break
