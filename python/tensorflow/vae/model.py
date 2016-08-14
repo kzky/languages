@@ -54,7 +54,7 @@ class VAE(object):
         self._compute_stats(h)
 
         # Reparamiterization trick
-        noise = tf.truncated_normal(shape=[self._mid_dim])
+        noise = tf.truncated_normal(shape=[self._mid_dim], stddev=0.05)
         z = self._mu + self._sigma * noise
 
         self.encode = z
