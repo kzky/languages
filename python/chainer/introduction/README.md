@@ -83,7 +83,7 @@ I guess that Updater depends on Iterator and Optimizer and compute one-step opti
 
 Use 4.9 with CUDA 7.5 before installing chainer.
 
-## Device ids are reverted or randomed
+## Device ids
 
 The following is the result of *nvidia-smi* on my ubuntu16.04.
 
@@ -122,6 +122,8 @@ Out[5]: '21'
 ```
 
 Comparing the "nvidia-smi" results with this result indicates the difference between device ids of nvidia-smi and ones indexed by Chainer because [Wikipedia](https://en.wikipedia.org/wiki/CUDA) says that GTX 750 has cc=35 and GeForce GT 610 has cc=21.
+
+When I use the TF(0.9), it just supports GPU with greater than cc=3.0, and device=1 shown in nvidia-smi corresponds to device=0 in TF. As such, it might be that chainer index GPU device by the cc-decreasing order.
 
 # Reference
 - http://docs.chainer.org/en/stable/tutorial/basic.html
