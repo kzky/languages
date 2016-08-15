@@ -30,7 +30,7 @@ class VAE(object):
         # Build Graph 
         self._build_graph()
 
-    def _MLP(self, x, in_dim, out_dim, scope):
+    def _MLP(self, x, in_dim, out_dim, scope, activation=True):
         with scope: 
             # Parameter
             W = tf.Variable(
@@ -42,7 +42,10 @@ class VAE(object):
         self._variables.add(W)
         self._variables.add(b)
 
-        h = tf.nn.tanh(tf.matmul(x, W) + b)
+        if activation: 
+            h = tf.nn.tanh(tf.matmul(x, W) + b)
+        else:
+            h = tf.matmul(x, W) + b
 
         return h
 
@@ -63,12 +66,13 @@ class VAE(object):
     def _compute_stats(self, h):
         # MLP for mu
         enc_scope = tf.variable_scope("encoder")
-        mu = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope)
+        mu = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope, False)
         self._mu = mu
 
         # MLP for sigma
         enc_scope = tf.variable_scope("encoder")
-        log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope)
+        log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim,
+                                         enc_scope, False)
         self._log_sigma_square = log_sigma_square
         #max_log_sigma_square = tf.reduce_max(log_sigma_square,
         #                                         reduction_indices=[1],

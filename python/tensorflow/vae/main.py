@@ -2,6 +2,7 @@ from model import VAE
 from datasets import DataReader
 import tensorflow as tf
 import numpy as np
+import time
 import __future__
 
 def main():
@@ -29,14 +30,14 @@ def main():
     with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Init
         sess.run(init_op)
-
+        st = time.time()
         for i in range(n_iter):
             # Read
             x_data, y_data = data_reader.get_train_batch()
 
             # Train
             train_step.run(feed_dict={x: x_data})
-
+             
             # Eval
             if (i+1) % (n_train_data / batch_size) == 0:
                 objs = []
@@ -44,7 +45,9 @@ def main():
                     x_data, y_data = data_reader.get_test_batch()
                     if data_reader._next_position_test == 0:
                         obj_mean = np.mean(obj)
-                        print("Iter={},Objective={}".format(i, obj))
+                        et = time.time()
+                        print("Elapsed Time={}[s],Iter={},Objective={}".format(et - st, i, obj))
+                        st = time.time()
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
