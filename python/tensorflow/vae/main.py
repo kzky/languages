@@ -31,6 +31,7 @@ def main():
         # Init
         sess.run(init_op)
         st = time.time()
+        epoch = 0
         for i in range(n_iter):
             # Read
             x_data, y_data = data_reader.get_train_batch()
@@ -41,12 +42,14 @@ def main():
             # Eval
             if (i+1) % (n_train_data / batch_size) == 0:
                 objs = []
+                ecpoh += 1
                 while True:
                     x_data, y_data = data_reader.get_test_batch()
                     if data_reader._next_position_test == 0:
                         obj_mean = np.mean(obj)
                         et = time.time()
-                        print("Elapsed Time={}[s],Iter={},Objective={}".format(et - st, i, obj))
+                        print("Epoch={},Elapsed Time={}[s],Iter={},Objective={}".format(
+                            epoch, et - st, i, obj))
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
