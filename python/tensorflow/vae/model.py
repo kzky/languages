@@ -59,7 +59,7 @@ class VAE(object):
         self._compute_stats(h)
 
         # Sampling with reparamiterization trick
-        noise = tf.truncated_normal(shape=[self._mid_dim], stddev=1)
+        noise = tf.truncated_normal(shape=[self._latent_dim], stddev=1)
         z = self._mu + self._sigma * noise
 
         self.encode = z
