@@ -15,7 +15,7 @@ class DataReader(object):
         self.train_data = np.load(train_path)
         self.test_data = np.load(test_path)
 
-        self._batch_size = 32
+        self._batch_size = batch_size
         self._next_position_train = 0
         self._next_position_test = 0
 
