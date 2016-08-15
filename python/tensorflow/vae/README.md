@@ -10,10 +10,11 @@ In my work, the followings are the setting of VAE.
 - Prior: Gaussian
 - Generative model: Bernoulli
 - Datataset: permutation invariant MNIST (binarized)
-- Network details: see the [code](), this might be a bit different from the origin.
+- Batch size: 128
+- Hidden Units: 260 (=782/3)
+- Network details: see the [model.py](https://github.com/kzky/languages/blob/master/python/tensorflow/vae/model.py), this might be a bit different from the origin.
 
 The inference model and  prior are both Gaussian, so KL divergence can be computed analytically, and the generative model is Bernoulli. As such, the dataset MNIST should be binaized.
-
 
 # References
 - Kingma, D. P., & Welling, M. (2013). Auto-Encoding Variational Bayes, (Ml), 1–14.
