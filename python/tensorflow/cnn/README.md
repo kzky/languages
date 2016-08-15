@@ -1,4 +1,4 @@
-# Convolutional Neural Nework 
+# Convolutional Neural Nework (IN PROGRESS)
 
 This is an example of Convolutional Neural Network (CNN) with Batch Normalization using MNIST (toy) dataset.
 
