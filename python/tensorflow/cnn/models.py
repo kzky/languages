@@ -26,6 +26,7 @@ class CNN(object):
         # Build Graph
         self._inference()
         self._compute_loss()
+        self._accuracy()
 
     def _conv_2d(self, x, name,
                      ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME"):

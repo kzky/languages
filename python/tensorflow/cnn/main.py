@@ -45,7 +45,7 @@ def main():
 
             # Train
             train_op.run(feed_dict={x: x_data, y: y_data})
-            
+
             # Eval for classificatoin
             if (i+1) % (n_train_data / batch_size) == 0:
                 accuracies = []
@@ -56,17 +56,19 @@ def main():
                     x_data, y_data = data_reader.get_test_batch()
                     if data_reader._next_position_test == 0:
                         acc_mean = 100. * \
-                          np.prod(accuracies, data_points) / np.sum(data_points)
+                          np.asarray(accuracies).dot(np.asarray(data_points)) \
+                          / np.sum(data_points)
                         loss_mean = 100. * \
-                          np.prod(accuracies, data_points) / np.sum(data_points)
-
+                          np.asarray(losses).dot(np.asarray(data_points)) \
+                          / np.sum(data_points)
+                          
                         et = time.time()
                         msg = "Epoch={},Elapsed Time={}[s],Iter={},Loss={}Acc={}"
                         print(msg.format(epoch, et - st, i, loss_mean, acc_mean))
                         break
 
-                    acc = sess.run(cnn.accuracy, feed_dict={x: x_data, y: y_data})
-                    loss = sess.run(cnn.loss, feed_dict={x: x_data, y: y_data})
+                    acc, loss = sess.run([cnn.accuracy, cnn.loss],
+                                             feed_dict={x: x_data, y: y_data})
                     accuracies.append(acc)
                     losses.append(loss)
                     data_points.append(len(y_data))

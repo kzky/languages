@@ -3,6 +3,9 @@
 This is an example of Convolutional Neural Network (CNN) with Batch Normalization using MNIST (toy) dataset.
 
 
+# Results of CNN
+
+
 
 # Referneces
 - https://www.tensorflow.org/versions/r0.10/tutorials/mnist/pros/index.html
