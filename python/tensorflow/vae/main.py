@@ -11,7 +11,7 @@ def main():
     batch_size = 128
     in_dim = 784
     mid_dim = in_dim / 3
-    n_iter = 10000
+    n_iter = 10000000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
