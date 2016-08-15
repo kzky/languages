@@ -47,7 +47,6 @@ def main():
                         obj_mean = np.mean(obj)
                         et = time.time()
                         print("Elapsed Time={}[s],Iter={},Objective={}".format(et - st, i, obj))
-                        st = time.time()
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
