@@ -81,7 +81,7 @@ class VAE(object):
     def _decode(self):
         # MLP
         dec_scope = tf.variable_scope("decoder")
-        h0 = self._MLP(self.encode, self._mid_dim, self._mid_dim, dec_scope)
+        h0 = self._MLP(self.encode, self._latent_dim, self._mid_dim, dec_scope)
 
         dec_scope = tf.variable_scope("decoder")
         h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scope)
