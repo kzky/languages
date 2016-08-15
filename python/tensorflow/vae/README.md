@@ -19,7 +19,7 @@ The inference model and  prior are both Gaussian, so KL divergence can be comput
 
 # Resuls of MNIST
 
-Tensorflow is version 0.9 I used. When you run the main script, you can get the output like the following on the stdout.
+Tensorflow  I used is the version 0.9. When you run the main script, you can get the output like the following on the stdout.
 
 ```
 ...
