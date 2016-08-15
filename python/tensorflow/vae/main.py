@@ -10,9 +10,9 @@ def main():
     n_train_data = 60000
     batch_size = 128
     in_dim = 784
-    mid_dim = 500
-    latent_dim = 200
-    n_iter = 10000000
+    mid_dim = 100
+    latent_dim = 100
+    n_iter = 100000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
