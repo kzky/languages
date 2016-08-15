@@ -74,10 +74,6 @@ class VAE(object):
         log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim,
                                          enc_scope, False)
         self._log_sigma_square = log_sigma_square
-        #max_log_sigma_square = tf.reduce_max(log_sigma_square,
-        #                                         reduction_indices=[1],
-        #                                         keep_dims=True)
-        #self._sigma_square = tf.exp(log_sigma_square - max_log_sigma_square)
         self._sigma_square = tf.exp(log_sigma_square)
         self._sigma = tf.sqrt(self._sigma_square)
             
