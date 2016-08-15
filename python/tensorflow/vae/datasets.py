@@ -34,7 +34,7 @@ class DataReader(object):
         beg = self._next_position_train
         end = self._next_position_train+self._batch_size
         batch_data_x = np.where(self.train_data["x"][beg:end, :]>0, 1, 0)
-        batch_data_y = self.train_data["y"][beg:end, :]
+        batch_data_y = self.train_data["y"][beg:end]
 
         # Reset pointer
         self._next_position_train += self._batch_size
@@ -57,7 +57,7 @@ class DataReader(object):
         end = self._next_position_test+self._batch_size
 
         batch_data_x = np.where(self.test_data["x"][beg:end, :]>0, 1, 0)
-        batch_data_y = self.test_data["y"][beg:end, :]
+        batch_data_y = self.test_data["y"][beg:end]
 
         # Reset pointer
         self._next_position_test += self._batch_size
