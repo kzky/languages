@@ -9,9 +9,9 @@ In my work (IN PROGRESS), the followings are the setting of VAE.
 - Inference model: Gaussian
 - Prior: Gaussian
 - Generative model: Bernoulli
-- Datataset: permutation invariant MNIST (binarized)
+- Datataset: permutation invariant (1-d) MNIST (binarized)
 - Batch size: 128
-- Hidden Units: 260 (=782/3)
+- Hidden Units: 260 (=782/3) arbitrarily determined
 - Network details: see the [model.py](https://github.com/kzky/languages/blob/master/python/tensorflow/vae/model.py), this might be a bit different from the origin.
 
 The inference model and  prior are both Gaussian, so KL divergence can be computed analytically, and the generative model is Bernoulli. As such, the dataset MNIST should be binaized.
