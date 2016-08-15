@@ -2,7 +2,7 @@ import tensorflow as tf
 
 class VAE(object):
 
-    def __init__(self, x, mid_dim=100):
+    def __init__(self, x, mid_dim=500, latent_dim=200):
         """
         Attributes:
           x: tf.placeholder
@@ -14,6 +14,7 @@ class VAE(object):
         self._x = x
         self._in_dim = self._x.get_shape()[1].value
         self._mid_dim = mid_dim
+        self._latent_dim = latent_dim
         
         self.encode = None
         self.decode = None
@@ -66,12 +67,12 @@ class VAE(object):
     def _compute_stats(self, h):
         # MLP for mu
         enc_scope = tf.variable_scope("encoder")
-        mu = self._MLP(h, self._mid_dim, self._mid_dim, enc_scope, False)
+        mu = self._MLP(h, self._mid_dim, self._latent_dim, enc_scope, False)
         self._mu = mu
 
         # MLP for sigma
         enc_scope = tf.variable_scope("encoder")
-        log_sigma_square = self._MLP(h, self._mid_dim, self._mid_dim,
+        log_sigma_square = self._MLP(h, self._mid_dim, self._latent_dim,
                                          enc_scope, False)
         self._log_sigma_square = log_sigma_square
         self._sigma_square = tf.exp(log_sigma_square)

@@ -10,14 +10,15 @@ def main():
     n_train_data = 60000
     batch_size = 128
     in_dim = 784
-    mid_dim = in_dim / 3
+    mid_dim = 500
+    latent_dim = 200
     n_iter = 10000000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
 
     # Model
-    vae = VAE(x)
+    vae = VAE(x, mid_dim=mid_dim, latent_dim=latent_dim)
 
     # Data
     data_reader = DataReader(batch_size=batch_size)
@@ -42,7 +43,7 @@ def main():
             # Eval
             if (i+1) % (n_train_data / batch_size) == 0:
                 objs = []
-                ecpoh += 1
+                epoch += 1
                 while True:
                     x_data, y_data = data_reader.get_test_batch()
                     if data_reader._next_position_test == 0:
