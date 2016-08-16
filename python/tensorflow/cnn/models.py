@@ -107,7 +107,7 @@ class CNN(object):
         # Train phase
         def mean_var_with_update():
             ema_apply_op = ema.apply([batch_mean, batch_var])
-            with tf.control_dependencies([ema_apply_op]):
+            with tf.control_dependencies([ema_apply_op]):  # ema op computed here
                 return tf.identity(batch_mean), tf.identity(batch_var)
             
         mean, var = tf.cond(self._phase_train,
