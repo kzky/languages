@@ -7,7 +7,10 @@ class CNN(object):
     ---------------
     x: tf.placeholder
     y: tf.placeholder
-
+    phase_train: tf.placeholder of bool used in BN
+    pred: pred op
+    loss: loss op, or objective function op
+    accuracy: accuracy op
     """
 
     def __init__(self, x, y, phase_train):
@@ -117,18 +120,25 @@ class CNN(object):
 
     def _inference(self, ):
         # 2 x Conv and 2 Maxpooling
-        conv1 = tf.nn.relu(self._conv_2d(self._x, name="conv1",
-                                             ksize=[3, 3, 1, 64], strides=[1, 1, 1, 1]))
-        max_pool1 = self._max_pooling_2d(conv1, name="max_pool1",
+        conv1 = self._conv_2d(self._x, name="conv1",
+                                  ksize=[3, 3, 1, 64], strides=[1, 1, 1, 1])
+        relu1 = tf.nn.relu(self._batch_norm(conv1, name="bn-conv1"))
+        max_pool1 = self._max_pooling_2d(relu1, name="max_pool1",
                                              ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
-        conv2 = tf.nn.relu(self._conv_2d(max_pool1, name="conv2",
-                                             ksize=[3, 3, 64, 32], strides=[1, 1, 1, 1]))
-        max_pool2 = self._max_pooling_2d(conv1, name="max_pool2",
+        conv2 = self._conv_2d(max_pool1, name="conv2",
+                                  ksize=[3, 3, 64, 32], strides=[1, 1, 1, 1])
+        relu2 = tf.nn.relu(self._batch_norm(conv2, name="bn-conv2"))
+        max_pool2 = self._max_pooling_2d(relu2, name="max_pool2",
                                              ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
         
         # 2 x Affine
-        linear1 = self._linear(max_pool2, name="affine1", out_dim=50)
-        pred = self._linear(linear1, name="affine2", out_dim=10)
+        linear1 = self._batch_norm(
+            self._linear(max_pool2, name="affine1", out_dim=50),
+            name="bn-affine1")
+
+        pred = self._batch_norm(
+            self._linear(linear1, name="affine2", out_dim=10),
+            name="bn-affine2")
 
         self.pred = pred
         

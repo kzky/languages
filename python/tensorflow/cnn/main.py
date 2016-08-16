@@ -18,9 +18,10 @@ def main():
     out_dim = 10  # num. of class
     x = tf.placeholder(tf.float32, shape=in_dim, name="x")
     y = tf.placeholder(tf.float32, shape=[None, out_dim], name="y")
+    phase_train = tf.placeholder(tf.bool, name="phase_train")
 
     # Model
-    cnn = CNN(x, y)
+    cnn = CNN(x, y, phase_train)
 
     # Data
     home = os.environ["HOME"]
@@ -40,11 +41,11 @@ def main():
         st = time.time()
         epoch = 0
         for i in range(n_iter):
-            # Read
+            # Read data
             x_data, y_data = data_reader.get_train_batch()
 
             # Train
-            train_op.run(feed_dict={x: x_data, y: y_data})
+            train_op.run(feed_dict={x: x_data, y: y_data, phase_train: True})
 
             # Eval for classificatoin
             if (i+1) % (n_train_data / batch_size) == 0:
@@ -63,12 +64,12 @@ def main():
                           / np.sum(data_points)
                           
                         et = time.time()
-                        msg = "Epoch={},Elapsed Time={}[s],Iter={},Loss={}Acc={}"
+                        msg = "Epoch={},Elapsed Time={}[s],Iter={},Loss={},Acc={}"
                         print(msg.format(epoch, et - st, i, loss_mean, acc_mean))
                         break
 
                     acc, loss = sess.run([cnn.accuracy, cnn.loss],
-                                             feed_dict={x: x_data, y: y_data})
+                                             feed_dict={x: x_data, y: y_data, phase_test: False})
                     accuracies.append(acc)
                     losses.append(loss)
                     data_points.append(len(y_data))
