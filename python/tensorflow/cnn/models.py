@@ -10,15 +10,18 @@ class CNN(object):
 
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, phase_train):
         """
         Parameters
         -----------------
-        x: tf.placeholder
-        y: tf.placeholder
+        x: tf.placeholder of sample
+        y: tf.placeholder of label
+        phase_train: tf.placeholder of bool used in BN
         """
         self._x = x
         self._y = y
+        self._phase_train = phase_train
+        
         self.pred = None
         self.loss = None
         self.accuracy = None
@@ -77,6 +80,40 @@ class CNN(object):
         linear_op = tf.matmul(x_, W)
 
         return linear_op
+
+    def _batch_norm(self, x, name):
+
+        # Determine affine or conv
+        shape = x.get_shape()
+        depth = shape[-1].value
+        if len(shape) == 4:  # NHWC
+            axes = [0, 1, 2]
+        else:
+            axes = [0]
+
+        # Batch mean/var and gamma/beta
+        batch_mean, batch_var = tf.nn.moments(x, axes=axes)
+        beta_name = "beta-{}".format(name)
+        gamma_name= "gamma-{}".format(name)
+        beta = tf.get_variable(name=beta_name, shape=[depth])
+        gamma = tf.get_variable(name=gamma_name, shape=[depth])
+
+        # Moving average
+        ema = tf.train.ExponentialMovingAverage(decay=0.5)
+
+        # Train phase
+        def mean_var_with_update():
+            ema_apply_op = ema.apply([batch_mean, batch_var])
+            with tf.control_dependencies([ema_apply_op]):
+                return tf.identity(batch_mean), tf.identity(batch_var)
+            
+        mean, var = tf.cond(self._phase_train,
+                                mean_var_with_update,
+                                lambda: (ema.average(batch_mean), ema.average(batch_var)))
+
+        x_normed = tf.nn.batch_normalization(
+            x, mean, var, beta, gamma, variance_epsilon=1e-12)
+        return x_normed
 
     def _inference(self, ):
         # 2 x Conv and 2 Maxpooling
