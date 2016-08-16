@@ -69,7 +69,7 @@ def main():
                         break
 
                     acc, loss = sess.run([cnn.accuracy, cnn.loss],
-                                             feed_dict={x: x_data, y: y_data, phase_test: False})
+                                             feed_dict={x: x_data, y: y_data, phase_train: False})
                     accuracies.append(acc)
                     losses.append(loss)
                     data_points.append(len(y_data))
