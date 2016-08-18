@@ -85,6 +85,8 @@ class VAE(object):
 
         dec_scope = tf.variable_scope("decoder")
         h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scope)
+
+        #TODO: duplicate sigmoi
         y = tf.nn.sigmoid(h1)
 
         self.decode = y
