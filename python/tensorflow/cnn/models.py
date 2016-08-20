@@ -48,11 +48,8 @@ class CNN(object):
         """
         w_name = "w-{}".format(name )
         b_name = "b-{}".format(name)
-        W = tf.get_variable(name=w_name, shape=ksize,
-                            initializer=tf.truncated_normal)
-        b = tf.get_variable(name=b_name, shape=[ksize[-1]],
-                            initializer=tf.truncated_normal)
-
+        W = tf.get_variable(name=w_name, shape=ksize)
+        b = tf.get_variable(name=b_name, shape=[ksize[-1]])
         conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding) + b
         return conv2d_op
         
@@ -79,10 +76,8 @@ class CNN(object):
 
         w_name = "w-{}".format(name)
         b_name = "b-{}".format(name)
-        W = tf.get_variable(name=w_name, shape=[in_dim, out_dim],
-                            initializer=tf.truncated_normal)
-        b = tf.get_variable(name=b_name, shape=[out_dim],
-                            initializer=tf.truncated_normal)
+        W = tf.get_variable(name=w_name, shape=[in_dim, out_dim])
+        b = tf.get_variable(name=b_name, shape=[out_dim])
         
         x_ = tf.reshape(x, [-1, in_dim])
         linear_op = tf.matmul(x_, W)
@@ -103,10 +98,8 @@ class CNN(object):
         batch_mean, batch_var = tf.nn.moments(x, axes=axes)
         beta_name = "beta-{}".format(name)
         gamma_name= "gamma-{}".format(name)
-        beta = tf.get_variable(name=beta_name, shape=[depth],
-                               initializer=tf.truncated_normal)
-        gamma = tf.get_variable(name=gamma_name, shape=[depth],
-                                initializer=tf.truncated_normal)
+        beta = tf.get_variable(name=beta_name, shape=[depth])
+        gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
         # Moving average
         ema = tf.train.ExponentialMovingAverage(decay=0.5)
