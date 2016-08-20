@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 
 def main():
-
+    """Batch Norm Sample without running mean.
+    """
+    
     # Afifne
     x = np.random.rand(64, 128).astype(np.float32)
     mu, var = tf.nn.moments(x, axes=[0])
