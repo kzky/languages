@@ -53,7 +53,7 @@ class Classifier(Chain):
 if __name__ == '__main__':
     # Model and Optimizer
     model = Classifier(CNN())
-    devide=1
+    device = 1
     try:
         model.to_gpu(device)
     except Exception as e:
