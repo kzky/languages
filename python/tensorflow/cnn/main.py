@@ -9,7 +9,7 @@ import os
 def main():
     # Setting
     n_train_data = 60000
-    batch_size = 32
+    batch_size = 128
     epoch = 20
     n_iter = n_train_data / batch_size * epoch
 
