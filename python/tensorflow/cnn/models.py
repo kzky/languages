@@ -50,7 +50,7 @@ class CNN(object):
         W = tf.get_variable(name=w_name, shape=ksize,
                             initializer=tf.truncated_normal_initializer(ksize))
         b = tf.get_variable(name=b_name, shape=[ksize[-1]],
-                            initializer=tf.truncated_normal_initializer(ksize[-1]))
+                            initializer=tf.truncated_normal_initializer([ksize[-1]]))
 
         conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding) + b
         return conv2d_op
