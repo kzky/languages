@@ -36,14 +36,13 @@ class DataReader(object):
         beg = self._next_position_train
         end = self._next_position_train+self._batch_size
 
-        batch_data_x_ = self.train_data["x"][beg:end, :] / 255
+        batch_data_x_ = self.train_data["x"][beg:end, :]
         batch_data_x = np.reshape(batch_data_x_, (len(batch_data_x_), 28, 28, 1))
 
         # Change to one-hot representaion
         batch_data_y_ = self.train_data["y"][beg:end]
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
-        batch_data_y = \
-                       batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_]
+        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
 
         # Reset pointer
         self._next_position_train += self._batch_size
@@ -65,14 +64,13 @@ class DataReader(object):
         beg = self._next_position_test
         end = self._next_position_test+self._batch_size
 
-        batch_data_x_ = self.test_data["x"][beg:end, :] / 255
+        batch_data_x_ = self.test_data["x"][beg:end, :]
         batch_data_x = np.reshape(batch_data_x_, (len(batch_data_x_), 28, 28, 1))
         
         # Change to one-hot representaion
         batch_data_y_ = self.test_data["y"][beg:end]
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
-        batch_data_y = \
-                       batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_]
+        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
 
         # Reset pointer
         self._next_position_test += self._batch_size
