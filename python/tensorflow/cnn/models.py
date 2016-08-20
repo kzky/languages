@@ -30,7 +30,8 @@ class CNN(object):
         self.accuracy = None
 
         # Build Graph
-        self._inference()
+        #self._inference()
+        self._inference_wo_bn()
         self._compute_loss()
         self._accuracy()
 
@@ -145,6 +146,26 @@ class CNN(object):
         pred = self._batch_norm(
             self._linear(linear1, name="affine2", out_dim=10),
             name="bn-affine2")
+
+        self.pred = pred
+
+    def _inference_wo_bn(self, ):
+        # 2 x Conv and 2 Maxpooling
+        conv1 = self._conv_2d(self._x, name="conv1",
+                                  ksize=[3, 3, 1, 64], strides=[1, 1, 1, 1])
+        relu1 = tf.nn.relu(conv1)
+        max_pool1 = self._max_pooling_2d(relu1, name="max_pool1",
+                                             ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
+        conv2 = self._conv_2d(max_pool1, name="conv2",
+                                  ksize=[3, 3, 64, 32], strides=[1, 1, 1, 1])
+        relu2 = tf.nn.relu(conv2)
+        max_pool2 = self._max_pooling_2d(relu2, name="max_pool2",
+                                             ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1])
+        
+        # 2 x Affine
+        linear1 = self._linear(max_pool2, name="affine1", out_dim=50)
+
+        pred = self._linear(linear1, name="affine2", out_dim=10)
 
         self.pred = pred
         
