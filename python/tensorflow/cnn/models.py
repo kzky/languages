@@ -30,8 +30,8 @@ class CNN(object):
         self.accuracy = None
 
         # Build Graph
-        #self._inference()
-        self._inference_wo_bn()
+        self._inference()
+        #self._inference_wo_bn()
         self._compute_loss()
         self._accuracy()
 
