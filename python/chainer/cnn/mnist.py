@@ -16,8 +16,8 @@ class CNN(Chain):
             cn1=L.Convolution2D(1, 64, (3, 3)),
             cn2=L.Convolution2D(64, 32, (3, 3)),
             # initialization is deferred until the first forward pass
-            l1=L.Linear(1152, 100),
             #l1=L.Linear(None, 100),
+            l1=L.Linear(1152, 100),
             l2=L.Linear(100, 10),
             bn1=L.BatchNormalization(64),
             bn2=L.BatchNormalization(32),
@@ -53,8 +53,9 @@ class Classifier(Chain):
 if __name__ == '__main__':
     # Model and Optimizer
     model = Classifier(CNN())
+    devide=1
     try:
-        model.to_gpu(0)
+        model.to_gpu(device)
     except Exception as e:
         print(e)
 
@@ -71,11 +72,11 @@ if __name__ == '__main__':
                                          repeat=False, shuffle=False)
      
     # Updater and Trainer
-    updater = training.StandardUpdater(train_iter, optimizer)
+    updater = training.StandardUpdater(train_iter, optimizer, device=device)
     trainer = training.Trainer(updater, (20, "epoch"), out="result")
      
     # Add extensions
-    trainer.extend(extensions.Evaluator(test_iter, model))
+    trainer.extend(extensions.Evaluator(test_iter, model, device=device))
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.PrintReport(
         ["epoch", "main/accuracy", "validation/main/accuracy"]))
