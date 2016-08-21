@@ -23,15 +23,6 @@ The inference model and  prior are both Gaussian, so KL divergence can be comput
 Tensorflow  I used is the version 0.9. When you run the main script, you can get the output like the following on the stdout.
 
 ```
-...
-Epoch=163,Elapsed Time=13752.871527[s],Iter=76283,Obj(Test)=-0.790570795536
-Epoch=164,Elapsed Time=13837.2553349[s],Iter=76751,Obj(Test)=-0.79049706459
-Epoch=165,Elapsed Time=13922.0969388[s],Iter=77219,Obj(Test)=-0.790649235249
-Epoch=166,Elapsed Time=14006.484201[s],Iter=77687,Obj(Test)=-0.790925621986
-Epoch=167,Elapsed Time=14090.968374[s],Iter=78155,Obj(Test)=-0.791207253933
-Epoch=168,Elapsed Time=14175.646683[s],Iter=78623,Obj(Test)=-0.791382491589
-Epoch=169,Elapsed Time=14260.0148499[s],Iter=79091,Obj(Test)=-0.790939152241
-```
 
 At the very beginning of epoch, the variational lower bound (objective) is very low, but it gradually increases. Learning is very unstable, depending on the number of units of MLP and of the latent variables. It gets nan very easily based on my reproduction, and the convergence is very slow in terms of epoch measurement. To prevent the unstability of learning (or becoming nan), one way to solve this is to apply *Tanh* to the statictics (*mu* and *log var*) with n-times multiplication. n limits the upper and lower bound for both *mu* and *log var*. That is my experience when trying to reproducing the work, but it can work without using *Tanh* to the statictics if we choose the number of units and of the latent variables properly.
 
