@@ -93,7 +93,13 @@ class SSLLadder(object):
 
         return linear_op
 
-    def _construct_ssl_ladder(self, ):
+    def _construct_ssl_ladder(self, x, y=None):
+        """Construct SSL Ladder Network
+
+        If y is None, reonstruction cost is only computed;
+        otherwise add the classification loss.
+        
+        """
         
         mu_list = []
         std_list = []
@@ -110,7 +116,7 @@ class SSLLadder(object):
         #TODO: separate labeled and unlabeled sample
         
         # Encoder
-        h = self._x
+        h = x
         h_noise = h + tf.truncated_normal(h.get_shape())
         for i in range(self._L):
             # clean encoder
