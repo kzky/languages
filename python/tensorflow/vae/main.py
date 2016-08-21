@@ -21,7 +21,11 @@ def main():
     vae = VAE(x, mid_dim=mid_dim, latent_dim=latent_dim)
 
     # Data
-    data_reader = DataReader(batch_size=batch_size)
+    home = os.environ["HOME"]
+    train_path="{}/.chainer/dataset/pfnet/chainer/mnist/train.npz".format(home)
+    test_path="{}//.chainer/dataset/pfnet/chainer/mnist/test.npz".format(home)
+
+    data_reader = DataReader(train_path, test_path, batch_size=batch_size)
 
     # Optimizer
     train_step = tf.train.AdamOptimizer(1e-4).minimize(-vae.obj)
