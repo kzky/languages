@@ -11,7 +11,7 @@ def main():
     n_train_data = 60000
     batch_size = 128
     in_dim = 784
-    mid_dim = 100
+    mid_dim = 300
     latent_dim = 100
     n_iter = 100000
 
