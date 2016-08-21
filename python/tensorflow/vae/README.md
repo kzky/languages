@@ -11,7 +11,7 @@ In my work, the followings are the settings of VAE.
 - Generative model: Bernoulli
 - Datataset: permutation invariant (1-d) MNIST (binarized)
 - Batch size: 128
-- Hidden Units: 260 (=782/3) arbitrarily determined
+- Hidden Units: xxx
 - Network details: see the [model.py](https://github.com/kzky/languages/blob/master/python/tensorflow/vae/model.py), this might be a bit different from the origin.
 - More details can be found in [main.py](https://github.com/kzky/languages/blob/master/python/tensorflow/vae/main.py)
 
