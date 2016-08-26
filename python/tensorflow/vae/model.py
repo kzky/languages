@@ -74,7 +74,7 @@ class VAE(object):
         enc_scope = tf.variable_scope("encoder")
         log_sigma_square = self._MLP(h, self._mid_dim, self._latent_dim,
                                          enc_scope, False)
-        self._log_sigma_square = tf.clip_by_value(log_sigma_square, -1000, 100)
+        self._log_sigma_square = tf.clip_by_value(log_sigma_square, -1000, 10)
         self._sigma_square = tf.exp(log_sigma_square)
         self._sigma = tf.sqrt(self._sigma_square)
             
