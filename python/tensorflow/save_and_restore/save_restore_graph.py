@@ -36,7 +36,6 @@ def main():
         with open("/tmp/{}".format(dst_fname), "rb") as fpin:
             graph_def = graph.as_graph_def()
             graph_def.ParseFromString(fpin.read())
-
             tf.import_graph_def(graph_def)
 
     print "----- Graph operations of another graph -----"

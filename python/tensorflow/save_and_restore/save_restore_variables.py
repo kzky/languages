@@ -6,17 +6,17 @@ import datetime
 def main():
     # Varialbes
     initial_v1 = tf.truncated_normal((10, 5), mean=0, stddev=0.1)
-    v1 = tf.Variable(initial_v1)
+    v1 = tf.Variable(initial_v1, name="v1")
 
     initial_v2 = tf.truncated_normal((5, 3), mean=0, stddev=0.1)
-    v2 = tf.Variable(initial_v2)
+    v2 = tf.Variable(initial_v2, name="v2")
 
     # Ops
     prod = tf.matmul(v1, v2)
     init_ops = tf.initialize_all_variables()
     
     # Saver
-    saver = tf.train.Saver()
+    saver = tf.train.Saver([v1, v2])
 
     with tf.Session() as sess:
 
