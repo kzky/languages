@@ -11,7 +11,7 @@ def array_f(X):
 
     return Y
 
-@cython.boundscheck(False) 
+@cython.boundscheck(False)
 def c_array_f(np.ndarray[np.float_t, ndim=1] X):
 
     cdef unsigned int N = X.shape[0]
