@@ -117,8 +117,43 @@ class SSLLadder(object):
 
         return linear_op
 
-    def _g(self, z_noise, u):
-        pass
+    def _denoise(self, z_noise, u, name, scope_name="denoise"):
+        """Denoising function
+
+        Denoise z_noize using u from the upper layer. Denoising function should be
+        linaer w.r.t. z_noize.
+        """
+        shape = []
+        for dim in z_noize.get_shape()[1:]:
+            shape.append(dim.value)
+
+        with tf.variable_scope(scope_name):
+            a_mu_1_name = "a_mu_1-{}".format(name)
+            a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape)
+            a_mu_2_name = "a_mu_2-{}".format(name)
+            a_mu_2 = tf.get_variable(a_mu_2_name, shape=shape)
+            a_mu_3_name = "a_mu_3-{}".format(name)
+            a_mu_3 = tf.get_variable(a_mu_3_name, shape=shape)
+            a_mu_4_name = "a_mu_4-{}".format(name)
+            a_mu_4 = tf.get_variable(a_mu_4_name, shape=shape)
+            a_mu_5_name = "a_mu_5-{}".format(name)
+            a_mu_5 = tf.get_variable(a_mu_5_name, shape=shape)
+
+            a_var_1_name = "a_var_1-{}".format(name)
+            a_var_1 = tf.get_variable(a_var_1_name, shape=shape)
+            a_var_2_name = "a_var_2-{}".format(name)
+            a_var_2 = tf.get_variable(a_var_2_name, shape=shape)
+            a_var_3_name = "a_var_3-{}".format(name)
+            a_var_3 = tf.get_variable(a_var_3_name, shape=shape)
+            a_var_4_name = "a_var_4-{}".format(name)
+            a_var_4 = tf.get_variable(a_var_4_name, shape=shape)
+            a_var_5_name = "a_var_5-{}".format(name)
+            a_var_5 = tf.get_variable(a_var_5_name, shape=shape)
+
+        mu = a_mu_1 * tf.nn.sigmoid(a_mu_2 * u + a_mu_3) + a_mu_4 * u + a_mu_5
+        var = a_var_1 * tf.nn.sigmoid(a_var_2 * u + a_var_3) + a_var_4 * u + a_var_5
+
+        z_recon = (z_noize - mu) * var + mu
 
     def _scaling_and_bias(self, x, name,
                               scope_name="scaling_and_bias"):
@@ -203,6 +238,7 @@ class SSLLadder(object):
         z_recon_list = []
         lambda_list = [1] * self._L
 
+        #TODO: code decoder
         #TODO: code loss
         #TODO: code classifier
         #TODO: code accuracy
@@ -248,13 +284,17 @@ class SSLLadder(object):
                 u = self._batch_norm(Vz_recon, mu, std)
 
             z_noise = z_noise_list[i]
-            z_recon = self._g(z_noize, u)
+            z_recon = self._denoise(z_noize, u, name="{}-th".format(i))
 
             mu = mu_list[i]
             std = std_list[i]
             z_recon_bn = self._batch_norm(z_recon, mu, std)
 
-        # Loss
+        # Loss for both labeled and unlabeled samples
+        
+        # Loss for labeled samples
+        if y:
+            pass
 
         # Acc
         
