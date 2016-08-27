@@ -80,7 +80,7 @@ class CNN(object):
         b = tf.get_variable(name=b_name, shape=[out_dim])
         
         x_ = tf.reshape(x, [-1, in_dim])
-        linear_op = tf.matmul(x_, W)
+        linear_op = tf.matmul(x_, W) + b
 
         return linear_op
 
