@@ -2,7 +2,7 @@
 
 Here I try to speed up some programs in Python that computation becomes overhead using Cython. 
 
-There are other approaches to speed up in Python with either multiprocessing or Numba (JIT compiler). In using multiprocessing for speedup purpose, we have to either use a shared memory which interfaces are a bit hard to use or copy the same data in processes, which uses much more memory than using shared memory. In case of numba, it is some times difficult to make Numba in your environement. In my exerience, when I tried to use numba in ubuntu14.04 and ubuntu16.04, I could not intall via pip; instead, I had to install it by *git clone ...*, and there are many dependencies that it depends on so that just doing *python setup.py* was not enough to completely install.
+There are other approaches to speed up in Python with either multiprocessing or Numba (JIT compiler). In using multiprocessing for speedup purpose, we have to either use a shared memory which interfaces are a bit hard to use or copy the same data in processes, which uses much more memory than using shared memory. In case of numba, it is some times difficult to install Numba in your environement. In my exerience, when I tried to use numba in ubuntu14.04 and ubuntu16.04, I could not intall via pip; instead, I had to install it by *git clone ...*, and there are many dependencies that it depends on so that just doing *python setup.py* was not enough to completely install.
 
 Cython is one of tools to speed up Python codes except for using either multiprocessing or numba. I tried to speed up some programs which computation is matter step-by-step. Thease codes in this directory are based on those in references. 
 
@@ -87,7 +87,7 @@ In both stats, cython is a bit faster and more stable.
 
 ## Exp. 3
 
-OpenMP is not good choice to speedup, so use threading with *nogil*
+OpenMP is not good choice to speedup, so use threading with *nogil*. Everybody knows GIL (Global Interpreter Lock) in python ensures threadsafe, but due to this, threading is no benefit in CPU-bound taks because a thread trying to access an object in memory gets GIL, and the other threads have to wait to the release of GIL taken by another thread.
 
 ### Resutls
 
