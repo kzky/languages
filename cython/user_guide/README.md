@@ -127,7 +127,7 @@ def spam(complex c):
 - 継承がある場合，*\_\_cinit\_\_*は親から呼ばれ，親クラスの*\_\_cinit\_\_*は小クラスで明示的に呼べない
 - コンストラクタに渡した引数は*\_\_cinit\_\_*と *\_\_init\_\_*両方に渡される
 - 設計として*\_\_cinit\_\_*に *\*args, \*\*kwargs*を用意しておいたほうがいい
-- *\_\_dealloc\_\_*で *\_\_cinit\_\_*
+- *\_\_dealloc\_\_*で *\_\_cinit\_\_*で明示的にアロケートしたデータ領域をfree
 - 細かい話は[doc](http://omake.accense.com/static/doc-ja/cython/src/userguide/special_methods.html)参照
 
 ##  Cython モジュール間で宣言を共有する
