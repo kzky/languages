@@ -42,7 +42,9 @@ class SSLLadder(object):
         self.accuracy = None
 
         # Build Graph
-        self._construct_ssl_ladder()
+        self.loss = self._construct_ssl_ladder(self._x, self._y) \
+          + self._construct_ssl_ladder(self._x_u)
+        
 
     def _get_variable_by_name(self, name):
 
@@ -215,7 +217,6 @@ class SSLLadder(object):
         self.loss = tf.reduce_mean(loss)
 
     def _accuracy(self, ):
-
         pred = self.pred
         y = self._y
 
@@ -223,11 +224,18 @@ class SSLLadder(object):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         self.accuracy = accuracy
 
-    def _construct_ssl_ladder(self, x, y=None):
+    def _construct_ssl_ladder_network(self, x, y=None):
         """Construct SSL Ladder Network
 
-        If y is None, reonstruction cost is only computed;
-        otherwise add the classification loss.
+        If y is None, reonstruction cost is only constructed;
+        otherwise the classification loss is also constructed.
+
+        Parameters
+        -----------------
+        x: tf.placeholder
+            x is either labeled sample or unlabeled sample.
+        y: tf.placeholder
+            y is not None when x is labeled samples.
         
         """
         
@@ -238,12 +246,6 @@ class SSLLadder(object):
         z_recon_list = []
         lambda_list = [1] * self._L
 
-        #TODO: code decoder
-        #TODO: code loss
-        #TODO: code classifier
-        #TODO: code accuracy
-        #TODO: separate labeled and unlabeled sample
-        
         # Encoder
         h = x
         h_noise = h + tf.truncated_normal(h.get_shape())
@@ -251,7 +253,6 @@ class SSLLadder(object):
             # Clean encoder
             scope_linear = tf.variable_scope("linear")
             z_pre = self._linear(h, name="{}-th".format(i), 100, scope_linear)
-            scope_linear.reuse = True
 
             mu, std = self._moments(z_pre)
             mu_list.append(mu)
@@ -262,7 +263,6 @@ class SSLLadder(object):
             scope_scaling_and_bias = tf.variable_scope("scaling_and_bias")
             h = tf.nn.tanh(self._scaling_and_bias(z, name="{}-th".format(i)),
                                scope_scaling_and_bias)
-            scope_scaling_and_bias.reuse= True
 
             # Corrupted encoder
             Wh = self._linear(h_noise, name="{}-th".format(i), 100, scope_linear)
@@ -272,6 +272,9 @@ class SSLLadder(object):
             z_noise_list.append(z_noize)
             h_noise = tf.nn.tanh(self._scaling_and_bias(z_noise, name="{}-th".format(i)),
                                      scope_scaling_and_bias)
+
+        # Set classifier
+        self.pred = h
             
         # Decoder
         for i in range(self._L).reverse():
@@ -289,14 +292,17 @@ class SSLLadder(object):
             mu = mu_list[i]
             std = std_list[i]
             z_recon_bn = self._batch_norm(z_recon, mu, std)
-
+            z_recon_list.append(z_recon_bn)
+            
         # Loss for both labeled and unlabeled samples
-        
+        C = 0
+        for i in range(self._L):
+            C += self.lambda_list[i] * (z_list[i] - z_recon_list[i]) ** 2
+            
         # Loss for labeled samples
         if y:
-            pass
+            C += tf.nn.softmax_cross_entropy(self.pred, self._y)
 
-        # Acc
-        
+        return C
 
         
