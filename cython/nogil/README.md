@@ -112,7 +112,7 @@ In both stats, cython is faster and more stable. Note that the concatenation of 
 
 Seeing results among the experients, the result of numpy were fluctuating even if using the same code while Cython codes gradually speed up according the step-by-step optimization; however the results reported above may change in time and environement. Note also *with nogil* block we can not use python objects incliuding, creation, handling, and returning.
 
-*Cython + threading + nogil* is a best choise based on my experience in some viewpoints, e.g., easiness to start using and to write,  memory efficiency, computational speed. However for Numpy, there are some room to speed up, i.e., using MKL.
+*Cython + threading + nogil* is a best choise based on my experience in some viewpoints, e.g., easiness to start using and to write,  memory efficiency, computational speed. Now I just ran the not-too-heavy computational tasks, so combination of cython, threadnig, and nogil, will have more benefit if executing much heavier tasks which can be parallel. On the other hand, for numpy, there are some room to speed up, i.e., using MKL. Thus, I should have compare with numpy w/ MKL.
 
 
 # References
