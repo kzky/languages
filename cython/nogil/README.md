@@ -101,15 +101,16 @@ Elapsed time (ave) 2.09492807388 [s]
 Elapsed time (std) 0.304449698912 [s]
 ```
 
-In both stats, cython is faster and more stable.
+In both stats, cython is faster and more stable. Note that the concatenation of results comming from each thread is a bottle neck. [main_multi_thread04.py](./main_multi_thread04.py) shows that if I comment the *Y = np.concatenate(Y)*.
 
 ### Codes
 - [multi_thread03.pyx](./multi_thread03.pyx)
 - [main_multi_thread03.py](./main_multi_thread03.py)
+- [main_multi_thread04.py](./main_multi_thread04.py)
 
 ## Conclusion
 
-Seeing results among the experients, the result of numpy were fluctuating even if using the same code while Cython codes gradually speed up according the step-by-step optimization.
+Seeing results among the experients, the result of numpy were fluctuating even if using the same code while Cython codes gradually speed up according the step-by-step optimization; however the results reported above may change in time and environement.
 
 *Cython + threading + nogil* is a best choise based on my experience in some viewpoints, e.g., easiness to start using and to write,  memory efficiency, computational speed. However for Numpy, there are some room to speed up, i.e., using MKL.
 
