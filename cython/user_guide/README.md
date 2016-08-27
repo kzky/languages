@@ -66,7 +66,7 @@ cdef widen_shrubbery(Shrubbery sh, extra\_width):
     sh.width = sh.width + extra_width
 ```
 - ローカル変数でも同じ
-```cythn
+```cython
 cdef Shrubbery another\_shrubbery(Shruberry sh1):
     cdef Shrubbery sh2
     sh2 = Shrubbery()
