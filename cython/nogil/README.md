@@ -101,7 +101,7 @@ Elapsed time (ave) 2.09492807388 [s]
 Elapsed time (std) 0.304449698912 [s]
 ```
 
-In both stats, cython is faster and more stable. Note that the concatenation of results comming from each thread is a bottle neck. [main_multi_thread04.py](./main_multi_thread04.py) shows that if I comment the *Y = np.concatenate(Y)*.
+In both stats, cython is faster and more stable. Note that the concatenation of results comming from each thread dominates in time. [main_multi_thread04.py](./main_multi_thread04.py) shows that if I comment the *Y = np.concatenate(Y)*.
 
 ### Codes
 - [multi_thread03.pyx](./multi_thread03.pyx)
