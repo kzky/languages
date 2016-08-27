@@ -2,7 +2,6 @@ import pyximport; pyximport.install()
 from multi_thread03 import *
 import numpy as np
 import time
-from threading import Thread
 
 def main():
 
@@ -21,13 +20,15 @@ def main():
     range_ = range(0, len(X), q)
     threads = []
     for i in range_:
-        t = Thread(target=c_array_f, args=(X[i:i+q], ))
+        t = TaskThread(X[i:i+q])
         t.start()
         threads.append(t)
 
+    Y = []
     for t in threads:
         t.join()
-
+        Y.append(t.y)
+    Y = np.concatenate(Y)
     et = time.time()
     print("Elapsed time {} [s]".format(et - st))
     
