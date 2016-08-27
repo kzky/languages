@@ -256,6 +256,11 @@ cdef class PyRectangle:
 - GILの開放が可能
 
 
+## FAQ
+- [FAQ](https://github.com/cython/cython/wiki/FAQ)
+
+
 ## Reference
 - http://omake.accense.com/static/doc-ja/cython/index.html
 - http://stackoverflow.com/questions/29168575/wrap-c-class-with-cython-getting-the-basic-example-to-work
+- https://github.com/cython/cython/wiki/FAQ
