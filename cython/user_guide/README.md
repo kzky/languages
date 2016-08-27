@@ -50,6 +50,8 @@ cdef int fucn(...) except -1:
 
 ##  拡張型
 - *extension type class*と呼ばれ，cythonのクラスのこと
+- *cdef class ClassName*とする，普通にpythonからインスタンス化可能
+- pythonからインスタンスのメソッドを使うには，*def*でラップか*cpdef*を使う
 - *cdef*を使ってアトリビュートを定義できる
 - 拡張型のアトリビュートはコンパイル時に決まっていないとならないので，拡張型では動的に追加できない
 - ただし，拡張型のpython子クラスを定義すれば，動的にアトリビュートを追加可能
@@ -255,10 +257,8 @@ cdef class PyRectangle:
 ##  Cython プログラムのデバッグ
 - GILの開放が可能
 
-
 ## FAQ
 - [FAQ](https://github.com/cython/cython/wiki/FAQ)
-
 
 ## Reference
 - http://omake.accense.com/static/doc-ja/cython/index.html
