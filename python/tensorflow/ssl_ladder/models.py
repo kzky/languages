@@ -6,26 +6,41 @@ class SSLLadder(object):
     Attributes
     ---------------
     x: tf.placeholder
+        dimension of x 2-d whose shape is [None, 784] in case of MNIST
     y: tf.placeholder
-    phase_train: tf.placeholder of bool used in BN
-    pred: pred op
-    corrupted_encoder:
-    clean_encoder: 
-    decoder: 
-    loss: loss op, or objective function op
-    accuracy: accuracy op
+    phase_train: tf.placeholder of bool
+        used in BN
+    pred: tf.Tesnor
+        Predictor of the network.
+    corrupted_encoder: tf.Tesnor
+        Corrupted Encoder of SSL Ladder Network
+    clean_encoder: tf.Tesnor
+        Clean Encoder of SSL Ladder Network
+    decoder: tf.Tesnor
+        Decoder of SSL Ladder Network
+    loss: tf.Tesnor
+        Loss function, or the objective function
+    accuracy: tf.Tesnor
+        Accuracy
     """
-
+    
     def __init__(self, x_l, y, x_u, L, n_cls, phase_train):
         """
         Parameters
         -----------------
-        x_l: tf.placeholder of sample
-        y: tf.placeholder of label
-        x_u: tf.placeholder of unlabeled sample
-        L: number of layers
-        n_cls: number of classes
-        phase_train: tf.placeholder of bool used in BN
+        x_l: tf.placeholder
+            tf.placeholder of sample
+        y: tf.placeholder
+            tf.placeholder of label
+        x_u: tf.placeholder
+            tf.placeholder of unlabeled sample
+        L: int
+            Number of layers
+        n_cls: int
+            Number of classes
+        phase_train: tf.placeholder of bool
+            tf.placeholder of bool Used in BN
+
         """
         self._x = x
         self._y = y
@@ -42,12 +57,19 @@ class SSLLadder(object):
         self.accuracy = None
 
         # Build Graph
+        self._build_graph()
+
+    def _build_graph(self, ):
+        """Build the computational graph
+        """
         self.loss = self._construct_ssl_ladder(self._x, self._y) \
           + self._construct_ssl_ladder(self._x_u)
-        
 
     def _get_variable_by_name(self, name):
+        """Get the variable by specified name
 
+        This is used for the parameter tying
+        """
         variables = tf.get_collection(tf.GraphKeys.VARIABLES)
         for v in varialbes:
             if v.name == name:
