@@ -7,19 +7,24 @@ class CNN(object):
     ---------------
     x: tf.placeholder
     y: tf.placeholder
-    phase_train: tf.placeholder of bool used in BN
-    pred: pred op
-    loss: loss op, or objective function op
-    accuracy: accuracy op
+    phase_train: tf.placeholder
+        tf.placeholder of bool used in BN
+    pred: tf.Tensor
+        Prediction op
+    loss: tf.Tensor
+        Loss op, or objective function op
+    accuracy: tf.Tensor
+        Accuracy op
     """
 
     def __init__(self, x, y, phase_train):
         """
         Parameters
         -----------------
-        x: tf.placeholder of sample
-        y: tf.placeholder of label
-        phase_train: tf.placeholder of bool used in BN
+        x: tf.placeholder
+        y: tf.placeholder
+        phase_train: tf.placeholder
+            tf.placeholder of bool used in BN
         """
         self._x = x
         self._y = y
@@ -70,6 +75,13 @@ class CNN(object):
         return max_pooling_2d_op
 
     def _linear(self, x, name, out_dim):
+        """
+        Parameters
+        -----------------
+        x: tf.Tesnor
+        name: str
+            Name for the parameter.
+        """
         in_dim = 1
         for dim in x.get_shape()[1:]:
             in_dim *= dim.value
@@ -85,6 +97,13 @@ class CNN(object):
         return linear_op
 
     def _batch_norm(self, x, name):
+        """
+        Parameters
+        -----------------
+        x: tf.Tesnor
+        name: str
+            Name for the parameter.
+        """
 
         # Determine affine or conv
         shape = x.get_shape()
@@ -119,6 +138,8 @@ class CNN(object):
         return x_normed
 
     def _inference(self, ):
+        """Compute the interence graph with BN.
+        """
         # 2 x Conv and 2 Maxpooling
         conv1 = self._conv_2d(self._x, name="conv1",
                                   ksize=[3, 3, 1, 64], strides=[1, 1, 1, 1])
@@ -143,6 +164,8 @@ class CNN(object):
         self.pred = pred
 
     def _inference_wo_bn(self, ):
+        """Compute the interence graph without BN.
+        """
         # 2 x Conv and 2 Maxpooling
         conv1 = self._conv_2d(self._x, name="conv1",
                                   ksize=[3, 3, 1, 64], strides=[1, 1, 1, 1])
@@ -163,11 +186,14 @@ class CNN(object):
         self.pred = pred
         
     def _compute_loss(self, ):
+        """Compute Loss , or the objective function.
+        """
         loss = tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y)
         self.loss = tf.reduce_mean(loss)
 
     def _accuracy(self, ):
-
+        """Compute accuracy network
+        """
         pred = self.pred
         y = self._y
 
