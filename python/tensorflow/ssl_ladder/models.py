@@ -1,3 +1,11 @@
+"""
+SSL-Ladder network.
+
+.. [1] Antti Rasmus, Mathias Berglund, Mikko Honkala, Harri Valpola, Tapani Raiko: Semi-supervised Learning with Ladder Networks. NIPS 2015: 3546-3554
+.. [2] Mohammad Pezeshki, Linxi Fan, Philemon Brakel, Aaron C. Courville, Yoshua Bengio: Deconstructing the Ladder Network Architecture. ICML 2016: 2368-2376
+
+"""
+
 import tensorflow as tf
 import numpy as np
 
@@ -24,7 +32,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y, x_u, L, n_cls, phase_train):
+    def __init__(self, x_l, y, x_u, L, n_dim, n_cls, phase_train):
         """
         Parameters
         -----------------
@@ -36,6 +44,8 @@ class SSLLadder(object):
             tf.placeholder of unlabeled sample
         L: int
             Number of layers
+        n_dim: int
+            Number of dimensions
         n_cls: int
             Number of classes
         phase_train: tf.placeholder of bool
@@ -46,6 +56,7 @@ class SSLLadder(object):
         self._y = y
         self._x_u = x_u
         self._L = L
+        self._n_dim = _n_dim
         self._n_cls = n_cls
         self._phase_train = phase_train
         
@@ -126,6 +137,7 @@ class SSLLadder(object):
         x: tf.Tesnor
         name: str
             Name for the parameter.
+        scope_name: str
         """
         in_dim = 1
         for dim in x.get_shape()[1:]:
@@ -326,7 +338,7 @@ class SSLLadder(object):
         std_list = []
         z_list = []
         z_noise_list = []
-        z_recon_list = []
+        z_recon_bn_list = []
         lambda_list = [1] * self._L
 
         # Encoder
@@ -335,39 +347,44 @@ class SSLLadder(object):
         for i in range(self._L):
             # Clean encoder
             scope_linear = tf.variable_scope("linear")
-            z_pre = self._linear(h, name="{}-th".format(i), 100, scope_linear)
+            z_pre = self._linear(h, name="{}-th".format(i), self._n_dim, scope_linear)
 
             mu, std = self._moments(z_pre)
-            mu_list.append(mu)
-            std_list.append(std)
-
             z = self._batch_norm(z_pre, mu, std)
-            z_list.append(z)
+
             scope_scaling_and_bias = tf.variable_scope("scaling_and_bias")
             h = tf.nn.tanh(self._scaling_and_bias(z, name="{}-th".format(i)),
                                scope_scaling_and_bias)
 
+            # Append  
+            mu_list.append(mu)
+            std_list.append(std)
+            z_list.append(z)
+            
             # Corrupted encoder
-            Wh = self._linear(h_noise, name="{}-th".format(i), 100, scope_linear)
-            mu, std = self._moments(Wh)
-            z_noize = self._batch_norm(Wh, mu, std) \
-              + tf.truncated_normal(Wh.get_shape())
-            z_noise_list.append(z_noize)
+            z_pre_noise = self._linear(h_noise,
+                                       name="{}-th".format(i), self._n_dim, scope_linear)
+            mu, std = self._moments(z_pre_noise)
+            z_noize = self._batch_norm(z_pre_noise, mu, std) \
+                      + tf.truncated_normal(z_pre_noise.get_shape())
             h_noise = tf.nn.tanh(self._scaling_and_bias(z_noise, name="{}-th".format(i)),
                                      scope_scaling_and_bias)
 
+            # Append
+            z_noise_list.append(z_noize)
+            
         # Set classifier
         self.pred = h
             
         # Decoder
-        for i in range(self._L).reverse():
+        for i in reversed(range(self._L)):
             if i == self._L - 1:
                 mu, std = self._moments(h_noise)
                 u = self._batch_norm(h_noise, mu, std)
             else:
-                Vz_recon = self._linear(z_recon, name="{}-th".format(i), 100)
-                mu, std = self._moments(Vz_recon)
-                u = self._batch_norm(Vz_recon, mu, std)
+                Vz = self._linear(z_recon, name="{}-th".format(i), self._n_dim)
+                mu, std = self._moments(Vz)
+                u = self._batch_norm(Vz, mu, std)
 
             z_noise = z_noise_list[i]
             z_recon = self._denoise(z_noize, u, name="{}-th".format(i))
@@ -375,12 +392,12 @@ class SSLLadder(object):
             mu = mu_list[i]
             std = std_list[i]
             z_recon_bn = self._batch_norm(z_recon, mu, std)
-            z_recon_list.append(z_recon_bn)
+            z_recon_bn_list.append(z_recon_bn)
             
         # Loss for both labeled and unlabeled samples
         C = 0
         for i in range(self._L):
-            C += self.lambda_list[i] * (z_list[i] - z_recon_list[i]) ** 2
+            C += self.lambda_list[i] * (z_list[i] - z_recon_bn_list[i]) ** 2
             
         # Loss for labeled samples
         if y:
