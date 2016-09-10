@@ -1,13 +1,27 @@
 import tensorflow as tf
 
 class VAE(object):
-
+    """
+    Attributes
+    ----------------
+    encode: tf.Tensor
+        Encoder network.
+    decode: tf.Tensor
+        Decoder network.
+    obj: tf.Tensor
+        Objective function.
+    """
+    
     def __init__(self, x, mid_dim=500, latent_dim=200):
         """
-        Attributes:
-          x: tf.placeholder
+        Parameters
+        -----------------
+        x: tf.placeholder
             dimension of x 2-d whose shape is [None, 784] in case of MNIST
-          dims (int): dimension of intermidiate layers
+        dim: int
+            dimension of intermidiate layers
+        latent_dim: int
+            dimension of intermidiate layers
         """
 
         self._initialized = True
@@ -32,6 +46,26 @@ class VAE(object):
         self._build_graph()
 
     def _MLP(self, x, in_dim, out_dim, scope, activation=True):
+        """Compute multi-layer perceptron.
+
+        MLP actually compute a single layer perceptron. If `activation` is True,
+        tanh activation will be added after the linear operation performs.
+
+        Parameters
+        -----------------
+        x: tf.Tensor
+        in_dim: int
+            Input dimension
+        out_dim: int
+            Output dimension
+        scope: tf.scope
+            tf.scope but actually context manager
+
+        Returns
+        -----------
+        tf.Tensor
+        """
+        
         with scope: 
             # Parameter
             W = tf.Variable(
@@ -51,6 +85,8 @@ class VAE(object):
         return h
 
     def _encode(self, ):
+        """Compute the encoder network of VAE.
+        """
         # MLP
         enc_scope = tf.variable_scope("encoder")
         h = self._MLP(self._x, self._in_dim, self._mid_dim, enc_scope)
@@ -65,6 +101,8 @@ class VAE(object):
         self.encode = z
 
     def _compute_stats(self, h):
+        """Compute statictics, mean and standard deviation.
+        """
         # MLP for mu
         enc_scope = tf.variable_scope("encoder")
         mu = self._MLP(h, self._mid_dim, self._latent_dim, enc_scope, False)
@@ -79,6 +117,8 @@ class VAE(object):
         self._sigma = tf.sqrt(self._sigma_square)
             
     def _decode(self):
+        """Compute the decoder network of VAE.
+        """
         # MLP
         dec_scope = tf.variable_scope("decoder")
         h0 = self._MLP(self.encode, self._latent_dim, self._mid_dim, dec_scope)
@@ -91,6 +131,11 @@ class VAE(object):
         self.decode = y
         
     def _compute_loss(self, ):
+        """Compute the loss function of VAE.
+
+        Loss of VAE contains the terms; the reconstruction error and
+        KL divergence between prior and posterior of the latent variables.
+        """
         # Encoder loss
         mu_square = self._mu**2
         sigma_square = self._sigma_square
@@ -113,6 +158,8 @@ class VAE(object):
         self.obj = encoder_loss + decoder_loss
 
     def _build_graph(self):
+        """Build the computational graph.
+        """
 
         # Bulid encoder network
         self._encode()
