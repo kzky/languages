@@ -120,6 +120,13 @@ class SSLLadder(object):
         return max_pooling_2d_op
 
     def _linear(self, x, name, out_dim, scope_name="linear"):
+        """
+        Parameters
+        -----------------
+        x: tf.Tesnor
+        name: str
+            Name for the parameter.
+        """
         in_dim = 1
         for dim in x.get_shape()[1:]:
             in_dim *= dim.value
@@ -144,8 +151,23 @@ class SSLLadder(object):
     def _denoise(self, z_noise, u, name, scope_name="denoise"):
         """Denoising function
 
-        Denoise z_noize using u from the upper layer. Denoising function should be
-        linaer w.r.t. z_noize.
+        Denoise z_noize from the lateral connection using u from the upper layer.
+        Denoising function should be linaer w.r.t. z_noize.
+
+        Parameters
+        -----------------
+        z_noise: tf.Tensor
+            Noisy input from the lateral connection.
+        u: tf.Tensor
+            Normalized input from the upper layer.
+        name: str
+        scope_name: str
+
+        Returns
+        -----------
+        tf.Tensor
+            Denoised output with denoising function.
+        
         """
         shape = []
         for dim in z_noize.get_shape()[1:]:
@@ -181,6 +203,20 @@ class SSLLadder(object):
 
     def _scaling_and_bias(self, x, name,
                               scope_name="scaling_and_bias"):
+        """Scale and bias the input in BatchNorm
+
+        The way to scale and bias is a bit different from the standard BatchNorm.
+        Basically, we compute gamma * (z - mu) / std + beta,
+        but here gamma * ((z - mu) / std + beta).
+        Note the normalization (z - mu) / std is already computed as `x`.
+                
+        Parameters
+        -----------------
+        x: tf.Tensor
+        name: str
+        scope_name: str
+        """
+        
         # Determine affine or conv
         shape = x.get_shape()
         depth = shape[-1].value
@@ -203,14 +239,19 @@ class SSLLadder(object):
         return gamma * (x - beta)
 
     def _moments(self, x):
-        """Compute mean and variance
+        """Compute mean and variance.
 
         Compute mean and variance but return std.
-        In addition, update running mean. 
+        In addition, update running mean.
+
+        Parameters
+        -----------------
+        x: tf.Tensor
 
         Returns
         -----------
-        tuple of op: mean and std
+        tuple of tf.Tesor
+            Mean and std.
         """
         
         # Batch mean/var and gamma/beta
@@ -232,13 +273,28 @@ class SSLLadder(object):
         return mean, tf.sqrt(var)
 
     def _batch_norm(self, x, mu, std):
+        """BatchNorm op.
+
+        This is NOT Batch Normalization, Whitening Op.
+
+        Parameters
+        -----------------
+        x: tf.Tensor
+        mu: tf.Tensor
+        std: tf.Tensor
+
+        """
         return (x - mu) / std
         
     def _compute_loss(self, ):
+        """Compute loss op
+        """
         loss = tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y)
         self.loss = tf.reduce_mean(loss)
 
     def _accuracy(self, ):
+        """Compute accuracy op
+        """
         pred = self.pred
         y = self._y
 
@@ -247,17 +303,22 @@ class SSLLadder(object):
         self.accuracy = accuracy
 
     def _construct_ssl_ladder_network(self, x, y=None):
-        """Construct SSL Ladder Network
+        """Construct SSL Ladder Network.
 
-        If y is None, reonstruction cost is only constructed;
+        If `y` is None, the reonstruction cost is only constructed;
         otherwise the classification loss is also constructed.
 
         Parameters
         -----------------
         x: tf.placeholder
-            x is either labeled sample or unlabeled sample.
+            x is either labeled samples or unlabeled samples.
         y: tf.placeholder
             y is not None when x is labeled samples.
+
+        Returns
+        -----------
+        tf.Tesnor
+            Loss op is returned.
         
         """
         
