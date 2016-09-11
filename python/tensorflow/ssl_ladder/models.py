@@ -77,8 +77,8 @@ class SSLLadder(object):
     def _build_graph(self, ):
         """Build the computational graph
         """
-        u_loss = self._construct_ssl_ladder(self._x_u)
-        l_loss = self._construct_ssl_ladder(self._x_l, self._y_l,  reuse=True)
+        l_loss = self._construct_ssl_ladder(self._x_l, self._y_l)
+        u_loss = self._construct_ssl_ladder(self._x_u, reuse=True)
         self.loss = l_loss + u_loss
 
     def _add_summaries(self,):
@@ -382,7 +382,8 @@ class SSLLadder(object):
             z_noise_list.append(z_noise)
             
         # Set classifier
-        self.pred = h
+        if y is not None: 
+            self.pred = h
         
         # Decoder
         print("# Decoder")
