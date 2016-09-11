@@ -17,8 +17,8 @@ def main():
     L = 3
     mid_dim = n_dim = 500
     out_dim = n_cls = 10
-    n_epoch = 30
-    n_iter = 30 * n_u_train_data / batch_size
+    n_epoch = 100
+    n_iter = n_epoch * n_u_train_data / batch_size
 
     # Separate
     home = os.environ.get("HOME")
