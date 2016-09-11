@@ -78,6 +78,7 @@ class SSLLadder(object):
         l_loss = self._construct_ssl_ladder(self._x_l, self._y_l)
         u_loss = self._construct_ssl_ladder(self._x_u, reuse=True)
         self.loss = l_loss + u_loss
+        self._accuracy()
         
     def _conv_2d(self, x, name, variable_scope, 
                      ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME"): 

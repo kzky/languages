@@ -90,10 +90,11 @@ def main():
                                    feed_dict={
                                        x_l: x_l_data,
                                        y_l: y_l_data,
+                                       x_u: x_u_data,
                                        phase_train: False})
                     accuracies.append(acc)
                     #losses.append(loss)
-                    data_points.append(len(y_l))
+                    data_points.append(len(y_l_data))
 
 if __name__ == '__main__':
     main()
