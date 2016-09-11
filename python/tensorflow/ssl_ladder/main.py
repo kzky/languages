@@ -27,9 +27,9 @@ def main():
     separator.separate_then_save(fpath)
 
     # Placeholder
-    x_l = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
-    y_l = tf.placeholder(tf.float32, shape=[None, out_dim], name="y")
-    x_u = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
+    x_l = tf.placeholder(tf.float32, shape=[None, in_dim], name="x_l")
+    y_l = tf.placeholder(tf.float32, shape=[None, out_dim], name="y_l")
+    x_u = tf.placeholder(tf.float32, shape=[None, in_dim], name="x_u")
     phase_train = tf.placeholder(tf.bool, name="phase_train")
     
     # Model
@@ -86,13 +86,13 @@ def main():
                         print(msg.format(epoch, et - st, i, loss_mean, acc_mean))
                         break
 
-                    acc, loss = sess.run([ssl_ladder.accuracy, ssl_ladder.loss],
-                                         feed_dict={
-                                             x_l: x_l_data,
-                                             y_l: y_l_data,
-                                             phase_train: False})
+                    acc = sess.run(ssl_ladder.accuracy,
+                                   feed_dict={
+                                       x_l: x_l_data,
+                                       y_l: y_l_data,
+                                       phase_train: False})
                     accuracies.append(acc)
-                    losses.append(loss)
+                    #losses.append(loss)
                     data_points.append(len(y_l))
 
 if __name__ == '__main__':

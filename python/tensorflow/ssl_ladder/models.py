@@ -287,14 +287,14 @@ class SSLLadder(object):
     def _compute_loss(self, ):
         """Compute loss op
         """
-        loss = tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y)
+        loss = tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y_l)
         self.loss = tf.reduce_mean(loss)
 
     def _accuracy(self, ):
         """Compute accuracy op
         """
         pred = self.pred
-        y = self._y
+        y = self._y_l
 
         correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
