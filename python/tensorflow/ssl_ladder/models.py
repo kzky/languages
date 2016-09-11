@@ -13,11 +13,13 @@ class SSLLadder(object):
     """
     Attributes
     ---------------
-    x: tf.placeholder
-        dimension of x 2-d whose shape is [None, 784] in case of MNIST
-    y: tf.placeholder
+    x_l: tf.placeholder
+        Dimension of x 2-d whose shape is [None, 784] in case of MNIST
+    y_l: tf.placeholder
+    x_u: tf.placeholder
+        Dimension of x 2-d whose shape is [None, 784] in case of MNIST
     phase_train: tf.placeholder of bool
-        used in BN
+        Used in BN
     pred: tf.Tesnor
         Predictor of the network.
     corrupted_encoder: tf.Tesnor
@@ -32,13 +34,13 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y, x_u, L, n_dim, n_cls, phase_train):
+    def __init__(self, x_l, y_l, x_u, L, n_dim, n_cls, phase_train):
         """
         Parameters
         -----------------
         x_l: tf.placeholder
             tf.placeholder of sample
-        y: tf.placeholder
+        y_l: tf.placeholder
             tf.placeholder of label
         x_u: tf.placeholder
             tf.placeholder of unlabeled sample
@@ -52,11 +54,11 @@ class SSLLadder(object):
             tf.placeholder of bool Used in BN
 
         """
-        self._x = x
-        self._y = y
+        self._x_l = x_l
+        self._y_l = y_l
         self._x_u = x_u
         self._L = L
-        self._n_dim = _n_dim
+        self._n_dim = n_dim
         self._n_cls = n_cls
         self._phase_train = phase_train
         
@@ -73,24 +75,12 @@ class SSLLadder(object):
     def _build_graph(self, ):
         """Build the computational graph
         """
-        self.loss = self._construct_ssl_ladder(self._x, self._y) \
-          + self._construct_ssl_ladder(self._x_u)
-
-    def _get_variable_by_name(self, name):
-        """Get the variable by specified name
-
-        This is used for the parameter tying
-        """
-        variables = tf.get_collection(tf.GraphKeys.VARIABLES)
-        for v in varialbes:
-            if v.name == name:
-                return v
-
-        return None
+        l_loss = self._construct_ssl_ladder(self._x_l, self._y_l)
+        u_loss = self._construct_ssl_ladder(self._x_u)
+        self.loss = l_loss + u_loss
         
-    def _conv_2d(self, x, name,
-                     ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME",
-                     scope_name="conv_2d"):
+    def _conv_2d(self, x, name, variable_scope, 
+                     ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME"): 
         """
         Parameters
         -----------------
@@ -103,13 +93,9 @@ class SSLLadder(object):
         w_name = "w-{}".format(name )
         #b_name = "b-{}".format(name)
 
-        with tf.variable_scope(scope_name):
-            v = self._get_variable_by_name(w_name)
-            W = tf.get_variable(name=w_name, shape=ksize) \
-              if v is None else v
-            v = self._get_variable_by_name(b_name)
-            #b = tf.get_variable(name=b_name, shape=[ksize[-1]]) \
-            #  if v is None else v
+        with variable_scope:
+            W = tf.get_variable(name=w_name, shape=ksize)
+            #b = tf.get_variable(name=b_name, shape=[ksize[-1]])
               
         conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding)
         return conv2d_op
@@ -130,7 +116,7 @@ class SSLLadder(object):
           tf.nn.max_pool(x, ksize=ksize, strides=strides, padding=padding)
         return max_pooling_2d_op
 
-    def _linear(self, x, name, out_dim, scope_name="linear"):
+    def _linear(self, x, name, out_dim, variable_scope):
         """
         Parameters
         -----------------
@@ -146,25 +132,20 @@ class SSLLadder(object):
         w_name = "w-{}".format(name)
         #b_name = "b-{}".format(name)
 
-        with tf.variable_scope(scope_name):
-            v = self._get_variable_by_name(w_name)
-            if v is None:
-            W = tf.get_variable(name=w_name, shape=[in_dim, out_dim]) \
-              if v is None else v
-            #v = tf.get_variable(name=b_name, shape=[out_dim])
-            #b = self._get_variable_by_name(w_name) \
-            #  if v is None else v
+        with variable_scope:
+            W = tf.get_variable(name=w_name, shape=[in_dim, out_dim])
+            #b = self._get_variable_by_name(scope_name, w_name)
             
         x_ = tf.reshape(x, [-1, in_dim])
         linear_op = tf.matmul(x_, W)
 
         return linear_op
 
-    def _denoise(self, z_noise, u, name, scope_name="denoise"):
+    def _denoise(self, z_noise, u, name, variable_scope):
         """Denoising function
 
-        Denoise z_noize from the lateral connection using u from the upper layer.
-        Denoising function should be linaer w.r.t. z_noize.
+        Denoise z_noise from the lateral connection using u from the upper layer.
+        Denoising function should be linaer w.r.t. z_noise.
 
         Parameters
         -----------------
@@ -173,7 +154,7 @@ class SSLLadder(object):
         u: tf.Tensor
             Normalized input from the upper layer.
         name: str
-        scope_name: str
+        variable_scope: tf.variable_scope
 
         Returns
         -----------
@@ -182,10 +163,10 @@ class SSLLadder(object):
         
         """
         shape = []
-        for dim in z_noize.get_shape()[1:]:
+        for dim in z_noise.get_shape()[1:]:
             shape.append(dim.value)
 
-        with tf.variable_scope(scope_name):
+        with variable_scope:
             a_mu_1_name = "a_mu_1-{}".format(name)
             a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape)
             a_mu_2_name = "a_mu_2-{}".format(name)
@@ -211,10 +192,11 @@ class SSLLadder(object):
         mu = a_mu_1 * tf.nn.sigmoid(a_mu_2 * u + a_mu_3) + a_mu_4 * u + a_mu_5
         var = a_var_1 * tf.nn.sigmoid(a_var_2 * u + a_var_3) + a_var_4 * u + a_var_5
 
-        z_recon = (z_noize - mu) * var + mu
+        z_recon = (z_noise - mu) * var + mu
 
-    def _scaling_and_bias(self, x, name,
-                              scope_name="scaling_and_bias"):
+        return z_recon
+        
+    def _scaling_and_bias(self, x, name, variable_scope):
         """Scale and bias the input in BatchNorm
 
         The way to scale and bias is a bit different from the standard BatchNorm.
@@ -226,7 +208,7 @@ class SSLLadder(object):
         -----------------
         x: tf.Tensor
         name: str
-        scope_name: str
+        variable_scope: tf.variable_scope
         """
         
         # Determine affine or conv
@@ -240,13 +222,9 @@ class SSLLadder(object):
         beta_name = "beta-{}".format(name)
         gamma_name= "gamma-{}".format(name)
 
-        with tf.variable_scope(scope_name):
-            v = self._get_variable_by_name(beta_name)
-            beta = tf.get_variable(name=beta_name, shape=[depth]) \
-              if v is None else v
-            v = self._get_variable_by_name(gamma_name)
-            gamma = tf.get_variable(name=gamma_name, shape=[depth]) \
-              if v is None else v
+        with variable_scope:
+            beta = tf.get_variable(name=beta_name, shape=[depth])
+            gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
         return gamma * (x - beta)
 
@@ -265,6 +243,14 @@ class SSLLadder(object):
         tuple of tf.Tesor
             Mean and std.
         """
+
+        # Determine affine or conv
+        shape = x.get_shape()
+        depth = shape[-1].value
+        if len(shape) == 4:  # NHWC
+            axes = [0, 1, 2]
+        else:
+            axes = [0]
         
         # Batch mean/var and gamma/beta
         batch_mean, batch_var = tf.nn.moments(x, axes=axes)
@@ -314,7 +300,7 @@ class SSLLadder(object):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         self.accuracy = accuracy
 
-    def _construct_ssl_ladder_network(self, x, y=None):
+    def _construct_ssl_ladder(self, x, y=None):
         """Construct SSL Ladder Network.
 
         If `y` is None, the reonstruction cost is only constructed;
@@ -342,52 +328,77 @@ class SSLLadder(object):
         lambda_list = [1] * self._L
 
         # Encoder
+        print("# Encoder")
         h = x
-        h_noise = h + tf.truncated_normal(h.get_shape())
+        h_noise = h + tf.truncated_normal(tf.shape(h))
         for i in range(self._L):
-            # Clean encoder
-            scope_linear = tf.variable_scope("linear")
-            z_pre = self._linear(h, name="{}-th".format(i), self._n_dim, scope_linear)
+            if i == self._L - 1:
+                dim = self._n_cls
 
+            else:
+                dim = self._n_dim
+
+            print("Layer-{}".format(i))
+
+            # Variable scope
+            l_variable_scope = tf.variable_scope("enc-linear")
+            sb_variable_scope = tf.variable_scope("enc-scale-bias")
+
+            # Clean encoder
+            print("# Clean encoder")
+            z_pre = self._linear(h, "{}-th".format(i), dim, l_variable_scope)
             mu, std = self._moments(z_pre)
             z = self._batch_norm(z_pre, mu, std)
-
-            scope_scaling_and_bias = tf.variable_scope("scaling_and_bias")
-            h = tf.nn.tanh(self._scaling_and_bias(z, name="{}-th".format(i)),
-                               scope_scaling_and_bias)
+            h = tf.nn.tanh(self._scaling_and_bias(z, "{}-th".format(i),
+                                                  sb_variable_scope))
 
             # Append  
             mu_list.append(mu)
             std_list.append(std)
             z_list.append(z)
+
+            # Variable scope
+            l_variable_scope = tf.variable_scope("enc-linear", reuse=True)
+            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=True)
             
             # Corrupted encoder
-            z_pre_noise = self._linear(h_noise,
-                                       name="{}-th".format(i), self._n_dim, scope_linear)
+            print("# Corrupted encoder")
+            z_pre_noise = self._linear(h_noise, "{}-th".format(i), dim, l_variable_scope)
             mu, std = self._moments(z_pre_noise)
-            z_noize = self._batch_norm(z_pre_noise, mu, std) \
-                      + tf.truncated_normal(z_pre_noise.get_shape())
-            h_noise = tf.nn.tanh(self._scaling_and_bias(z_noise, name="{}-th".format(i)),
-                                     scope_scaling_and_bias)
+            z_noise = self._batch_norm(z_pre_noise, mu, std) \
+                      + tf.truncated_normal(tf.shape(z_pre_noise))
+            h_noise = tf.nn.tanh(self._scaling_and_bias(z_noise, "{}-th".format(i),
+                                                        sb_variable_scope))
 
             # Append
-            z_noise_list.append(z_noize)
+            z_noise_list.append(z_noise)
             
         # Set classifier
         self.pred = h
-            
+        
         # Decoder
+        print("# Decoder")
         for i in reversed(range(self._L)):
+            if i == self._L - 1:
+                dim = self._n_cls
+            else:
+                dim = self._n_dim
+            
+            print("Layer-{}".format(i))
+            # Variable scope
+            l_variable_scope = tf.variable_scope("dec-linear")
+            d_variable_scope = tf.variable_scope("dec-denoise")
+            
             if i == self._L - 1:
                 mu, std = self._moments(h_noise)
                 u = self._batch_norm(h_noise, mu, std)
             else:
-                Vz = self._linear(z_recon, name="{}-th".format(i), self._n_dim)
+                Vz = self._linear(z_recon, "{}-th".format(i), dim, l_variable_scope)
                 mu, std = self._moments(Vz)
                 u = self._batch_norm(Vz, mu, std)
 
             z_noise = z_noise_list[i]
-            z_recon = self._denoise(z_noize, u, name="{}-th".format(i))
+            z_recon = self._denoise(z_noise, u, "{}-th".format(i), d_variable_scope)
 
             mu = mu_list[i]
             std = std_list[i]
@@ -396,12 +407,16 @@ class SSLLadder(object):
             
         # Loss for both labeled and unlabeled samples
         C = 0
+        z_recon_bn_list.reverse()
         for i in range(self._L):
-            C += self.lambda_list[i] * (z_list[i] - z_recon_bn_list[i]) ** 2
+            print(z_list[i])
+            print(z_recon_bn_list[i])
+            C += lambda_list[i] * tf.reduce_mean((z_list[i] - z_recon_bn_list[i]) ** 2)
             
         # Loss for labeled samples
-        if y:
-            C += tf.nn.softmax_cross_entropy(self.pred, self._y)
+        if y is not None:
+            C += tf.reduce_mean(
+                tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y_l))
 
         return C
 
