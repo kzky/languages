@@ -76,7 +76,7 @@ class SSLLadder(object):
         """Build the computational graph
         """
         l_loss = self._construct_ssl_ladder(self._x_l, self._y_l)
-        u_loss = self._construct_ssl_ladder(self._x_u)
+        u_loss = self._construct_ssl_ladder(self._x_u, reuse=True)
         self.loss = l_loss + u_loss
         
     def _conv_2d(self, x, name, variable_scope, 
@@ -300,7 +300,7 @@ class SSLLadder(object):
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         self.accuracy = accuracy
 
-    def _construct_ssl_ladder(self, x, y=None):
+    def _construct_ssl_ladder(self, x, y=None, reuse=None):
         """Construct SSL Ladder Network.
 
         If `y` is None, the reonstruction cost is only constructed;
@@ -312,7 +312,9 @@ class SSLLadder(object):
             x is either labeled samples or unlabeled samples.
         y: tf.placeholder
             y is not None when x is labeled samples.
-
+        reuse: bool
+            Reuse variable for parameter tying.
+        
         Returns
         -----------
         tf.Tesnor
@@ -341,8 +343,8 @@ class SSLLadder(object):
             print("Layer-{}".format(i))
 
             # Variable scope
-            l_variable_scope = tf.variable_scope("enc-linear")
-            sb_variable_scope = tf.variable_scope("enc-scale-bias")
+            l_variable_scope = tf.variable_scope("enc-linear", reuse=reuse)
+            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=reuse)
 
             # Clean encoder
             print("# Clean encoder")
@@ -386,8 +388,8 @@ class SSLLadder(object):
             
             print("Layer-{}".format(i))
             # Variable scope
-            l_variable_scope = tf.variable_scope("dec-linear")
-            d_variable_scope = tf.variable_scope("dec-denoise")
+            l_variable_scope = tf.variable_scope("dec-linear", reuse=reuse)
+            d_variable_scope = tf.variable_scope("dec-denoise", reuse=reuse)
             
             if i == self._L - 1:
                 mu, std = self._moments(h_noise)
@@ -409,8 +411,6 @@ class SSLLadder(object):
         C = 0
         z_recon_bn_list.reverse()
         for i in range(self._L):
-            print(z_list[i])
-            print(z_recon_bn_list[i])
             C += lambda_list[i] * tf.reduce_mean((z_list[i] - z_recon_bn_list[i]) ** 2)
             
         # Loss for labeled samples
