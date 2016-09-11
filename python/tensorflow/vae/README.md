@@ -1,4 +1,4 @@
-# Variational Auto Encoder
+# Variational Auto Encoder (IN PROGRESS)
 
 This is an implementation of VAE, Variational Auto Encoder with TensorFlow.
 
@@ -41,6 +41,11 @@ Tensorflow  I used is the version 0.9. When you run the main script, you can get
 At the very beginning of epoch, the variational lower bound (objective) is very low, but it gradually increases. Learning is very unstable, depending on the number of units of MLP and of the latent variables. It gets nan very easily based on my reproduction, and the convergence is very slow in terms of epoch measurement. To prevent the unstability of learning (or becoming nan), one way to solve this is using *clipping* to the statictics (*mu* and *log var*). That is my experience when trying to reproducing the work, but it can work without using *clipping* to the statictics if we choose the number of units and of the latent variables carefully.
 
 The remaining of this work is to visualize the reconstruction.
+
+# Notes (based on experience for hyper parameter tuning)
+- The number of hidden units and latent variables have to be chosen very carefully. Unless doing it, the objective function can easily get into nan. 
+- If The number of hidden units and latent variables are large, it is hard to select good values without the objective value being nan; however if it is, the speed in learning is fast.
+- If The number of hidden units and latent variables are small, it is relatively easy to select good values without the objective value being nan; however if it is, the speed in learning is slow.
 
 # References
 - Kingma, D. P., & Welling, M. (2013). Auto-Encoding Variational Bayes, (Ml), 1–14.
