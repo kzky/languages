@@ -48,8 +48,14 @@ class DataReader(object):
         self._next_position_train += self._batch_size
         if self._next_position_train >= self._n_train_data:
             self._next_position_train = 0
+
+            # shuffle
+            idx = np.arange(self._n_train_data)
+            np.random.shuffle(idx)
+            self.train_data["x"] = self.train_data["x"][idx]
+            self.train_data["y"] = self.train_data["y"][idx]
         
-        return batch_data_x, batch_data_y
+        return batch_data_x / 256. , batch_data_y
             
     def get_test_batch(self,):
         """Return next batch data.
@@ -77,5 +83,5 @@ class DataReader(object):
         if self._next_position_test >= self._n_test_data:
             self._next_position_test = 0
 
-        return batch_data_x, batch_data_y
+        return batch_data_x / 256. , batch_data_y
 
