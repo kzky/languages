@@ -14,8 +14,7 @@ def main():
     n_u_train_data = n_train_data - l
     batch_size = 128
     in_dim = 784
-    L = 3
-    mid_dim = n_dim = 500
+    n_dims = [1000, 500, 250, 250, 250, 10]
     out_dim = n_cls = 10
     n_epoch = 100
     n_iter = n_epoch * n_u_train_data / batch_size
@@ -33,7 +32,7 @@ def main():
     phase_train = tf.placeholder(tf.bool, name="phase_train")
     
     # Model
-    ssl_ladder = SSLLadder(x_l, y_l, x_u, L, n_dim, n_cls, phase_train)
+    ssl_ladder = SSLLadder(x_l, y_l, x_u, n_dims, n_cls, phase_train)
 
     # Data
     home = os.environ["HOME"]

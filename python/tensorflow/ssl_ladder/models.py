@@ -34,7 +34,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y_l, x_u, L, n_dim, n_cls, phase_train):
+    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train):
         """
         Parameters
         -----------------
@@ -44,8 +44,6 @@ class SSLLadder(object):
             tf.placeholder of label
         x_u: tf.placeholder
             tf.placeholder of unlabeled sample
-        L: int
-            Number of layers
         n_dim: int
             Number of dimensions
         n_cls: int
@@ -57,8 +55,8 @@ class SSLLadder(object):
         self._x_l = x_l
         self._y_l = y_l
         self._x_u = x_u
-        self._L = L
-        self._n_dim = n_dim
+        self._L = len(n_dims)
+        self._n_dims = n_dims
         self._n_cls = n_cls
         self._phase_train = phase_train
         
@@ -340,12 +338,6 @@ class SSLLadder(object):
         h = x
         h_noise = h + tf.truncated_normal(tf.shape(h))
         for i in range(self._L):
-            if i == self._L - 1:
-                dim = self._n_cls
-
-            else:
-                dim = self._n_dim
-
             print("\tLayer-{}".format(i))
 
             # Variable scope
@@ -354,7 +346,7 @@ class SSLLadder(object):
 
             # Clean encoder
             print("\t# Clean encoder")
-            z_pre = self._linear(h, "{}-th".format(i), dim, l_variable_scope)
+            z_pre = self._linear(h, "{}-th".format(i), self._n_dims[i], l_variable_scope)
             mu, std = self._moments(z_pre)
             z = self._batch_norm(z_pre, mu, std)
             h = tf.nn.tanh(self._scaling_and_bias(z, "{}-th".format(i),
@@ -371,7 +363,8 @@ class SSLLadder(object):
             
             # Corrupted encoder
             print("\t# Corrupted encoder")
-            z_pre_noise = self._linear(h_noise, "{}-th".format(i), dim, l_variable_scope)
+            z_pre_noise = self._linear(h_noise, "{}-th".format(i), self._n_dims[i],
+                                       l_variable_scope)
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
                       + tf.truncated_normal(tf.shape(z_pre_noise))
@@ -388,11 +381,6 @@ class SSLLadder(object):
         # Decoder
         print("# Decoder")
         for i in reversed(range(self._L)):
-            if i == self._L - 1:
-                dim = self._n_cls
-            else:
-                dim = self._n_dim
-            
             print("\tLayer-{}".format(i))
             # Variable scope
             l_variable_scope = tf.variable_scope("dec-linear", reuse=reuse)
@@ -402,7 +390,8 @@ class SSLLadder(object):
                 mu, std = self._moments(h_noise)
                 u = self._batch_norm(h_noise, mu, std)
             else:
-                Vz = self._linear(z_recon, "{}-th".format(i), dim, l_variable_scope)
+                Vz = self._linear(z_recon, "{}-th".format(i), self._n_dims[i],
+                                  l_variable_scope)
                 mu, std = self._moments(Vz)
                 u = self._batch_norm(Vz, mu, std)
 
