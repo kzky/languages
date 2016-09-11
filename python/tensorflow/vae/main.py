@@ -13,7 +13,7 @@ def main():
     in_dim = 784
     mid_dim = 300
     latent_dim = 100
-    n_iter = 100000
+    n_iter = 200000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
