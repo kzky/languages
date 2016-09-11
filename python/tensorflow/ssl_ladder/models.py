@@ -230,7 +230,7 @@ class SSLLadder(object):
             beta = tf.get_variable(name=beta_name, shape=[depth])
             gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
-        return gamma * (x - beta)
+        return gamma * (x + beta)
 
     def _moments(self, x):
         """Compute mean and variance.
@@ -288,12 +288,6 @@ class SSLLadder(object):
         """
         return (x - mu) / std
         
-    def _compute_loss(self, ):
-        """Compute loss op
-        """
-        loss = tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y_l)
-        self.loss = tf.reduce_mean(loss)
-
     def _accuracy(self, ):
         """Compute accuracy op
         """

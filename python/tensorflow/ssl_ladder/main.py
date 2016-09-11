@@ -16,7 +16,7 @@ def main():
     in_dim = 784
     n_dims = [1000, 500, 250, 250, 250, 10]
     out_dim = n_cls = 10
-    n_epoch = 100
+    n_epoch = 200
     n_iter = n_epoch * n_u_train_data / batch_size
 
     # Separate
