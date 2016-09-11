@@ -106,8 +106,7 @@ class DataReader(object):
         beg = self._next_position_test
         end = self._next_position_test+self._batch_size
 
-        batch_data_x_ = self.test_data["x"][beg:end, :]
-        batch_data_x = np.reshape(batch_data_x_, (len(batch_data_x_), 28, 28, 1))
+        batch_data_x = self.test_data["x"][beg:end, :]
         
         # Change to one-hot representaion
         batch_data_y_ = self.test_data["y"][beg:end]

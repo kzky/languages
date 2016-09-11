@@ -341,14 +341,14 @@ class SSLLadder(object):
             else:
                 dim = self._n_dim
 
-            print("Layer-{}".format(i))
+            print("\tLayer-{}".format(i))
 
             # Variable scope
             l_variable_scope = tf.variable_scope("enc-linear", reuse=reuse)
             sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=reuse)
 
             # Clean encoder
-            print("# Clean encoder")
+            print("\t# Clean encoder")
             z_pre = self._linear(h, "{}-th".format(i), dim, l_variable_scope)
             mu, std = self._moments(z_pre)
             z = self._batch_norm(z_pre, mu, std)
@@ -365,7 +365,7 @@ class SSLLadder(object):
             sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=True)
             
             # Corrupted encoder
-            print("# Corrupted encoder")
+            print("\t# Corrupted encoder")
             z_pre_noise = self._linear(h_noise, "{}-th".format(i), dim, l_variable_scope)
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
@@ -387,7 +387,7 @@ class SSLLadder(object):
             else:
                 dim = self._n_dim
             
-            print("Layer-{}".format(i))
+            print("\tLayer-{}".format(i))
             # Variable scope
             l_variable_scope = tf.variable_scope("dec-linear", reuse=reuse)
             d_variable_scope = tf.variable_scope("dec-denoise", reuse=reuse)

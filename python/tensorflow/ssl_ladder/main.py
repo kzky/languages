@@ -68,7 +68,9 @@ def main():
              
             # Eval
             if (i+1) % (n_u_train_data / batch_size) == 0:
-                lossess = []
+                accuracies = []
+                losses = []
+                data_points = []
                 epoch += 1
                 while True:
                     #TODO: Use Saver
