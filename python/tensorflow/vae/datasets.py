@@ -12,8 +12,8 @@ class DataReader(object):
           test_path: Dict, NpzFile, or some like that, one key-value holds whole data.
         """
             
-        self.train_data = np.load(train_path)
-        self.test_data = np.load(test_path)
+        self.train_data = dict(np.load(train_path))
+        self.test_data = dict(np.load(test_path))
 
         self._batch_size = batch_size
         self._next_position_train = 0
@@ -40,6 +40,12 @@ class DataReader(object):
         self._next_position_train += self._batch_size
         if self._next_position_train >= self._n_train_data:
             self._next_position_train = 0
+
+            # shuffle
+            idx = np.arange(self._n_train_data)
+            np.random.shuffle(idx)
+            self.train_data["x"] = self.train_data["x"][idx]
+            self.train_data["y"] = self.train_data["y"][idx]
         
         return batch_data_x, batch_data_y
             
