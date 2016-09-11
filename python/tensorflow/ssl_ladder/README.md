@@ -9,6 +9,7 @@ When reconstructing the noisy inputs, the key to reconstrcut is such a way that 
 #TODO
 - Address multi-layer case
 - Add Saver
+- Add Summary
 
 # References
 - Rasmus, A., Valpola, H., Honkala, M., Berglund, M., & Raiko, T. (2015). Semi-Supervised Learning with Ladder Networks. Neural and Evolutionary Computing; Learning; Machine Learning.
