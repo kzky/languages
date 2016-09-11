@@ -129,8 +129,8 @@ class Separator(object):
     and the others are unlabeled samples.
     """
 
-    def __init__(self, u=100):
-        self.u = u
+    def __init__(self, l=100):
+        self.l = l
 
     def separate_then_save(self,
                 fpath="/home/kzk/.chainer/dataset/pfnet/chainer/mnist/train.npz"):
@@ -143,7 +143,7 @@ class Separator(object):
         data = np.load(fpath)
         n = len(data["x"])
         idxs = np.arange(n)
-        idxs_l = np.random.choice(idxs, size=self.u, replace=False)
+        idxs_l = np.random.choice(idxs, size=self.l, replace=False)
         idxs_u = np.asarray(list(set(idxs) - set(idxs_l)))
 
         ldata = {}
