@@ -71,14 +71,19 @@ class SSLLadder(object):
 
         # Build Graph
         self._build_graph()
+        self._accuracy()
+        self._add_summaries()
 
     def _build_graph(self, ):
         """Build the computational graph
         """
-        l_loss = self._construct_ssl_ladder(self._x_l, self._y_l)
-        u_loss = self._construct_ssl_ladder(self._x_u, reuse=True)
+        u_loss = self._construct_ssl_ladder(self._x_u)
+        l_loss = self._construct_ssl_ladder(self._x_l, self._y_l,  reuse=True)
         self.loss = l_loss + u_loss
-        self._accuracy()
+
+    def _add_summaries(self,):
+        tf.scalar_summary("accuracy", self.accuracy)
+        tf.histogram_summary("prediction", self.pred)
         
     def _conv_2d(self, x, name, variable_scope, 
                      ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME"): 

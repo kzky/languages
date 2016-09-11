@@ -52,8 +52,10 @@ def main():
 
     # Run training and test
     init_op = tf.initialize_all_variables()
+    merged = tf.merge_all_summaries()
     with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Init
+        writer = tf.train.SummaryWriter("./logs", sess.graph)
         sess.run(init_op)
         st = time.time()
         epoch = 0
@@ -68,35 +70,18 @@ def main():
              
             # Eval
             if (i+1) % (n_u_train_data / batch_size) == 0:
-                accuracies = []
-                losses = []
-                data_points = []
                 epoch += 1
-                while True:
-                    #TODO: Use Saver
-                    x_l_data, y_l_data = data_reader.get_test_batch()
-                    if data_reader._next_position_test == 0:
-                        acc_mean = 100. * \
-                          np.asarray(accuracies).dot(np.asarray(data_points)) \
-                          / np.sum(data_points)
-                        loss_mean = 100. * \
-                          np.asarray(losses).dot(np.asarray(data_points)) \
-                          / np.sum(data_points)
-                          
-                        et = time.time()
-                        msg = "Epoch={},Elapsed Time={}[s],Iter={},Loss={},Acc={}"
-                        print(msg.format(epoch, et - st, i, loss_mean, acc_mean))
-                        break
-
-                    acc = sess.run(ssl_ladder.accuracy,
-                                   feed_dict={
-                                       x_l: x_l_data,
-                                       y_l: y_l_data,
-                                       x_u: x_u_data,
-                                       phase_train: False})
-                    accuracies.append(acc)
-                    #losses.append(loss)
-                    data_points.append(len(y_l_data))
+                x_l_data, y_l_data = data_reader.get_test_batch()
+                summary, acc = sess.run([merged, ssl_ladder.accuracy],
+                               feed_dict={
+                                   x_l: x_l_data,
+                                   y_l: y_l_data,
+                                   x_u: x_u_data,
+                                   phase_train: False})
+                et = time.time()
+                writer.add_summary(summary)
+                msg = "Epoch={},Elapsed Cum Time={}[s],Iter={},Acc={}%"
+                print(msg.format(epoch, et - st, i, acc * 100))
 
 if __name__ == '__main__':
     main()

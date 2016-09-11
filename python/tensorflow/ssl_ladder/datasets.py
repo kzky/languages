@@ -24,12 +24,16 @@ class DataReader(object):
         self._batch_size = batch_size
         self._next_position_l_train = 0
         self._next_position_u_train = 0
-        self._next_position_test = 0
 
         self._n_l_train_data = len(self.l_train_data["x"])
         self._n_u_train_data = len(self.u_train_data["x"])
         self._n_test_data = len(self.test_data["x"])
         self._n_cls = n_cls
+
+        prnit("num. of labeled samples {}".format(self._n_l_train_data))
+        prnit("num. of unlabeled samples {}".format(self._n_u_train_data))
+        prnit("num. of test samples {}".format(self._n_test_data))
+        prnit("num. of classes {}".format(self._n_cls = n_cls))
         
     def get_l_train_batch(self,):
         """Return next batch data.
@@ -103,20 +107,10 @@ class DataReader(object):
         """
 
         # Read data
-        beg = self._next_position_test
-        end = self._next_position_test+self._batch_size
-
-        batch_data_x = self.test_data["x"][beg:end, :]
-        
-        # Change to one-hot representaion
-        batch_data_y_ = self.test_data["y"][beg:end]
+        batch_data_x = self.test_data["x"]
+        batch_data_y_ = self.test_data["y"]
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
         batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
-
-        # Reset pointer
-        self._next_position_test += self._batch_size
-        if self._next_position_test >= self._n_test_data:
-            self._next_position_test = 0
 
         return batch_data_x / 256. , batch_data_y
 
@@ -164,8 +158,5 @@ class Separator(object):
         ldata_fpath = os.path.join(dpath, l_fname)
         udata_fpath = os.path.join(dpath, u_fname)
 
-        print(ldata_fpath)
-        print(udata_fpath)
-        
         np.savez(ldata_fpath, **ldata)
         np.savez(udata_fpath, **udata)
