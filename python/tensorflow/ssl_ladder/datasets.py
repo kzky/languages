@@ -30,10 +30,10 @@ class DataReader(object):
         self._n_test_data = len(self.test_data["x"])
         self._n_cls = n_cls
 
-        prnit("num. of labeled samples {}".format(self._n_l_train_data))
-        prnit("num. of unlabeled samples {}".format(self._n_u_train_data))
-        prnit("num. of test samples {}".format(self._n_test_data))
-        prnit("num. of classes {}".format(self._n_cls = n_cls))
+        print("num. of labeled samples {}".format(self._n_l_train_data))
+        print("num. of unlabeled samples {}".format(self._n_u_train_data))
+        print("num. of test samples {}".format(self._n_test_data))
+        print("num. of classes {}".format(self._n_cls))
         
     def get_l_train_batch(self,):
         """Return next batch data.
@@ -144,7 +144,7 @@ class Separator(object):
         ldata["x"] = data["x"][idxs_l]
         ldata["y"] = data["y"][idxs_l]
         udata["x"] = data["x"][idxs_u]
-        udata["y"] = data["y"][idxs_l]
+        udata["y"] = data["y"][idxs_u]
 
         return ldata, udata
         

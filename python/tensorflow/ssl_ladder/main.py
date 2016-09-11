@@ -15,7 +15,7 @@ def main():
     batch_size = 128
     in_dim = 784
     L = 3
-    mid_dim = n_dim = 100
+    mid_dim = n_dim = 500
     out_dim = n_cls = 10
     n_epoch = 30
     n_iter = 30 * n_u_train_data / batch_size
@@ -53,6 +53,7 @@ def main():
     # Run training and test
     init_op = tf.initialize_all_variables()
     merged = tf.merge_all_summaries()
+    saver = tf.train.Saver()
     with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Init
         writer = tf.train.SummaryWriter("./logs", sess.graph)
@@ -80,6 +81,7 @@ def main():
                                    phase_train: False})
                 et = time.time()
                 writer.add_summary(summary)
+                saver.save(sess, "./model.ckpt")
                 msg = "Epoch={},Elapsed Cum Time={}[s],Iter={},Acc={}%"
                 print(msg.format(epoch, et - st, i, acc * 100))
 
