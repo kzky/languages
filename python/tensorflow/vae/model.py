@@ -42,7 +42,7 @@ class VAE(object):
         self._sigma = None
         self._log_sigma_square = None
 
-        # Build Graph 
+        # Build Graph
         self._build_graph()
 
     def _MLP(self, x, in_dim, out_dim, scope, activation=True):
@@ -95,7 +95,7 @@ class VAE(object):
         self._compute_stats(h)
 
         # Sampling with reparamiterization trick
-        noise = tf.truncated_normal(shape=[self._latent_dim], stddev=1)
+        noise = tf.truncated_normal(shape=h.get_shape(), stddev=1)
         z = self._mu + self._sigma * noise
 
         self.encode = z
