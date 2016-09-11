@@ -9,16 +9,17 @@ class DataReader(object):
         u_train_path=\
             "/home/kzk/.chainer/dataset/pfnet/chainer/mnist/u_train.npz", 
         test_path="/home/kzk/.chainer/dataset/pfnet/chainer/mnist/test.npz",
-        batch_size=32):
+        batch_size=32,
+        n_cls=10):
         """
         Args:
           train_path: Dict, NpzFile, or some like that, one key-value holds whole data.
           test_path: Dict, NpzFile, or some like that, one key-value holds whole data.
         """
             
-        self.l_train_data = np.load(l_train_path)
-        self.u_train_data = np.load(u_train_path)
-        self.test_data = np.load(test_path)
+        self.l_train_data = dict(np.load(l_train_path))
+        self.u_train_data = dict(np.load(u_train_path))
+        self.test_data = dict(np.load(test_path))
 
         self._batch_size = batch_size
         self._next_position_l_train = 0
@@ -28,7 +29,8 @@ class DataReader(object):
         self._n_l_train_data = len(self.l_train_data["x"])
         self._n_u_train_data = len(self.u_train_data["x"])
         self._n_test_data = len(self.test_data["x"])
-
+        self._n_cls = n_cls
+        
     def get_l_train_batch(self,):
         """Return next batch data.
 
@@ -40,7 +42,7 @@ class DataReader(object):
         # Read data
         beg = self._next_position_l_train
         end = self._next_position_l_train+self._batch_size
-        batch_data_x_ = self.l_train_data["x"][beg:end, :]
+        batch_data_x = self.l_train_data["x"][beg:end, :]
         batch_data_y_ = self.l_train_data["y"][beg:end]
 
         # Change to one-hot representaion
@@ -58,7 +60,7 @@ class DataReader(object):
             self.l_train_data["x"] = self.l_train_data["x"][idx]
             self.l_train_data["y"] = self.l_train_data["y"][idx]
         
-        return batch_data_x, batch_data_y
+        return batch_data_x / 256. , batch_data_y
 
     def get_u_train_batch(self,):
         """Return next batch data.
@@ -71,7 +73,7 @@ class DataReader(object):
         # Read data
         beg = self._next_position_u_train
         end = self._next_position_u_train+self._batch_size
-        batch_data_x_ = self.u_train_data["x"][beg:end, :]
+        batch_data_x = self.u_train_data["x"][beg:end, :]
         batch_data_y_ = self.u_train_data["y"][beg:end]
 
         # Change to one-hot representaion
@@ -117,7 +119,7 @@ class DataReader(object):
         if self._next_position_test >= self._n_test_data:
             self._next_position_test = 0
 
-        return batch_data_x, batch_data_y
+        return batch_data_x / 256. , batch_data_y
 
 class Separator(object):
     """Seprate the original samples to labeled samples and unlabeled samples.
@@ -132,19 +134,26 @@ class Separator(object):
 
     def separate_then_save(self,
                 fpath="/home/kzk/.chainer/dataset/pfnet/chainer/mnist/train.npz"):
-        ldata, udata = self._seprate(fpath)
+        ldata, udata = self._separate(fpath)
         self._save_ssl_data(fpath, ldata, udata)
         
     def _separate(self,
                  fpath="/home/kzk/.chainer/dataset/pfnet/chainer/mnist/train.npz"):
         
         data = np.load(fpath)
-        n = len(data)
+        n = len(data["x"])
         idxs = np.arange(n)
         idxs_l = np.random.choice(idxs, size=self.u, replace=False)
-        idxs_u = np.asarray(list(set(idxs) - set(idx_l)))
-        
-        return data[idxs_l], data[idxs_u]
+        idxs_u = np.asarray(list(set(idxs) - set(idxs_l)))
+
+        ldata = {}
+        udata = {}
+        ldata["x"] = data["x"][idxs_l]
+        ldata["y"] = data["y"][idxs_l]
+        udata["x"] = data["x"][idxs_u]
+        udata["y"] = data["y"][idxs_l]
+
+        return ldata, udata
         
     def _save_ssl_data(self, fpath, ldata, udata):
         dpath = os.path.dirname(fpath)
@@ -153,8 +162,11 @@ class Separator(object):
         l_fname = "l_{}".format(fname)
         u_fname = "u_{}".format(fname)
         
-        ldata_fpath = os.path.join(dpath, l_frame)
-        udata_fpath = os.path.join(dpath, u_frame)
+        ldata_fpath = os.path.join(dpath, l_fname)
+        udata_fpath = os.path.join(dpath, u_fname)
 
-        np.savez(ldata_fpath)
-        np.savez(udata_fpath)
+        print(ldata_fpath)
+        print(udata_fpath)
+        
+        np.savez(ldata_fpath, **ldata)
+        np.savez(udata_fpath, **udata)

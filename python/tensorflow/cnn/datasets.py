@@ -13,8 +13,8 @@ class DataReader(object):
           test_path: Dict, NpzFile, or some like that, one key-value holds whole data.
         """
             
-        self.train_data = np.load(train_path)
-        self.test_data = np.load(test_path)
+        self.train_data = dict(np.load(train_path))
+        self.test_data = dict(np.load(test_path))
 
         self._batch_size = batch_size
         self._n_cls = n_cls
