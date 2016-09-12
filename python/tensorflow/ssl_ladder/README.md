@@ -6,6 +6,10 @@ Semi-supervised Ladder Network was proposed by Rasmus et al. It can be used for 
 
 When reconstructing the noisy inputs, the key to reconstrcut is such a way that fomulate the probablity distribution of the reconstructed sample same as that of the original sample before adding a noise and add the reconstruction cost between samples nomarlized in the same way, i.e., use the same batch mean and variance. In order to use the same distributions, we have to know the mean and variance of the reconstructed sample so make these functions of the reconstructed samples of the above layer. Note these functions have trainable parameters; a neural net. For reconstruction error, use the batch mean and variance of the before-corrupted samples. Using the variance-scaled least-square loss between the sample and the denoised sample results in this reconstruction error.
 
+#TODO
+- Have to address reconstruction for the input.
+
+
 # References
 - Rasmus, A., Valpola, H., Honkala, M., Berglund, M., & Raiko, T. (2015). Semi-Supervised Learning with Ladder Networks. Neural and Evolutionary Computing; Learning; Machine Learning.
 - Pezeshki, M., Fan, L., Brakel, P., Courville, A., & Bengio, Y. (2016). Deconstructing the Ladder Network Architecture (icml). Icml, 48, 1–15.
