@@ -230,7 +230,7 @@ class SSLLadder(object):
             beta = tf.get_variable(name=beta_name, shape=[depth])
             gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
-        return gamma * (x + beta)
+        return gamma * x + beta
 
     def _moments(self, x):
         """Compute mean and variance.
