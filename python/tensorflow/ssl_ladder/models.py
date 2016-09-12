@@ -95,11 +95,11 @@ class SSLLadder(object):
         padding: str
         """
         w_name = "w-{}".format(name )
-        #b_name = "b-{}".format(name)
+        b_name = "b-{}".format(name)
 
         with variable_scope:
             W = tf.get_variable(name=w_name, shape=ksize)
-            #b = tf.get_variable(name=b_name, shape=[ksize[-1]])
+            b = tf.get_variable(name=b_name, shape=[ksize[-1]])
               
         conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding)
         return conv2d_op
@@ -134,11 +134,11 @@ class SSLLadder(object):
             in_dim *= dim.value
 
         w_name = "w-{}".format(name)
-        #b_name = "b-{}".format(name)
+        b_name = "b-{}".format(name)
 
         with variable_scope:
             W = tf.get_variable(name=w_name, shape=[in_dim, out_dim])
-            #b = self._get_variable_by_name(scope_name, w_name)
+            b = tf.get_variable(name=b_name, shape=[out_dim])
             
         x_ = tf.reshape(x, [-1, in_dim])
         linear_op = tf.matmul(x_, W)
