@@ -46,7 +46,7 @@ def main():
             train_step.run(feed_dict={x: x_data})
              
             # Eval
-            obj_mean = 0
+            obj_mean = -1e-100
             if (i+1) % (n_train_data / batch_size) == 0:
                 objs = []
                 epoch += 1
@@ -60,7 +60,7 @@ def main():
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
-            if obj_mean < -100:
+            if obj_mean > -100:
                 print("End at {} epoch".format(epoch))
                 break
 if __name__ == '__main__':
