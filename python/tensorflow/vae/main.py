@@ -46,7 +46,7 @@ def main():
             train_step.run(feed_dict={x: x_data})
              
             # Eval
-            obj_mean = -1e-100
+            obj_mean = -1e100
             if (i+1) % (n_train_data / batch_size) == 0:
                 objs = []
                 epoch += 1
