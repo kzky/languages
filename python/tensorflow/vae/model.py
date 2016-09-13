@@ -95,7 +95,7 @@ class VAE(object):
         self._compute_stats(h)
 
         # Sampling with reparamiterization trick
-        noise = tf.truncated_normal(shape=tf.shape(self._sigma), stddev=1)
+        noise = tf.truncated_normal(shape=tf.shape(self._sigma), stddev=3)
         z = self._mu + self._sigma * noise
 
         self.encode = z
@@ -146,6 +146,7 @@ class VAE(object):
 
         # Decoder loss
         x = self._x
+        #y = self.decode
         y = tf.nn.sigmoid(self.decode)
         binary_cross_entropy = tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y),
                                             reduction_indices=[1]) # this code will overflow

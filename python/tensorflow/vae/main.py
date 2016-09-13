@@ -13,7 +13,7 @@ def main():
     in_dim = 784
     mid_dim = 500
     latent_dim = 20
-    n_iter = 1000000
+    n_iter = 100000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
@@ -60,8 +60,8 @@ def main():
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
-            if obj_mean > -100:
-                print("End at {} epoch".format(epoch))
-                break
+            #if obj_mean > -100:
+            #    print("End at {} epoch".format(epoch))
+            #    break
 if __name__ == '__main__':
     main()
