@@ -69,9 +69,9 @@ class VAE(object):
         with scope: 
             # Parameter
             W = tf.Variable(
-                tf.truncated_normal(shape=[in_dim, out_dim])*0.0005)
+                tf.truncated_normal(shape=[in_dim, out_dim]))
             b = tf.Variable(
-                tf.truncated_normal(shape=[out_dim])*0.0005)
+                tf.truncated_normal(shape=[out_dim]))
 
         # Add to the set of variables
         self._variables.add(W)
