@@ -59,6 +59,8 @@ def main():
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
-
+            if obj_mean < -100:
+                print("End at {} epoch".format(epoch))
+                break
 if __name__ == '__main__':
     main()
