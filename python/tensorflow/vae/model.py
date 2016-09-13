@@ -69,9 +69,9 @@ class VAE(object):
         with scope: 
             # Parameter
             W = tf.Variable(
-                tf.truncated_normal(shape=[in_dim, out_dim]))
+                tf.truncated_normal(shape=[in_dim, out_dim])*0.0005)
             b = tf.Variable(
-                tf.truncated_normal(shape=[out_dim]))
+                tf.truncated_normal(shape=[out_dim])*0.0005)
 
         # Add to the set of variables
         self._variables.add(W)
@@ -112,7 +112,8 @@ class VAE(object):
         enc_scope = tf.variable_scope("encoder")
         log_sigma_square = self._MLP(h, self._mid_dim, self._latent_dim,
                                          enc_scope, False)
-        self._log_sigma_square = tf.clip_by_value(log_sigma_square, -1000, 5)
+        #self._log_sigma_square = tf.clip_by_value(log_sigma_square, -1000, 100)
+        self._log_sigma_square = log_sigma_square
         self._sigma_square = tf.exp(log_sigma_square)
         self._sigma = tf.sqrt(self._sigma_square)
             
