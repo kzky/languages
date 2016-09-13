@@ -55,7 +55,7 @@ def main():
                         obj_mean = np.mean(obj)
                         et = time.time()
                         print("Epoch={},Elapsed Time={}[s],Iter={},Obj(Test)={}".format(
-                            epoch, et - st, i, obj))
+                            epoch, et - st, i, obj_mean))
                         break
                     obj = sess.run(vae.obj, feed_dict={x: x_data})
                     objs.append(obj)
