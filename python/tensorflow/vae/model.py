@@ -124,9 +124,9 @@ class VAE(object):
         h0 = self._MLP(self.encode, self._latent_dim, self._mid_dim, dec_scope)
 
         dec_scope = tf.variable_scope("decoder")
-        h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scope)
+        h1 = self._MLP(h0, self._mid_dim, self._in_dim, dec_scope, activation=False)
 
-        y = tf.nn.sigmoid(h1)
+        #y = tf.nn.sigmoid(h1)
 
         self.decode = y
         
@@ -148,11 +148,11 @@ class VAE(object):
         # Decoder loss
         x = self._x
         y = self.decode
-        binary_cross_entropy = tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y),
-                                            reduction_indices=[1]) # this code will overflow
+        #binary_cross_entropy = tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y),
+        #                                    reduction_indices=[1]) # this code will overflow
 
         # Note tf.nn.sigmoid_cross_entropy_with_logits returns `minus`
-        #binary_cross_entropy = - tf.nn.sigmoid_cross_entropy_with_logits(y, x)
+        binary_cross_entropy = - tf.nn.sigmoid_cross_entropy_with_logits(y, x)
         decoder_loss = tf.reduce_mean(binary_cross_entropy)
         
         self.obj = encoder_loss + decoder_loss
