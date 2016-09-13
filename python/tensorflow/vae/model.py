@@ -69,9 +69,9 @@ class VAE(object):
         with scope: 
             # Parameter
             W = tf.Variable(
-                tf.truncated_normal(shape=[in_dim, out_dim]))
+                tf.truncated_normal(shape=[in_dim, out_dim])*0.01)
             b = tf.Variable(
-                tf.truncated_normal(shape=[out_dim]))
+                tf.truncated_normal(shape=[out_dim])*0.01)
 
         # Add to the set of variables
         self._variables.add(W)
@@ -146,13 +146,12 @@ class VAE(object):
 
         # Decoder loss
         x = self._x
-        y = self.decode
-        #y = tf.nn.sigmoid(y)
-        #binary_cross_entropy = tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y),
-        #                                    reduction_indices=[1]) # this code will overflow
+        y = tf.nn.sigmoid(self.decode)
+        binary_cross_entropy = tf.reduce_sum(x * tf.log(y) + (1 - x) * tf.log(1 - y),
+                                            reduction_indices=[1]) # this code will overflow
 
         # Note tf.nn.sigmoid_cross_entropy_with_logits returns `minus`
-        binary_cross_entropy = - tf.nn.sigmoid_cross_entropy_with_logits(y, x)
+        #binary_cross_entropy = - tf.nn.sigmoid_cross_entropy_with_logits(y, x)
         decoder_loss = tf.reduce_mean(binary_cross_entropy)
         
         self.obj = encoder_loss + decoder_loss

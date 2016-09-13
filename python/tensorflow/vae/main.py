@@ -9,11 +9,11 @@ import __future__
 def main():
     # Setting
     n_train_data = 60000
-    batch_size = 128
+    batch_size = 100
     in_dim = 784
-    mid_dim = 300
-    latent_dim = 100
-    n_iter = 200000
+    mid_dim = 500
+    latent_dim = 20
+    n_iter = 1000000
 
     # Placeholder
     x = tf.placeholder(tf.float32, shape=[None, in_dim], name="x")
