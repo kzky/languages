@@ -6,7 +6,7 @@ import time
 import os
 import __future__
 
-def main():
+def run_experiments(lambda_list):
     # Setting
     l = 100
     n_train_data = 60000
@@ -15,9 +15,12 @@ def main():
     batch_size = 128
     in_dim = 784
     n_dims = [1000, 500, 250, 250, 250, 10]
+    lambda_list = lambda_list
     out_dim = n_cls = 10
     n_epoch = 200
     n_iter = n_epoch * n_u_train_data / batch_size
+    learning_rate = tf.placeholder(tf.float32, shape=[])
+    learning_rate_ = 1e-4
 
     # Separate
     home = os.environ.get("HOME")
@@ -32,7 +35,7 @@ def main():
     phase_train = tf.placeholder(tf.bool, name="phase_train")
     
     # Model
-    ssl_ladder = SSLLadder(x_l, y_l, x_u, n_dims, n_cls, phase_train)
+    ssl_ladder = SSLLadder(x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list)
 
     # Data
     home = os.environ["HOME"]
@@ -47,7 +50,7 @@ def main():
                              test_path, batch_size=batch_size)
 
     # Optimizer
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(ssl_ladder.loss)
+    train_step = tf.train.AdamOptimizer(learning_rate).minimize(ssl_ladder.loss)
 
     # Run training and test
     init_op = tf.initialize_all_variables()
@@ -55,18 +58,21 @@ def main():
     saver = tf.train.Saver()
     with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Init
-        writer = tf.train.SummaryWriter("./logs", sess.graph)
+        writer = tf.train.SummaryWriter("./logs_{}".format(lambda_list), sess.graph)
         sess.run(init_op)
         st = time.time()
         epoch = 0
+        acc_prev = 0
+        acc = 0
         for i in range(n_iter):
             # Read
             x_l_data, y_l_data = data_reader.get_l_train_batch()
             x_u_data, y_u_data = data_reader.get_u_train_batch()
 
-            # Train
+            # Train                
             train_step.run(feed_dict={x_l: x_l_data, y_l: y_l_data,
-                                      x_u: x_u_data, phase_train: True})
+                                      x_u: x_u_data, phase_train: True, 
+                                      learning_rate: learning_rate_})
              
             # Eval
             if (i+1) % (n_u_train_data / batch_size) == 0:
@@ -78,11 +84,27 @@ def main():
                                    y_l: y_l_data,
                                    x_u: x_u_data,
                                    phase_train: False})
+                if acc < acc_prev:
+                    learning_rate_ *= 0.1 
+
                 et = time.time()
                 writer.add_summary(summary)
                 saver.save(sess, "./model.ckpt")
                 msg = "Epoch={},Elapsed Cum Time={}[s],Iter={},Acc={}%"
                 print(msg.format(epoch, et - st, i, acc * 100))
-
+                acc_prev = acc
+                                
 if __name__ == '__main__':
-    main()
+    lambda_lists = [
+        [10, 0.1, 0.1, 0.1, 0.1, 0.1],
+        [100, 0.1, 0.1, 0.1, 0.1, 0.1],
+        [1000, 0.1, 0.1, 0.1, 0.1, 0.1],
+        [0, 0, 0, 0, 0, 0.5],
+        [0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 10],
+        [0, 0, 0, 0, 0, 100],
+    ]
+    for lambda_list in lambda_lists:
+        print("lambda_list")
+        print(lambda_list)
+        run_experiments(lambda_list)

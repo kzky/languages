@@ -34,7 +34,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train):
+    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list):
         """
         Parameters
         -----------------
@@ -66,6 +66,8 @@ class SSLLadder(object):
         self.decoder = None
         self.loss = None
         self.accuracy = None
+
+        self._lambda_list = lambda_list
 
         # Build Graph
         self._build_graph()
@@ -325,7 +327,7 @@ class SSLLadder(object):
         z_list = []
         z_noise_list = []
         z_recon_bn_list = []
-        lambda_list = [1] * self._L
+        lambda_list = self._lambda_list
 
         # Encoder
         print("# Encoder")
