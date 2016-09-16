@@ -369,7 +369,8 @@ class SSLLadder(object):
                                                         sb_variable_scope))
 
             z_noise_list.append(z_noise)
-            
+
+        # TODO: this is a problem for not getting the high accuracy?
         # Set classifier
         if y is not None: 
             self.pred = h
