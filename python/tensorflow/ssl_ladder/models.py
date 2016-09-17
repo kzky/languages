@@ -34,7 +34,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train):
+    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list):
         """
         Parameters
         -----------------
@@ -61,11 +61,14 @@ class SSLLadder(object):
         self._phase_train = phase_train
         
         self.pred = None
+        self.h_noise = None
         self.corrupted_encoder = None
         self.clean_encoder = None
         self.decoder = None
         self.loss = None
         self.accuracy = None
+
+        self._lambda_list = lambda_list
 
         # Build Graph
         self._build_graph()
@@ -325,7 +328,7 @@ class SSLLadder(object):
         z_list = []
         z_noise_list = []
         z_recon_bn_list = []
-        lambda_list = [1] * self._L
+        lambda_list = self._lambda_list
 
         # Encoder
         print("# Encoder")
@@ -333,31 +336,13 @@ class SSLLadder(object):
         h_noise = h + tf.truncated_normal(tf.shape(h))
         for i in range(self._L):
             print("\tLayer-{}".format(i))
-            
-            # Clean encoder
-            print("\t# Clean encoder")
-
-            # Variable scope
-            l_variable_scope = tf.variable_scope("enc-linear", reuse=reuse)
-            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=reuse)
-
-            # encode
-            z_pre = self._linear(h, "{}-th".format(i), self._n_dims[i], l_variable_scope)
-            mu, std = self._moments(z_pre)
-            z = self._batch_norm(z_pre, mu, std)
-            h = tf.nn.relu(self._scaling_and_bias(z, "{}-th".format(i),
-                                                  sb_variable_scope))
-
-            mu_list.append(mu)
-            std_list.append(std)
-            z_list.append(z)
 
             # Corrupted encoder
             print("\t# Corrupted encoder")
 
             # Variable scope
-            l_variable_scope = tf.variable_scope("enc-linear", reuse=True)
-            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=True)
+            l_variable_scope = tf.variable_scope("enc-linear", reuse=reuse)
+            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=reuse)
 
             # encode
             z_pre_noise = self._linear(h_noise, "{}-th".format(i), self._n_dims[i],
@@ -369,11 +354,29 @@ class SSLLadder(object):
                                                         sb_variable_scope))
 
             z_noise_list.append(z_noise)
+            
+            # Clean encoder
+            print("\t# Clean encoder")
 
-        # TODO: this is a problem for not getting the high accuracy?
+            # Variable scope
+            l_variable_scope = tf.variable_scope("enc-linear", reuse=True)
+            sb_variable_scope = tf.variable_scope("enc-scale-bias", reuse=True)
+
+            # encode
+            z_pre = self._linear(h, "{}-th".format(i), self._n_dims[i], l_variable_scope)
+            mu, std = self._moments(z_pre)
+            z = self._batch_norm(z_pre, mu, std)
+            h = tf.nn.relu(self._scaling_and_bias(z, "{}-th".format(i),
+                                                  sb_variable_scope))
+
+            mu_list.append(mu)
+            std_list.append(std)
+            z_list.append(z)
+            
         # Set classifier
         if y is not None: 
             self.pred = h
+            self.h_noise = h_noise
         
         # Decoder
         print("# Decoder")
@@ -414,7 +417,7 @@ class SSLLadder(object):
         # Loss for labeled samples
         if y is not None:
             C += tf.reduce_mean(
-                tf.nn.softmax_cross_entropy_with_logits(self.pred, self._y_l))
+                tf.nn.softmax_cross_entropy_with_logits(self.h_noise, self._y_l))
 
         return C
 
