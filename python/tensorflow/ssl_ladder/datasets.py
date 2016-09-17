@@ -95,7 +95,7 @@ class DataReader(object):
             self.u_train_data["x"] = self.u_train_data["x"][idx]
             self.u_train_data["y"] = self.u_train_data["y"][idx]
         
-        return batch_data_x, batch_data_y
+        return batch_data_x / 256. , batch_data_y
 
     def get_test_batch(self,):
         """Return next batch data.
