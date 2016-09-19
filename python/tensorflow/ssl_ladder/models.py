@@ -36,7 +36,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list, std=3):
+    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list, std=0.3):
         """
         Parameters
         -----------------
