@@ -292,7 +292,7 @@ class SSLLadder(object):
         std: tf.Tensor
 
         """
-        return (x - mu) / std
+        return (x - mu) / (std + 1e-10)
         
     def _accuracy(self, ):
         """Compute accuracy op
