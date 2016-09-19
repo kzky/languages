@@ -14,7 +14,7 @@ def run_experiments(lambda_list):
     n_u_train_data = n_train_data - l
     batch_size = 128
     in_dim = 784
-    n_dims = [1000, 500, 250, 250, 250, 10]
+    n_dims = [in_dim, 1000, 500, 250, 250, 250, 10]
     lambda_list = lambda_list
     out_dim = n_cls = 10
     n_epoch = 200
@@ -95,16 +95,7 @@ def run_experiments(lambda_list):
                 acc_prev = acc
                                 
 if __name__ == '__main__':
-    lambda_lists = [
-        [10, 0.1, 0.1, 0.1, 0.1, 0.1],
-        [100, 0.1, 0.1, 0.1, 0.1, 0.1],
-        [1000, 0.1, 0.1, 0.1, 0.1, 0.1],
-        [0, 0, 0, 0, 0, 0.5],
-        [0, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 0, 10],
-        [0, 0, 0, 0, 0, 100],
-    ]
-    for lambda_list in lambda_lists:
-        print("lambda_list")
-        print(lambda_list)
-        run_experiments(lambda_list)
+    lambda_list = [1000, 10, 0.1, 0.1, 0.1, 0.1, 0.1]
+    print("lambda_list")
+    print(lambda_list)
+    run_experiments(lambda_list)

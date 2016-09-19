@@ -55,7 +55,7 @@ class SSLLadder(object):
         self._x_l = x_l
         self._y_l = y_l
         self._x_u = x_u
-        self._L = len(n_dims)
+        self._L = len(n_dims) - 1
         self._n_dims = n_dims
         self._n_cls = n_cls
         self._phase_train = phase_train
@@ -333,8 +333,13 @@ class SSLLadder(object):
         # Encoder
         print("# Encoder")
         h = z = x
-        h_noise = h + tf.truncated_normal(tf.shape(h))
-        for i in range(self._L):
+        h_noise = z_noise = h + tf.truncated_normal(tf.shape(h))
+        z_noise_list.append(z_noise)
+        mu_list.append(0)
+        std_list.append(0)
+        z_list.append(z_noise)
+
+        for i in range(1, self._L+1):
             print("\tLayer-{}".format(i))
 
             # Corrupted encoder
@@ -350,7 +355,7 @@ class SSLLadder(object):
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
                       + tf.truncated_normal(tf.shape(z_pre_noise))
-            if i == self._L - 1:
+            if i == self._L:
                 h_noise = self._scaling_and_bias(z_noise, "{}-th".format(i),
                                                  sb_variable_scope)
             else: 
@@ -370,7 +375,7 @@ class SSLLadder(object):
             mu, std = self._moments(z_pre)
             z = self._batch_norm(z_pre, mu, std)
 
-            if i == self._L -1: 
+            if i == self._L: 
                 h = self._scaling_and_bias(z, "{}-th".format(i),
                                            sb_variable_scope)
             else:
@@ -387,13 +392,13 @@ class SSLLadder(object):
         
         # Decoder
         print("# Decoder")
-        for i in reversed(range(self._L)):
+        for i in reversed(range(0, self._L + 1)):
             print("\tLayer-{}".format(i))
             # Variable scope
             l_variable_scope = tf.variable_scope("dec-linear", reuse=reuse)
             d_variable_scope = tf.variable_scope("dec-denoise", reuse=reuse)
             
-            if i == self._L - 1:
+            if i == self._L:
                 mu, std = self._moments(h_noise)
                 u = self._batch_norm(h_noise, mu, std)
             else:
@@ -407,7 +412,11 @@ class SSLLadder(object):
 
             mu = mu_list[i]
             std = std_list[i]
-            z_recon_bn = self._batch_norm(z_recon, mu, std)
+
+            if mu == 0 or std == 0:  # case of the first layer
+                z_recon_bn = z_recon
+            else:
+                z_recon_bn = self._batch_norm(z_recon, mu, std)
             z_recon_bn_list.append(z_recon_bn)
             
         # Loss for both labeled and unlabeled samples
