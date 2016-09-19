@@ -338,8 +338,9 @@ class SSLLadder(object):
         h = z = x
         h_noise = z_noise = h + tf.random_normal(tf.shape(h), stddev=self._std)
         z_noise_list.append(z_noise)
-        mu_list.append(0)
-        std_list.append(0)
+        mu, std = self._moments(z)
+        mu_list.append(mu)
+        std_list.append(std)
         z_list.append(z)
 
         for i in range(1, self._L+1):
