@@ -82,7 +82,6 @@ def run_experiments(lambda_list):
                                feed_dict={
                                    x_l: x_l_data,
                                    y_l: y_l_data,
-                                   x_u: x_u_data,
                                    phase_train: False})
                 if acc < acc_prev:
                     learning_rate_ *= 0.1 
