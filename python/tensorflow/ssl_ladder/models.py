@@ -107,7 +107,7 @@ class SSLLadder(object):
             W = tf.get_variable(name=w_name, shape=ksize)
             b = tf.get_variable(name=b_name, shape=[ksize[-1]])
               
-        conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding)
+        conv2d_op = tf.nn.conv2d(x, W, strides=strides, padding=padding) + b
         return conv2d_op
         
     def _max_pooling_2d(self, x, name,
@@ -146,7 +146,7 @@ class SSLLadder(object):
             W = tf.get_variable(name=w_name, shape=[in_dim, out_dim])
             b = tf.get_variable(name=b_name, shape=[out_dim])
             
-        x_ = tf.reshape(x, [-1, in_dim])
+        x_ = tf.reshape(x, [-1, in_dim]) + b
         linear_op = tf.matmul(x_, W)
 
         return linear_op
