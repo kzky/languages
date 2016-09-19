@@ -86,7 +86,8 @@ def run_experiments(lambda_list):
                                    phase_train: False})
                 if acc < acc_prev:
                     learning_rate_ *= 0.1 
-
+                    print("Learning rate decayed to {}".format(learning_rate_))
+                    
                 et = time.time()
                 writer.add_summary(summary)
                 saver.save(sess, "./model.ckpt")
