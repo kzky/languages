@@ -432,7 +432,8 @@ class SSLLadder(object):
             
         for i in range(self._L + 1):
             coeff = lambda_list[i] / self._n_dims[i]
-            C +=  coeff * tf.reduce_mean((z_list[i] - z_recon_bn_list[i]) ** 2)
+            C +=  coeff * tf.reduce_mean(
+                tf.reduce_sum((z_list[i] - z_recon_bn_list[i]), 1) ** 2)
             
         # Loss for labeled samples
         if y is not None:
