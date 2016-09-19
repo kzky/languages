@@ -278,7 +278,7 @@ class SSLLadder(object):
                                 mean_var_with_update,
                                 lambda: (ema.average(batch_mean), ema.average(batch_var)))
 
-        return mean, tf.sqrt(var)
+        return mean, tf.sqrt(var + 1e-10)
 
     def _batch_norm(self, x, mu, std):
         """BatchNorm op.
@@ -292,7 +292,7 @@ class SSLLadder(object):
         std: tf.Tensor
 
         """
-        return (x - mu) / (std + 1e-10)
+        return (x - mu) / std
         
     def _accuracy(self, ):
         """Compute accuracy op
