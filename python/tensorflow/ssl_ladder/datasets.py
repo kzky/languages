@@ -64,7 +64,7 @@ class DataReader(object):
             self.l_train_data["x"] = self.l_train_data["x"][idx]
             self.l_train_data["y"] = self.l_train_data["y"][idx]
         
-        return batch_data_x / 256. , batch_data_y
+        return batch_data_x / 255. , batch_data_y
 
     def get_u_train_batch(self,):
         """Return next batch data.
@@ -95,7 +95,7 @@ class DataReader(object):
             self.u_train_data["x"] = self.u_train_data["x"][idx]
             self.u_train_data["y"] = self.u_train_data["y"][idx]
         
-        return batch_data_x / 256. , batch_data_y
+        return batch_data_x / 255. , batch_data_y
 
     def get_test_batch(self,):
         """Return next batch data.
@@ -112,7 +112,7 @@ class DataReader(object):
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
         batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
 
-        return batch_data_x / 256. , batch_data_y
+        return batch_data_x / 255. , batch_data_y
 
 class Separator(object):
     """Seprate the original samples to labeled samples and unlabeled samples.
