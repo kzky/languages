@@ -338,7 +338,7 @@ class SSLLadder(object):
         z_noise_list.append(z_noise)
         mu_list.append(0)
         std_list.append(0)
-        z_list.append(z_noise)
+        z_list.append(z)
 
         for i in range(1, self._L+1):
             print("\tLayer-{}".format(i))
