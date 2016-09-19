@@ -20,6 +20,8 @@ class SSLLadder(object):
         Dimension of x 2-d whose shape is [None, 784] in case of MNIST
     phase_train: tf.placeholder of bool
         Used in BN
+    lambda_lit: list of int
+    std: float
     pred: tf.Tesnor
         Predictor of the network.
     corrupted_encoder: tf.Tesnor
