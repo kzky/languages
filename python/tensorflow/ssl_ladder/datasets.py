@@ -51,7 +51,7 @@ class DataReader(object):
 
         # Change to one-hot representaion
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
-        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
+        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1.
 
         # Reset pointer
         self._next_position_l_train += self._batch_size
@@ -82,7 +82,7 @@ class DataReader(object):
 
         # Change to one-hot representaion
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
-        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
+        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1.
 
         # Reset pointer
         self._next_position_u_train += self._batch_size
@@ -110,7 +110,7 @@ class DataReader(object):
         batch_data_x = self.test_data["x"]
         batch_data_y_ = self.test_data["y"]
         batch_data_y = np.zeros((len(batch_data_y_), self._n_cls))
-        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1
+        batch_data_y[np.arange(len(batch_data_y_)), batch_data_y_] = 1.
 
         return batch_data_x / 255. , batch_data_y
 
