@@ -34,7 +34,7 @@ class SSLLadder(object):
         Accuracy
     """
     
-    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list):
+    def __init__(self, x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list, std=3):
         """
         Parameters
         -----------------
@@ -69,6 +69,7 @@ class SSLLadder(object):
         self.accuracy = None
 
         self._lambda_list = lambda_list
+        self._std = std
 
         # Build Graph
         self._build_graph()
@@ -84,7 +85,7 @@ class SSLLadder(object):
 
     def _add_summaries(self,):
         tf.scalar_summary("accuracy", self.accuracy)
-        tf.histogram_summary("prediction", self.pred)
+        #tf.histogram_summary("prediction", self.pred)
         
     def _conv_2d(self, x, name, variable_scope, 
                      ksize=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding="SAME"): 
@@ -333,7 +334,7 @@ class SSLLadder(object):
         # Encoder
         print("# Encoder")
         h = z = x
-        h_noise = z_noise = h + tf.truncated_normal(tf.shape(h))
+        h_noise = z_noise = h + tf.truncated_normal(tf.shape(h), stddev=self._std)
         z_noise_list.append(z_noise)
         mu_list.append(0)
         std_list.append(0)
@@ -354,7 +355,7 @@ class SSLLadder(object):
                                        l_variable_scope)
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
-                      + tf.truncated_normal(tf.shape(z_pre_noise))
+                      + tf.truncated_normal(tf.shape(z_pre_noise), stddev=self._std)
             if i == self._L:
                 h_noise = self._scaling_and_bias(z_noise, "{}-th".format(i),
                                                  sb_variable_scope)
