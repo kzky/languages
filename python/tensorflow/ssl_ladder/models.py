@@ -429,7 +429,7 @@ class SSLLadder(object):
             print(z.get_shape())
             
         for i in range(self._L + 1):
-            C += lambda_list[i] * tf.reduce_mean((z_list[i] - z_recon_bn_list[i]) ** 2)
+            C += lambda_list[i] * tf.reduce_sum((z_list[i] - z_recon_bn_list[i]) ** 2)
             
         # Loss for labeled samples
         if y is not None:
