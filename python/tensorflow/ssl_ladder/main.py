@@ -35,7 +35,7 @@ def run_experiments(lambda_list):
     phase_train = tf.placeholder(tf.bool, name="phase_train")
     
     # Model
-    ssl_ladder = SSLLadder(x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list)
+    ssl_ladder = SSLLadder(x_l, y_l, x_u, n_dims, n_cls, phase_train, lambda_list, std=0.3)
 
     # Data
     home = os.environ["HOME"]
