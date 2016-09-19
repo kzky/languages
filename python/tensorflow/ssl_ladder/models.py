@@ -336,7 +336,7 @@ class SSLLadder(object):
         # Encoder
         print("# Encoder")
         h = z = x
-        h_noise = z_noise = h + tf.truncated_normal(tf.shape(h), stddev=self._std)
+        h_noise = z_noise = h + tf.random_normal(tf.shape(h), stddev=self._std)
         z_noise_list.append(z_noise)
         mu_list.append(0)
         std_list.append(0)
@@ -357,7 +357,7 @@ class SSLLadder(object):
                                        l_variable_scope)
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
-                      + tf.truncated_normal(tf.shape(z_pre_noise), stddev=self._std)
+                      + tf.random_normal(tf.shape(z_pre_noise), stddev=self._std)
             if i == self._L:
                 h_noise = self._scaling_and_bias(z_noise, "{}-th".format(i),
                                                  sb_variable_scope)
