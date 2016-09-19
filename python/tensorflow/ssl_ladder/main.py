@@ -12,7 +12,7 @@ def run_experiments(lambda_list):
     n_train_data = 60000
     n_l_train_data = l
     n_u_train_data = n_train_data - l
-    batch_size = 128
+    batch_size = 100
     in_dim = 784
     n_dims = [in_dim, 1000, 500, 250, 250, 250, 10]
     lambda_list = lambda_list
