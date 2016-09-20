@@ -178,26 +178,26 @@ class SSLLadder(object):
 
         with variable_scope:
             a_mu_1_name = "a_mu_1-{}".format(name)
-            a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape)
+            a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape, initializer=tf.zeros)
             a_mu_2_name = "a_mu_2-{}".format(name)
-            a_mu_2 = tf.get_variable(a_mu_2_name, shape=shape)
+            a_mu_2 = tf.get_variable(a_mu_2_name, shape=shape, initializer=tf.ones)
             a_mu_3_name = "a_mu_3-{}".format(name)
-            a_mu_3 = tf.get_variable(a_mu_3_name, shape=shape)
+            a_mu_3 = tf.get_variable(a_mu_3_name, shape=shape, initializer=tf.zeros)
             a_mu_4_name = "a_mu_4-{}".format(name)
-            a_mu_4 = tf.get_variable(a_mu_4_name, shape=shape)
+            a_mu_4 = tf.get_variable(a_mu_4_name, shape=shape, initializer=tf.zeros)
             a_mu_5_name = "a_mu_5-{}".format(name)
-            a_mu_5 = tf.get_variable(a_mu_5_name, shape=shape)
+            a_mu_5 = tf.get_variable(a_mu_5_name, shape=shape, initializer=tf.zeros)
 
             a_var_1_name = "a_var_1-{}".format(name)
-            a_var_1 = tf.get_variable(a_var_1_name, shape=shape)
+            a_var_1 = tf.get_variable(a_var_1_name, shape=shape, initializer=tf.zeros)
             a_var_2_name = "a_var_2-{}".format(name)
-            a_var_2 = tf.get_variable(a_var_2_name, shape=shape)
+            a_var_2 = tf.get_variable(a_var_2_name, shape=shape, initializer=tf.ones)
             a_var_3_name = "a_var_3-{}".format(name)
-            a_var_3 = tf.get_variable(a_var_3_name, shape=shape)
+            a_var_3 = tf.get_variable(a_var_3_name, shape=shape, initializer=tf.zeros)
             a_var_4_name = "a_var_4-{}".format(name)
-            a_var_4 = tf.get_variable(a_var_4_name, shape=shape)
+            a_var_4 = tf.get_variable(a_var_4_name, shape=shape, initializer=tf.zeros)
             a_var_5_name = "a_var_5-{}".format(name)
-            a_var_5 = tf.get_variable(a_var_5_name, shape=shape)
+            a_var_5 = tf.get_variable(a_var_5_name, shape=shape, initializer=tf.zeros)
 
         mu = a_mu_1 * tf.nn.sigmoid(a_mu_2 * u + a_mu_3) + a_mu_4 * u + a_mu_5
         var = a_var_1 * tf.nn.sigmoid(a_var_2 * u + a_var_3) + a_var_4 * u + a_var_5
@@ -206,7 +206,7 @@ class SSLLadder(object):
 
         return z_recon
         
-    def _scaling_and_bias(self, x, name, variable_scope):
+    def _scaling_and_bias(self, x, name, variable_scope, i):
         """Scale and bias the input in BatchNorm
 
         The way to scale and bias is a bit different from the standard BatchNorm.
@@ -233,10 +233,15 @@ class SSLLadder(object):
         gamma_name= "gamma-{}".format(name)
 
         with variable_scope:
-            beta = tf.get_variable(name=beta_name, shape=[depth])
+            beta = tf.get_variable(name=beta_name, shape=[depth], initializer=tf.ones)
             gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
-        return gamma * (x + beta)
+        if i == self._L:
+            a = gamma * (x + beta)
+        else:
+            a = x + beta
+
+        return a
 
     def _moments(self, x):
         """Compute mean and variance.
@@ -336,7 +341,7 @@ class SSLLadder(object):
         # Encoder
         print("# Encoder")
         h = z = x
-        h_noise = z_noise = h + tf.random_normal(tf.shape(h), stddev=self._std)
+        h_noise = z_noise = h + tf.random_normal(tf.shape(h), stddev=1.) * self._std
         z_noise_list.append(z_noise)
         mu_list.append(0)
         std_list.append(0)
@@ -357,13 +362,13 @@ class SSLLadder(object):
                                        l_variable_scope)
             mu, std = self._moments(z_pre_noise)
             z_noise = self._batch_norm(z_pre_noise, mu, std) \
-                      + tf.random_normal(tf.shape(z_pre_noise), stddev=self._std)
+                      + tf.random_normal(tf.shape(z_pre_noise), stddev=1.0) * self._std
             if i == self._L:
                 h_noise = self._scaling_and_bias(z_noise, "{}-th".format(i),
-                                                 sb_variable_scope)
+                                                 sb_variable_scope, i)
             else: 
                 h_noise = tf.nn.relu(self._scaling_and_bias(z_noise, "{}-th".format(i),
-                                                            sb_variable_scope))
+                                                            sb_variable_scope, i))
             z_noise_list.append(z_noise)
             
             # Clean encoder
@@ -380,10 +385,10 @@ class SSLLadder(object):
 
             if i == self._L: 
                 h = self._scaling_and_bias(z, "{}-th".format(i),
-                                           sb_variable_scope)
+                                           sb_variable_scope, i)
             else:
                 h = tf.nn.relu(self._scaling_and_bias(z, "{}-th".format(i),
-                                                      sb_variable_scope))
+                                                      sb_variable_scope, i))
             mu_list.append(mu)
             std_list.append(std)
             z_list.append(z)
@@ -433,7 +438,7 @@ class SSLLadder(object):
         for i in range(self._L + 1):
             coeff = lambda_list[i] / self._n_dims[i]
             C +=  coeff * tf.reduce_mean(
-                tf.reduce_sum((z_list[i] - z_recon_bn_list[i]), 1) ** 2)
+                tf.reduce_sum(tf.square(z_list[i] - z_recon_bn_list[i]), 1))
             
         # Loss for labeled samples
         if y is not None:
