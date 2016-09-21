@@ -20,7 +20,7 @@ def run_experiments(lambda_list):
     n_epoch = 200
     n_iter = n_epoch * n_u_train_data / batch_size
     learning_rate = tf.placeholder(tf.float32, shape=[])
-    learning_rate_ = 1e-4
+    learning_rate_ = 1. * 1e-4
 
     # Separate
     home = os.environ.get("HOME")
@@ -84,9 +84,6 @@ def run_experiments(lambda_list):
                                    y_l: y_l_data,
                                    x_u: x_u_data,
                                    phase_train: False})
-                if acc < acc_prev:
-                    learning_rate_ *= 0.1 
-                    print("Learning rate decayed to {}".format(learning_rate_))
                     
                 et = time.time()
                 writer.add_summary(summary)
