@@ -178,26 +178,26 @@ class SSLLadder(object):
 
         with variable_scope:
             a_mu_1_name = "a_mu_1-{}".format(name)
-            a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape, initializer=tf.zeros)
+            a_mu_1 = tf.get_variable(a_mu_1_name, shape=shape)
             a_mu_2_name = "a_mu_2-{}".format(name)
-            a_mu_2 = tf.get_variable(a_mu_2_name, shape=shape, initializer=tf.ones)
+            a_mu_2 = tf.get_variable(a_mu_2_name, shape=shape)
             a_mu_3_name = "a_mu_3-{}".format(name)
-            a_mu_3 = tf.get_variable(a_mu_3_name, shape=shape, initializer=tf.zeros)
+            a_mu_3 = tf.get_variable(a_mu_3_name, shape=shape)
             a_mu_4_name = "a_mu_4-{}".format(name)
-            a_mu_4 = tf.get_variable(a_mu_4_name, shape=shape, initializer=tf.zeros)
+            a_mu_4 = tf.get_variable(a_mu_4_name, shape=shape)
             a_mu_5_name = "a_mu_5-{}".format(name)
-            a_mu_5 = tf.get_variable(a_mu_5_name, shape=shape, initializer=tf.zeros)
+            a_mu_5 = tf.get_variable(a_mu_5_name, shape=shape)
 
             a_var_1_name = "a_var_1-{}".format(name)
-            a_var_1 = tf.get_variable(a_var_1_name, shape=shape, initializer=tf.zeros)
+            a_var_1 = tf.get_variable(a_var_1_name, shape=shape)
             a_var_2_name = "a_var_2-{}".format(name)
-            a_var_2 = tf.get_variable(a_var_2_name, shape=shape, initializer=tf.ones)
+            a_var_2 = tf.get_variable(a_var_2_name, shape=shape)
             a_var_3_name = "a_var_3-{}".format(name)
-            a_var_3 = tf.get_variable(a_var_3_name, shape=shape, initializer=tf.zeros)
+            a_var_3 = tf.get_variable(a_var_3_name, shape=shape)
             a_var_4_name = "a_var_4-{}".format(name)
-            a_var_4 = tf.get_variable(a_var_4_name, shape=shape, initializer=tf.zeros)
+            a_var_4 = tf.get_variable(a_var_4_name, shape=shape)
             a_var_5_name = "a_var_5-{}".format(name)
-            a_var_5 = tf.get_variable(a_var_5_name, shape=shape, initializer=tf.zeros)
+            a_var_5 = tf.get_variable(a_var_5_name, shape=shape)
 
         mu = a_mu_1 * tf.nn.sigmoid(a_mu_2 * u + a_mu_3) + a_mu_4 * u + a_mu_5
         var = a_var_1 * tf.nn.sigmoid(a_var_2 * u + a_var_3) + a_var_4 * u + a_var_5
@@ -233,7 +233,7 @@ class SSLLadder(object):
         gamma_name= "gamma-{}".format(name)
 
         with variable_scope:
-            beta = tf.get_variable(name=beta_name, shape=[depth], initializer=tf.ones)
+            beta = tf.get_variable(name=beta_name, shape=[depth])
             gamma = tf.get_variable(name=gamma_name, shape=[depth])
 
         if i == self._L:
