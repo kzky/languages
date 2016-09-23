@@ -69,7 +69,7 @@ optimizer.setup(model)
 optimizer.add_hook(chainer.optimizer.WeightDecay(0.0005))
 
 ## One way to use in the training loop
-###model.zerograds()
+###model.zerograds() or model.cleargrads()
 #### call backward for objective function.
 ###optimizer.update()
 
