@@ -1,6 +1,6 @@
 # Convolutional Neural Network with Batch
 
-Implementation of Convolution Neural Network in Chainer is very eas just deriving from [MNIST Example](http://docs.chainer.org/en/stable/tutorial/basic.html#example-multi-layer-perceptron-on-mnist). Even if using BatchNormalization, we just add *L.BatchNorm* either after Conv/Affine Layer or before activation.
+Implementation of Convolution Neural Network in Chainer is very easy just deriving from [MNIST Example](http://docs.chainer.org/en/stable/tutorial/basic.html#example-multi-layer-perceptron-on-mnist). Even if using BatchNormalization, we just add *L.BatchNorm* either after Conv/Affine Layer or before activation.
 
 Be careful about setting *device* in *trainer/evaluator* in addtion to *model.to\_gpu(device)*
 
