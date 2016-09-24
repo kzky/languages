@@ -12,7 +12,7 @@ batch = 32
 dim = 100
 x_data = np.random.rand(batch, dim).astype(np.float32)
 y_data = np.random.rand(batch, dim).astype(np.float32)
-r_init_data = np.random.rand(batch, dim).astype(np.float32)
+r_init_data = np.random.rand(dim).astype(np.float32)
 
 x = Variable(x_data)
 y = Variable(y_data)
@@ -20,7 +20,7 @@ r = Variable(r_init_data)
 
 # Forward
 print("# Forward")
-z = F.exp(- F.sum(r * (x - y) ** 2, axis=1))
+z = F.exp(- F.sum(F.broadcast_to(r, (batch, dim)) * (x - y) ** 2, axis=1))
 print(z.data.shape)
 
 # Backward
@@ -33,6 +33,7 @@ z.backward()
 # Show
 print("r.grad")
 print(r.grad)
+print(r.grad.shape)
 
 
 
