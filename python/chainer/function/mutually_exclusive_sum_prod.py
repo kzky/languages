@@ -1,7 +1,7 @@
 """
 Mutually exclusive Sum-Prod with given axis
 
-\sum_{k=1}^{K} o_k \prod_{k=1, k \neq j} (1 - o_k)
+\sum_{k=1}^{K} o_k \prod_{k=1, k \neq j}^{K} (1 - o_k)
 """
 
 import numpy as np
