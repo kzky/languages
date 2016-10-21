@@ -9,7 +9,9 @@ def f(q, S):
     x_ = ctypeslib.as_array(S.get_obj())
 
     st = time.time()
-    x_[0] = 1000    
+    #x_ = x
+    x_[:] = x
+    x_[0] = 1000
     data = {"x": None, "st": st}
     q.put(data)
 

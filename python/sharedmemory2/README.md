@@ -24,14 +24,14 @@ Parent:0.445959091187[s]
 $ python data_with_shmarray.py
 /usr/local/lib/python2.7/dist-packages/numpy/ctypeslib.py:435: RuntimeWarning: Item size computed from the PEP 3118 buffer format string does not match the actual item size.
   return array(obj, copy=False)
-Parent:0.00239086151123[s]
+Parent:0.0340781211853[s]
 /usr/local/lib/python2.7/dist-packages/numpy/ctypeslib.py:435: RuntimeWarning: Item size computed from the PEP 3118 buffer format string does not match the actual item size.
   return array(obj, copy=False)
-init-val:0.77322208706, changed-val:1000.0
+init-val:0.102639386732, changed-val:1000.0
 ```
 
 ## Discussion
-SahredArray is extreamly fast! If data shape is known in advance, it should be used; otherwise, secure the large memory in advance, then do some logic to use that memroy region efficiently.
+SahredArray is 10-fold fast! If data shape is known in advance, it should be used; otherwise, secure the large memory in advance, then do some logic to use that memroy region efficiently.
 
 
 
