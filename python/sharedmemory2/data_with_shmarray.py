@@ -9,7 +9,7 @@ def f(q, S):
     x_ = ctypeslib.as_array(S.get_obj())
 
     st = time.time()
-    #x_ = x
+    #x_ = x  # This does not overwrite the shared memory.
     x_[:] = x
     x_[0] = 1000
     data = {"x": None, "st": st}
