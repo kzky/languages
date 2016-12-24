@@ -20,7 +20,7 @@ def main():
     st = time.time()
     q = (q * np.sign(g)).astype(np.int8)
     et = time.time()
-    print("Num of 0 is {}/{}".format()len(np.where(np.abs(q) == 0)[0]), len(q))
+    print("Num of 0 is {}/{}".format(len(np.where(np.abs(q) == 0)[0]), len(q)))
 
 if __name__ == '__main__':
     main()
