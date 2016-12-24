@@ -36,7 +36,7 @@ def main():
     et = time.time()
     print("Method:Where(Pos+Neg),ElapsedTime:{}[s]".format(et - st))
 
-
+    print("Num of 0 is {}/{}".format()len(np.where(np.abs(q) == 0)[0]), len(q))
 if __name__ == '__main__':
     main()
     
