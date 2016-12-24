@@ -24,7 +24,7 @@ def normal():
 
     # Compress
     st = time.time()
-    x_ser_comp = zlib.compress(x_ser, 1)
+    x_ser_comp = snappy.compress(x_ser)
     et = time.time() - st
     elapsed_times.append(et)
     print("Compress:{}[s],{}[len]".format(et, len(x_ser_comp)))
@@ -34,7 +34,7 @@ def normal():
 
     # Decompress
     st = time.time()
-    xdecomp = zlib.decompress(x_ser_comp)
+    xdecomp = snappy.decompress(x_ser_comp)
     et = time.time() - st
     elapsed_times.append(et)
     print("Decompress:{}[s]".format(et))
@@ -75,7 +75,7 @@ def diff_index():
 
     # Compress
     st = time.time()
-    x_diff_ser_comp = zlib.compress(x_diff_ser, 1)
+    x_diff_ser_comp = snappy.compress(x_diff_ser)
     et = time.time() - st
     elapsed_times.append(et)
     print("Compress:{}[s],{}[len]".format(et, len(x_diff_ser_comp)))
@@ -85,7 +85,7 @@ def diff_index():
 
     # Decompress
     st = time.time()
-    x_diff_decomp = zlib.decompress(x_diff_ser_comp)
+    x_diff_decomp = snappy.decompress(x_diff_ser_comp)
     et = time.time() - st
     elapsed_times.append(et)
     print("Decompress:{}[s]".format(et))
