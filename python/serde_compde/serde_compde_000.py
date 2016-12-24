@@ -99,7 +99,7 @@ def diff_index():
     
     # Cumsum
     st = time.time()
-    x = np.cumsum(x_diff_deser)
+    x = reduce(lambda x, y: x+y, x_diff_deser)
     et = time.time() - st
     elapsed_times.append(et)
     print("Cumsum:{}[s]".format(et))
