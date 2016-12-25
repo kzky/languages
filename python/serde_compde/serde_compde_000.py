@@ -3,14 +3,14 @@ import zlib
 import snappy
 import marshal
 import numpy as np
-
+import sys
 
 def normal():
     print("### Normal ###")
     
     # Settings
-    p = 0.15  # density
-    max_index = int(10 * 1e6)
+    p = 0.07  # density
+    max_index = int(40 * 1e6)
     size = int(max_index * p)
     x = np.sort(np.random.choice(max_index, size, replace=False))
     elapsed_times = []
@@ -21,6 +21,7 @@ def normal():
     et = time.time() - st
     elapsed_times.append(et)
     print("Serialize:{}[s],{}[len]".format(et, len(x_ser)))
+    print("Serialize:{}[s],{}[B]".format(et, sys.getsizeof(x_ser)))
 
     # Compress
     st = time.time()
@@ -28,6 +29,7 @@ def normal():
     et = time.time() - st
     elapsed_times.append(et)
     print("Compress:{}[s],{}[len]".format(et, len(x_ser_comp)))
+    print("Compress:{}[s],{}[B]".format(et, sys.getsizeof(x_ser_comp)))
 
     print("Total(Ser+Comp):{}[s]".format(np.sum(elapsed_times)))
     elapsed_times = []
@@ -52,8 +54,8 @@ def diff_index():
     print("### Diff Index ###")
     
     # Settings
-    p = 0.15  # density
-    max_index = int(10 * 1e6)
+    p = 0.07  # density
+    max_index = int(40 * 1e6)
     size = int(max_index * p)
     x = np.sort(np.random.choice(max_index, size, replace=False))
     elapsed_times = []
@@ -71,7 +73,8 @@ def diff_index():
     x_diff_ser = marshal.dumps(x_diff_)
     et = time.time() - st
     elapsed_times.append(et)
-    print("Serialize:{}[s],{}[s]".format(et, len(x_diff_ser)))
+    print("Serialize:{}[s],{}[len]".format(et, len(x_diff_ser)))
+    print("Serialize:{}[s],{}[B]".format(et, sys.getsizeof(x_diff_ser)))
 
     # Compress
     st = time.time()
@@ -79,6 +82,7 @@ def diff_index():
     et = time.time() - st
     elapsed_times.append(et)
     print("Compress:{}[s],{}[len]".format(et, len(x_diff_ser_comp)))
+    print("Compress:{}[s],{}[B]".format(et, sys.getsizeof(x_diff_ser_comp)))
 
     print("Total(Diffindex+Ser+Comp):{}[s]".format(np.sum(elapsed_times)))
     elapsed_times = []
