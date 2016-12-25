@@ -6,7 +6,7 @@ import scipy.stats
 def main():
     loc = 0
     scale = 0.003
-    size = int(100 * 1e4)
+    size = int(10 * 1e6)
     g = scipy.stats.laplace.rvs(loc=0., scale=scale, size=size)
     p_g = scipy.stats.laplace.pdf(g, loc=0., scale=scale)
     inv_p_g = 1 / p_g
