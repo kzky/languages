@@ -31,8 +31,22 @@ def sample_hook(optimizer):
         print(type(p))
         print(p.data)
         print(p.grad)
+
+def grad_norm_hook(optimizer):
+    for p in optimizer.target.params():
+        grad_data = p.grad
+        shape = grad_data.shape
+        reshape = (1, np.prod(shape), )
+
+        grad = Variable(grad_data)
+        grad_reshape = F.reshape(grad, reshape)
+        grad_norm = F.normalize(grad_reshape)
+        grad_norm_reshape = F.reshape(grad_norm, shape)
+
+        p.grad = grad_norm_reshape.data
+        print(np.linalg.norm(grad_norm.data))
         
-def main():
+def hello():
     model = MLP()
     optimizer = optimizers.SGD(1)
     optimizer.setup(model)
@@ -51,7 +65,28 @@ def main():
     optimizer.call_hooks()    
     optimizer.update()    
     optimizer.call_hooks()  # sanity check for data and grad are the same
-        
+    
+def grad_norm():
+    model = MLP()
+    optimizer = optimizers.SGD(0.01)
+    optimizer.setup(model)
+    optimizer.use_cleargrads()
+    optimizer.add_hook(grad_norm_hook, name="grad_norm_hook")
+
+    bs = 8
+    x_data = np.random.randn(bs, 100).astype(np.float32)
+    x = Variable(x_data)
+    y_data = np.random.randn(bs).astype(np.int32)
+    y_t = Variable(y_data)
+    y = model(x)
+    l = F.softmax_cross_entropy(y, y_t)
+    model.cleargrads()
+    l.backward()
+    optimizer.call_hooks()    
+    optimizer.update()    
+
+            
 if __name__ == '__main__':
-    main()
+    #hello()
+    grad_norm()
 
