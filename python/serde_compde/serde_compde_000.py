@@ -5,12 +5,10 @@ import marshal
 import numpy as np
 import sys
 
-def normal():
+def normal(max_index=int(2 * 1e6), p=0.07):
     print("### Normal ###")
     
     # Settings
-    p = 0.07  # density
-    max_index = int(40 * 1e6)
     size = int(max_index * p)
     x = np.sort(np.random.choice(max_index, size, replace=False))
     elapsed_times = []
@@ -20,17 +18,14 @@ def normal():
     x_ser = marshal.dumps(x)
     et = time.time() - st
     elapsed_times.append(et)
-    print("Serialize:{}[s],{}[len]".format(et, len(x_ser)))
-    print("Serialize:{}[s],{}[B]".format(et, sys.getsizeof(x_ser)))
+    print("Serialize:{}[s],{}[len],{}[B]".format(et, len(x_ser), sys.getsizeof(x_ser)))
 
     # Compress
     st = time.time()
     x_ser_comp = snappy.compress(x_ser)
     et = time.time() - st
     elapsed_times.append(et)
-    print("Compress:{}[s],{}[len]".format(et, len(x_ser_comp)))
-    print("Compress:{}[s],{}[B]".format(et, sys.getsizeof(x_ser_comp)))
-
+    print("Compress:{}[s],{}[len],{}[B]".format(et, len(x_ser_comp), sys.getsizeof(x_ser_comp)))
     print("Total(Ser+Comp):{}[s]".format(np.sum(elapsed_times)))
     elapsed_times = []
 
@@ -50,12 +45,10 @@ def normal():
     
     print("Total(Decomp+Deser):{}[s]".format(np.sum(elapsed_times)))
 
-def diff_index():
+def diff_index(max_index=int(2 * 1e6), p=0.07):
     print("### Diff Index ###")
     
     # Settings
-    p = 0.07  # density
-    max_index = int(40 * 1e6)
     size = int(max_index * p)
     x = np.sort(np.random.choice(max_index, size, replace=False))
     elapsed_times = []
@@ -73,17 +66,14 @@ def diff_index():
     x_diff_ser = marshal.dumps(x_diff_)
     et = time.time() - st
     elapsed_times.append(et)
-    print("Serialize:{}[s],{}[len]".format(et, len(x_diff_ser)))
-    print("Serialize:{}[s],{}[B]".format(et, sys.getsizeof(x_diff_ser)))
+    print("Serialize:{}[s],{}[len],{}[B]".format(et, len(x_diff_ser), sys.getsizeof(x_diff_ser)))
 
     # Compress
     st = time.time()
     x_diff_ser_comp = snappy.compress(x_diff_ser)
     et = time.time() - st
     elapsed_times.append(et)
-    print("Compress:{}[s],{}[len]".format(et, len(x_diff_ser_comp)))
-    print("Compress:{}[s],{}[B]".format(et, sys.getsizeof(x_diff_ser_comp)))
-
+    print("Compress:{}[s],{}[len],{}[B]".format(et, len(x_diff_ser_comp), sys.getsizeof(x_diff_ser_comp)))
     print("Total(Diffindex+Ser+Comp):{}[s]".format(np.sum(elapsed_times)))
     elapsed_times = []
 
@@ -111,7 +101,8 @@ def diff_index():
 
 
 if __name__ == '__main__':
-    normal()
-    diff_index()
-
+    max_index = int(40 * 1e6)
+    p = 0.07
+    normal(max_index=max_index, p=p)
+    diff_index(max_index=max_index, p=p)
 
