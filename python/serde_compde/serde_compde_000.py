@@ -96,6 +96,10 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     #x = reduce(lambda x, y: x+y, x_diff_deser)
     x = np.cumsum(x_diff_deser)
     #x = np.add.accumulate(x_diff_deser)
+    #x = np.array(x_diff_deser)
+    #for i in range(len(x) -1):
+    #    x[i+1] += x[i]
+        
     et = time.time() - st
     elapsed_times.append(et)
     print("Cumsum:{}[s]".format(et))
