@@ -62,7 +62,7 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     
     # Serialize
     st = time.time()
-    x_diff_ = [int(x[0])] + x_diff.tolist()
+    x_diff_ = [int(x[0])] + x_diff.tolist()  # need copy [int(x[0])]
     x_diff_ser = marshal.dumps(x_diff_)
     et = time.time() - st
     elapsed_times.append(et)
@@ -93,7 +93,9 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     
     # Cumsum
     st = time.time()
-    x = reduce(lambda x, y: x+y, x_diff_deser)
+    #x = reduce(lambda x, y: x+y, x_diff_deser)
+    x = np.cumsum(x_diff_deser)
+    #x = np.add.accumulate(x_diff_deser)
     et = time.time() - st
     elapsed_times.append(et)
     print("Cumsum:{}[s]".format(et))
@@ -101,8 +103,8 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
 
 
 if __name__ == '__main__':
-    max_index = int(40 * 1e6)
-    p = 0.07
-    normal(max_index=max_index, p=p)
+    max_index = int(10 * 1e6)
+    p = 0.15
+    #normal(max_index=max_index, p=p)
     diff_index(max_index=max_index, p=p)
 
