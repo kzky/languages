@@ -4,6 +4,8 @@ import snappy
 import marshal
 import numpy as np
 import sys
+#import pyximport; pyximport.install()
+#import cumsum
 
 def normal(max_index=int(2 * 1e6), p=0.07):
     print("### Normal ###")
@@ -99,6 +101,8 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     #x = np.array(x_diff_deser)
     #for i in range(len(x) -1):
     #    x[i+1] += x[i]
+    #x = np.array(x_diff_deser)
+    #cumsum.cumsum(x, len(x))
         
     et = time.time() - st
     elapsed_times.append(et)
