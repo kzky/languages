@@ -25,6 +25,7 @@ def normal_no_comp(max_index=int(2 * 1e6), p=0.07):
     elapsed_times.append(et)
     print("Serialize:{}[s],{}[len],{}[B]".format(et, len(x_ser), sys.getsizeof(x_ser)))
 
+    elapsed_times = []
     # Deserialize
     st = time.time()
     xdeser = marshal.loads(x_ser)
