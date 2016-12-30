@@ -5,9 +5,34 @@ import marshal
 import numpy as np
 import sys
 import numexpr as ne
+import cPickle as pickle
 #from itertools import accumulate
 #import pyximport; pyximport.install()
 #import cumsum
+
+def normal_no_comp(max_index=int(2 * 1e6), p=0.07):
+    print("### Normal w/o Compression ###")
+    
+    # Settings
+    size = int(max_index * p)
+    x = np.sort(np.random.choice(max_index, size, replace=False))
+    elapsed_times = []
+
+    # Serialize
+    st = time.time()
+    x_ser = marshal.dumps(x.tolist())
+    et = time.time() - st
+    elapsed_times.append(et)
+    print("Serialize:{}[s],{}[len],{}[B]".format(et, len(x_ser), sys.getsizeof(x_ser)))
+
+    # Deserialize
+    st = time.time()
+    xdeser = marshal.loads(x_ser)
+    et = time.time() - st
+    elapsed_times.append(et)
+    print("Deserialize:{}[s]".format(et))
+    
+    print("Total(Decomp+Deser):{}[s]".format(np.sum(elapsed_times)))
 
 def normal(max_index=int(2 * 1e6), p=0.07):
     print("### Normal ###")
@@ -63,7 +88,7 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     et = time.time() - st
     elapsed_times.append(et)
     print("DiffIndex:{}[s]".format(et))
-    
+
     # Serialize
     st = time.time()
     x_diff_ = [int(x[0])] + x_diff.tolist()  # need copy [int(x[0])]
@@ -116,6 +141,7 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
 if __name__ == '__main__':
     max_index = int(10 * 1e6)
     p = 0.15
+    normal_no_comp(max_index=max_index, p=p)
     normal(max_index=max_index, p=p)
     diff_index(max_index=max_index, p=p)
 
