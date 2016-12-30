@@ -4,6 +4,8 @@ import snappy
 import marshal
 import numpy as np
 import sys
+import numexpr as ne
+#from itertools import accumulate
 #import pyximport; pyximport.install()
 #import cumsum
 
@@ -17,7 +19,7 @@ def normal(max_index=int(2 * 1e6), p=0.07):
 
     # Serialize
     st = time.time()
-    x_ser = marshal.dumps(x)
+    x_ser = marshal.dumps(x.tolist())
     et = time.time() - st
     elapsed_times.append(et)
     print("Serialize:{}[s],{}[len],{}[B]".format(et, len(x_ser), sys.getsizeof(x_ser)))
@@ -103,6 +105,7 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
     #    x[i+1] += x[i]
     #x = np.array(x_diff_deser)
     #cumsum.cumsum(x, len(x))
+    #x = np.array(x_diff_deser)
         
     et = time.time() - st
     elapsed_times.append(et)
@@ -113,6 +116,6 @@ def diff_index(max_index=int(2 * 1e6), p=0.07):
 if __name__ == '__main__':
     max_index = int(10 * 1e6)
     p = 0.15
-    #normal(max_index=max_index, p=p)
+    normal(max_index=max_index, p=p)
     diff_index(max_index=max_index, p=p)
 
