@@ -4,7 +4,7 @@ import snappy
 import marshal
 import numpy as np
 import sys
-import numexpr as ne
+#import numexpr as ne
 import cPickle as pickle
 #from itertools import accumulate
 #import pyximport; pyximport.install()
