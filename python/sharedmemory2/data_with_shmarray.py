@@ -4,10 +4,10 @@ import numpy as np
 import time
 from numpy import ctypeslib
 
-n_params = 100 * 1000
+n_params = 256 * 256 * 3 * 64
 
 def f(q, S):
-    x = np.random.rand(n_params)
+    x = np.random.rand(n_params)  # data pre-fetched
     x_ = ctypeslib.as_array(S.get_obj())
 
     st = time.time()

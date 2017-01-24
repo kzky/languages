@@ -14,8 +14,9 @@ def f(q_inp, q_out):
 
 if __name__ == '__main__':
     data = {
-        "x": np.random.rand(128, 3, 224, 224),
-        "y": np.random.rand(128, 1000),
+        "x": np.random.rand(64, 3, 224, 224),
+        #"y": np.random.rand(128, 1000),
+        #"y": np.random.rand(64,),
     }
     q_inp = Queue()
     q_out = Queue()
