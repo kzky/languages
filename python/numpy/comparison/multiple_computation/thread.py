@@ -40,7 +40,7 @@ def main():
     iteration_list = [1, 10, 100]
 
     for n_workers in n_workers_list:
-        for iteration in ieration_list:
+        for iteration in iteration_list:
             compute(n_workers, iteration)        
     
 if __name__ == '__main__':
