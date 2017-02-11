@@ -2,7 +2,7 @@ from threading import Thread
 import numpy as np
 import time
 
-class Worker(Process):
+class Worker(Thread):
     def __init__(self, iteration):
         super(Worker, self).__init__()
 
