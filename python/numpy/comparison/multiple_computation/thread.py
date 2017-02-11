@@ -2,25 +2,25 @@ from threading import Thread
 import numpy as np
 import time
 
-class Worker(Thread):
-    def __init__(self, ):
+class Worker(Process):
+    def __init__(self, iteration):
         super(Worker, self).__init__()
 
         shape = (1000, 1000)
         self.data = np.random.rand(*shape)
-        self.threshold = 1
+        self.iteration = iteration
         
     def run(self, ):
         data = self.data
-        for i in range(self.threshold):
+        for i in range(self.iteration):
             c = np.dot(data, data)
 
-def main():
+def compute(n_workers, iteration):
     # Initialize
-    n_workers = 4
+    n_workers = n_workers
     workers = []
     for i in range(n_workers):
-        worker = Worker()
+        worker = Worker(iteration)
         workers.append(worker)
         
     # Start
@@ -33,8 +33,20 @@ def main():
         workers[i].join()
 
     et = time.time() - st
-    print("ElapsedTime:{}[s]".format(et))
+    print("ElapsedTime:{}[s],Nworkers:{},Iter:{}".format(et, n_workers, iteration))
 
+def main():
+    n_workers_list = [4, 8, 16, 32]
+    iteration_list = [1, 10, 100]
+
+    for n_workers in n_workers_list:
+        for iteration in ieration_list:
+            compute(n_workers, iteration)        
+    
 if __name__ == '__main__':
     main()
     
+
+    
+    
+               
