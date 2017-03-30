@@ -9,7 +9,7 @@ def main():
     params = []
 
     for i in range(num_layers):
-        params.append(np.random.rand(num_param) * 10).astype(np.int32)
+        params.append((np.random.rand(num_param) * 10).astype(np.int32))
 
     # tobytes and join
     st = time.time()
@@ -18,7 +18,7 @@ def main():
         data.append(param.tobytes())
     "".join(data)
     et = time.time() - st
-    print("ElapsedTime:{}[s]".format(et))    
+    print("ElapsedTime(tobytes+join):{}[s]".format(et))    
     
     # tolist and marshal
     st = time.time()
@@ -27,7 +27,7 @@ def main():
         data.append(param.tolist())
     marshal.dumsp(data)
     et = time.time() - st
-    print("ElapsedTime:{}[s]".format(et))
+    print("ElapsedTime(tolist+marshal):{}[s]".format(et))
 
     
 if __name__ == '__main__':
