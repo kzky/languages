@@ -25,7 +25,7 @@ def main():
     data = []
     for param in params:
         data.append(param.tolist())
-    marshal.dumsp(data)
+    marshal.dumps(data)
     et = time.time() - st
     print("ElapsedTime(tolist+marshal):{}[s]".format(et))
 
