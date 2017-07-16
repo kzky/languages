@@ -1,20 +1,21 @@
 import numpy as np
 from multiprocessing.pool import ThreadPool
+import multiprocessing as mp
 import time
 import argparse
+import threading
 
 def copy_array(x, y):
     x[:] = y
     return None
 
 def copy(args):
-    print(args)
     # Settings
     b, c, h, w = args.batch_size, 3, 224, 224
-    n = args.num_threads
+    n = args.num_tasks
     x_list = []
     y_list = []
-    pool = ThreadPool(processes=n)
+    pool = ThreadPool(processes=mp.cpu_count())
 
     # Create container
     for _ in range(n):
@@ -38,8 +39,8 @@ def copy(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", '--number-threads', type=int, 
-                        dest="num_threads", default=16)
+    parser.add_argument("-n", '--number-tasks', type=int, 
+                        dest="num_tasks", default=16)
     parser.add_argument("-b", '--batch-size', type=int, 
                         dest="batch_size", default=16)
     args = parser.parse_args()

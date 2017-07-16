@@ -1,20 +1,19 @@
 import cython
 from libc.string cimport memcpy
+import threading
 
 import numpy as np
 cimport numpy as np
 
 @cython.boundscheck(False)
 def copy_array_nogil(float[:, :, :, :] x, float[:, :, :, :] y):
-    cdef int size
-    cdef int a, b, c, d
-    cdef int i, j, k, l
+    cdef unsigned int a, b, c, d
+    cdef unsigned int i, j, k, l
  
     a = x.shape[0]
     b = x.shape[1]
     c = x.shape[2]
     d = x.shape[3]
-    size = x.size * 4  # float32
  
     with nogil:
         for i in range(a):
