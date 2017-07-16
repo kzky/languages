@@ -16,8 +16,8 @@ def copy(args):
 
     # Create container
     for _ in range(n):
-        x = np.random.rand(b, c, h, w)
-        y = np.random.rand(b, c, h, w)
+        x = np.random.rand(b, c, h, w).astype(np.float32)
+        y = np.random.rand(b, c, h, w).astype(np.float32)
         x_list.append(x)
         y_list.append(y)
 
@@ -34,11 +34,6 @@ def copy(args):
     
     et = time.time() - st
     print("{}[s]".format(et))
-
-    # Check value
-    print(x_list[0][4,1,110,7])
-    print(y_list[0][4,1,110,7])
-
 
 def main():
     parser = argparse.ArgumentParser()

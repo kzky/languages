@@ -4,7 +4,7 @@ import time
 import argparse
 
 def copy_array(x, y):
-    x[...] = y
+    x[:] = y
     return None
 
 def copy(args):
@@ -18,8 +18,8 @@ def copy(args):
 
     # Create container
     for _ in range(n):
-        x = np.random.rand(b, c, h, w)
-        y = np.random.rand(b, c, h, w)
+        x = np.random.rand(b, c, h, w).astype(np.float32)
+        y = np.random.rand(b, c, h, w).astype(np.float32)
         x_list.append(x)
         y_list.append(y)
 
