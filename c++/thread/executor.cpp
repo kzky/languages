@@ -23,3 +23,22 @@ T BlockingQueue<T>::pop() {
 	auto item = queue_.front();
 	queue_.pop();
 }
+
+
+template<typename T>
+ExecutorPool<T>::ExecutorPool(int pool_size): pool_size_(pool_size) {
+}
+
+template<typename T>
+ExecutorPool<T>::~ExecutorPool() {
+}
+	
+template<typename T>
+std::future<T> ExecutorPool<T>::submit(T task) {
+}
+
+template<typename T>
+void ExecutorPool<T>::shutdown() {
+}
+
+
