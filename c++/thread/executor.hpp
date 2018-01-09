@@ -1,11 +1,16 @@
+/*
+	Minimal Examples of ExecutorPool
+ */
+
 #include <mutex>
 #include <condition_variable>
 #include <queue>
 #include <future>
 #include <thread>
+#include <utility>
+#include <memory>
 
-
-template<typename T>
+template<typename T, typename R>
 class BlockingQueue {
 private:
 	std::mutex mutex_;
@@ -15,18 +20,20 @@ private:
 public:
 	BlockingQueue();
 	~BlockingQueue();
-	void push(T const &task);
-	T pop();
+	void push(std::pair<T, std::promise<R>> &&item);
+	std::pair<T, std::promise<R>> pop();
 };
 
-template<typename T>
+template<typename T, typename R>
 class ExecutorPool {
 private:
-	BlockingQueue<T> queue_;
 	int pool_size_;
+	BlockingQueue<T, R> queue_;
+	std::vector<std::thread> thread_pool_;
+	bool is_shutdown_;
 public:
 	ExecutorPool(int pool_size);
 	~ExecutorPool();
-	std::future<T> submit(T task);
+	std::future<R> submit(T const &task);
 	void shutdown();
 };
