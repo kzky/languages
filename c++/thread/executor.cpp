@@ -1,4 +1,4 @@
-#include <executor.hpp>
+#include "executor.hpp"
 
 template<typename T, typename R>
 BlockingQueue<T, R>::BlockingQueue() {
@@ -11,7 +11,7 @@ BlockingQueue<T, R>::~BlockingQueue() {
 template<typename T, typename R>
 void BlockingQueue<T, R>::push(std::pair<T, std::promise<R>> &&item) {
 	std::unique_lock<std::mutex> mlock(mutex_);
-	queue_.push(std::move(item));
+	queue_.push(item);
 	mlock.unlock();
 	cond_.notify_one();
 }
@@ -27,8 +27,8 @@ std::pair<T, std::promise<R>> BlockingQueue<T, R>::pop() {
 
 
 template<typename T, typename R>
-ExecutorPool<T, R>::ExecutorPool(int pool_size): pool_size_(pool_size) {
-	// Create thead pool
+ThreadPool<T, R>::ThreadPool(int pool_size): pool_size_(pool_size) {
+	// Create thread pool
 	for (int i = 0; i < pool_size_; i++) {
 		std::thread t([&] {
 				while (true) {
@@ -37,27 +37,28 @@ ExecutorPool<T, R>::ExecutorPool(int pool_size): pool_size_(pool_size) {
 					item.second.set_value(result);
 				}
 			});
-		thread_pool_.push_back(std::move(t));
+		thread_pool_.push_back(t);
 	}
 }
 
 template<typename T, typename R>
-ExecutorPool<T, R>::~ExecutorPool() {
+ThreadPool<T, R>::~ThreadPool() {
 }
 	
 template<typename T, typename R>
-std::future<R> ExecutorPool<T, R>::submit(T const &task) {
+std::future<R> ThreadPool<T, R>::submit(T const &task) {
 	if (is_shutdown_) {
 		return nullptr; // TODO: handle in a better way.
 	}
 	std::promise<R> p;
 	std::future<R> f = p.get_future();
-	queue_.push(std::move(task), std::move(p));
+	std::pair<R, T> item = std::make_pair(std::move(task), std::move(p));
+	queue_.push(item);
 	return f;
 }
 
 template<typename T, typename R>
-void ExecutorPool<T, R>::shutdown() {
+void ThreadPool<T, R>::shutdown() {
 	is_shutdown_ = true;
 	// Wait taks completed
 	for (auto t : thread_pool_) {

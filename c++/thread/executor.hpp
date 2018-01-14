@@ -1,5 +1,5 @@
 /*
-	Minimal Examples of ExecutorPool
+	Minimal Examples of ThreadPool
  */
 
 #include <mutex>
@@ -25,15 +25,15 @@ public:
 };
 
 template<typename T, typename R>
-class ExecutorPool {
+class ThreadPool {
 private:
 	int pool_size_;
 	BlockingQueue<T, R> queue_;
 	std::vector<std::thread> thread_pool_;
 	bool is_shutdown_;
 public:
-	ExecutorPool(int pool_size);
-	~ExecutorPool();
+	ThreadPool(int pool_size);
+	~ThreadPool();
 	std::future<R> submit(T const &task);
 	void shutdown();
 };
