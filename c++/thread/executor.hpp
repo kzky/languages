@@ -15,13 +15,13 @@ class BlockingQueue {
 private:
 	std::mutex mutex_;
 	std::condition_variable cond_;
-	std::queue<T> queue_;
+	std::queue<std::pair<T, std::promise<R>>> queue_;
 
 public:
 	BlockingQueue();
 	~BlockingQueue();
 	void push(std::pair<T, std::promise<R>> &&item);
-	std::pair<T, std::promise<R>> pop();
+	std::pair<T, std::promise<R>>& pop();
 };
 
 template<typename T, typename R>
@@ -37,3 +37,5 @@ public:
 	std::future<R> submit(T const &task);
 	void shutdown();
 };
+
+#include "executor_impl.hpp"
