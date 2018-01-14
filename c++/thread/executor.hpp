@@ -10,18 +10,19 @@
 #include <utility>
 #include <memory>
 
+//TODO: can address one type: T<R>?
 template<typename T, typename R>
 class BlockingQueue {
 private:
 	std::mutex mutex_;
 	std::condition_variable cond_;
-	std::queue<std::pair<T, std::promise<R>>> queue_;
+	std::queue<std::pair<T, std::shared_ptr<std::promise<R>>>> queue_;
 
 public:
 	BlockingQueue();
 	~BlockingQueue();
-	void push(std::pair<T, std::promise<R>> &&item);
-	std::pair<T, std::promise<R>>& pop();
+	void push(std::pair<T, std::shared_ptr<std::promise<R>>> &item);
+	std::pair<T, std::shared_ptr<std::promise<R>>> pop();
 };
 
 template<typename T, typename R>
@@ -34,7 +35,7 @@ private:
 public:
 	ThreadPool(int pool_size);
 	~ThreadPool();
-	std::future<R> submit(T const &task);
+	std::shared_ptr<std::future<R>> submit(T const &task);
 	void shutdown();
 };
 

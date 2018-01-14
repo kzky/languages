@@ -1,5 +1,7 @@
 #include "executor.hpp"
 #include <cstdio>
+#include <memory>
+#include <chrono>
 
 class SumTask {
 
@@ -24,17 +26,18 @@ public:
 int main(int argc, char *argv[])
 {
 	// Tasks
-	SumTask task(100000);
+	SumTask task(100);
 
 	// Executor
 	int pool_size = 4;
 
-	//TODO: template specification
 	ThreadPool<SumTask, int> thread_pool(pool_size);
 
-	std::future<int> f = thread_pool.submit(task);
+	std::shared_ptr<std::future<int>> f = thread_pool.submit(task);
 
-	printf("%d\n", f.get());
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	printf("%d\n", f->get());
 
 	thread_pool.shutdown();
 		 
