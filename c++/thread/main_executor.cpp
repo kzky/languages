@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	// Executor
 	int pool_size = 4;
 
-	ThreadPool<SumTask, int> thread_pool(pool_size);
+	ThreadPool<SumTask<int>> thread_pool(pool_size);
 
 	std::shared_ptr<std::future<int>> f = thread_pool.submit(task);
 

@@ -25,7 +25,7 @@ T BlockingQueue<T>::pop() {
 
 
 template<template<typename R> typename T, typename R>
-ThreadPool<T, R>::ThreadPool(int pool_size): pool_size_(pool_size) {
+ThreadPool<T<R>>::ThreadPool(int pool_size): pool_size_(pool_size) {
 	// Create thread pool
 	for (int i = 0; i < pool_size_; i++) {
 		std::thread t([&, this] {
@@ -40,11 +40,11 @@ ThreadPool<T, R>::ThreadPool(int pool_size): pool_size_(pool_size) {
 }
 
 template<template<typename R> typename T, typename R>
-ThreadPool<T, R>::~ThreadPool() {
+ThreadPool<T<R>>::~ThreadPool() {
 }
 	
 template<template<typename R> typename T, typename R>
-std::shared_ptr<std::future<R>> ThreadPool<T, R>::submit(T<R> const &task) {
+std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> const &task) {
 	//TODO: handle when shutdowning.
 	std::shared_ptr<std::promise<R>> p_ptr = std::make_shared<std::promise<R>>();
 	std::future<R> f = p_ptr->get_future();
@@ -55,7 +55,7 @@ std::shared_ptr<std::future<R>> ThreadPool<T, R>::submit(T<R> const &task) {
 }
 
 template<template<typename R> typename T, typename R>
-void ThreadPool<T, R>::shutdown() {
+void ThreadPool<T<R>>::shutdown() {
 	//TODO: Send End Message
 	
 	// Wait tasks completed

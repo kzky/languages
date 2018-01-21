@@ -10,7 +10,6 @@
 #include <utility>
 #include <memory>
 
-//TODO: can address one type: T<R>?
 template<typename T>
 class BlockingQueue {
 private:
@@ -25,11 +24,13 @@ public:
 	T pop();
 };
 
-//template<typename T0, typename R>
-//class BlockingQueue<std::pair<T0, std::shared_ptr<std::promise<R>>>>;
 
-template<template<typename R> typename T, typename R>
-class ThreadPool {
+// ThreadPool Traits
+template<typename R>
+class ThreadPool;
+
+template<template<typename> typename T, typename R>
+class ThreadPool<T<R>> {
 private:
 	int pool_size_;
 	BlockingQueue<std::pair<T<R>, std::shared_ptr<std::promise<R>>>> queue_;
