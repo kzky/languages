@@ -23,7 +23,6 @@ T BlockingQueue<T>::pop() {
   return item;
 }
 
-
 template<template<typename R> typename T, typename R>
 ThreadPool<T<R>>::ThreadPool(int pool_size): pool_size_(pool_size) {
   // Create thread pool
@@ -31,11 +30,16 @@ ThreadPool<T<R>>::ThreadPool(int pool_size): pool_size_(pool_size) {
     std::thread t([&, this] {
         while (true) {
           auto item = this->queue_.pop();
-          R result = item.first();
+          // stop
+          if (item.first.get_msg() == "stop")
+            break;
+            
+          // do task
+          R result = item.first();  // call operator method.
           item.second->set_value(result);
         }
       });
-    thread_pool_.push_back(std::move(t));
+    threads_.push_back(std::move(t));
   }
 }
 
@@ -44,8 +48,7 @@ ThreadPool<T<R>>::~ThreadPool() {
 }
   
 template<template<typename R> typename T, typename R>
-std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> const &task) {
-  //TODO: handle when shutdowning.
+std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> task) {
   std::shared_ptr<std::promise<R>> p_ptr = std::make_shared<std::promise<R>>();
   std::future<R> f = p_ptr->get_future();
   auto f_ptr = std::make_shared<std::future<R>>(std::move(f));
@@ -56,10 +59,14 @@ std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> const &task) {
 
 template<template<typename R> typename T, typename R>
 void ThreadPool<T<R>>::shutdown() {
-  //TODO: Send End Message
+  // Send stop messages
+  for (int i = 0; i < pool_size_; i++) {
+    T<R> stop("stop");
+    this->submit(stop);
+  }
 
   // Wait tasks completed
-  for (auto &t : thread_pool_) {
+  for (auto &t : threads_) {
     t.join();
   }
 }

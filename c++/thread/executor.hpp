@@ -24,6 +24,19 @@ public:
   T pop();
 };
 
+template<typename R>
+class Task {
+  std::string msg_;
+
+public:
+  Task() {};
+  Task(std::string msg) {
+    msg_ = msg; 
+  }
+  std::string get_msg() {
+    return msg_;
+  }
+};
 
 // ThreadPool Traits
 template<typename R>
@@ -34,12 +47,12 @@ class ThreadPool<T<R>> {
 private:
   int pool_size_;
   BlockingQueue<std::pair<T<R>, std::shared_ptr<std::promise<R>>>> queue_;
-  std::vector<std::thread> thread_pool_;
+  std::vector<std::thread> threads_;
   bool is_shutdown_;
 public:
   ThreadPool(int pool_size);
   ~ThreadPool();
-  std::shared_ptr<std::future<R>> submit(T<R> const &task);
+  std::shared_ptr<std::future<R>> submit(T<R> task);
   void shutdown();
 };
 

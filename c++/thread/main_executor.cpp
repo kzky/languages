@@ -4,7 +4,7 @@
 #include <chrono>
 
 template<typename R>
-class SumTask {
+class SumTask : public Task<R> {
 
 private:
 	int n_;
@@ -13,6 +13,8 @@ public:
 	SumTask(R n) {
 		n_ = n;
 	}
+
+  using Task<R>::Task;
 	
 	R operator()() const {
 		int sum = 0;
