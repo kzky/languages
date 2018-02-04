@@ -6,3 +6,5 @@
 - https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
 - https://qiita.com/i153/items/38f9688a9c80b2cb7da7
 - https://stackoverflow.com/questions/45305151/how-to-get-template-parameter-of-a-template-template-parameter
+- https://stackoverflow.com/questions/9659955/template-class-methods-definition-with-enable-if-as-template-parameter
+- https://stackoverflow.com/questions/13964447/why-compile-error-with-enable-if
