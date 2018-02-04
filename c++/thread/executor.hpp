@@ -39,11 +39,11 @@ public:
 };
 
 // ThreadPool Traits
-template<typename R>
+template<typename R, typename enalbe = void>
 class ThreadPool;
 
 template<template<typename> typename T, typename R>
-class ThreadPool<T<R>> {
+class ThreadPool<T<R>, typename std::enable_if<std::is_base_of<Task<R>, T<R>>::value>::type> {
 private:
   int pool_size_;
   BlockingQueue<std::pair<T<R>, std::shared_ptr<std::promise<R>>>> queue_;

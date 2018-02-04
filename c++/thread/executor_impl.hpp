@@ -24,7 +24,7 @@ T BlockingQueue<T>::pop() {
 }
 
 template<template<typename R> typename T, typename R>
-ThreadPool<T<R>>::ThreadPool(int pool_size): pool_size_(pool_size) {
+ThreadPool<T<R>, typename std::enable_if<std::is_base_of<Task<R>, T<R>>::value>::type>::ThreadPool(int pool_size): pool_size_(pool_size) {
   // Create thread pool
   for (int i = 0; i < pool_size_; i++) {
     std::thread t([&, this] {
@@ -44,11 +44,11 @@ ThreadPool<T<R>>::ThreadPool(int pool_size): pool_size_(pool_size) {
 }
 
 template<template<typename R> typename T, typename R>
-ThreadPool<T<R>>::~ThreadPool() {
+ThreadPool<T<R>, typename std::enable_if<std::is_base_of<Task<R>, T<R>>::value>::type>::~ThreadPool() {
 }
   
 template<template<typename R> typename T, typename R>
-std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> task) {
+std::shared_ptr<std::future<R>> ThreadPool<T<R>, typename std::enable_if<std::is_base_of<Task<R>, T<R>>::value>::type>::submit(T<R> task) {
   std::shared_ptr<std::promise<R>> p_ptr = std::make_shared<std::promise<R>>();
   std::future<R> f = p_ptr->get_future();
   auto f_ptr = std::make_shared<std::future<R>>(std::move(f));
@@ -58,11 +58,11 @@ std::shared_ptr<std::future<R>> ThreadPool<T<R>>::submit(T<R> task) {
 }
 
 template<template<typename R> typename T, typename R>
-void ThreadPool<T<R>>::shutdown() {
+void ThreadPool<T<R>, typename std::enable_if<std::is_base_of<Task<R>, T<R>>::value>::type>::shutdown() {
   // Send stop messages
   for (int i = 0; i < pool_size_; i++) {
-    T<R> stop("stop");
-    this->submit(stop);
+    T<R> stop_task("stop");
+    this->submit(stop_task);
   }
 
   // Wait tasks completed
