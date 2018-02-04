@@ -24,8 +24,7 @@ T BlockingQueue<T>::pop() {
 }
 
 template<typename R>
-ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* = nullptr>::ThreadPool(int pool_size): pool_size_(pool_size) {
-//ThreadPool<R, enabler>::ThreadPool(int pool_size): pool_size_(pool_size) {
+ThreadPool<R>::ThreadPool(int pool_size): pool_size_(pool_size) {
   // Create thread pool
   for (int i = 0; i < pool_size_; i++) {
     std::thread t([&, this] {
@@ -35,11 +34,7 @@ ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* 
           item.second->set_value(result);
 
           // stop
-          bool cond = typeid(result) == typeid(StopResult);
-          printf("result = %s\n", typeid(result).name());
-          printf("stop_result = %s\n", typeid(StopResult).name());
-          printf("cond = %d\n", cond);
-          if (cond) {
+          if (result.msg_ == "stop") {
             break;
           }
         }
@@ -49,11 +44,11 @@ ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* 
 }
 
 template<typename R>
-ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* = nullptr>::~ThreadPool() {
+ThreadPool<R>::~ThreadPool() {
 }
 
 template<typename R>
-std::shared_ptr<std::future<R>> ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* = nullptr>::submit(std::function<R()> func) {
+std::shared_ptr<std::future<R>> ThreadPool<R>::submit(std::function<R()> func) {
   std::shared_ptr<std::promise<R>> p_ptr = std::make_shared<std::promise<R>>();
   std::future<R> f = p_ptr->get_future();
   auto f_ptr = std::make_shared<std::future<R>>(std::move(f));
@@ -63,10 +58,10 @@ std::shared_ptr<std::future<R>> ThreadPool<R, typename std::enable_if<std::is_ba
 }
 
 template<typename R>
-void ThreadPool<R, typename std::enable_if<std::is_base_of<Result, R>::value>::type* = nullptr>::shutdown() {
+void ThreadPool<R>::shutdown() {
   // Send stop messages
   for (int i = 0; i < pool_size_; i++) {
-    std::function<R()> stop = []() {return StopResult();};
+    std::function<R()> stop = [&]() {return Result("stop");};
     this->submit(stop);
   }
 

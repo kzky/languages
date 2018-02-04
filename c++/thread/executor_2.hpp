@@ -24,17 +24,20 @@ public:
   T pop();
 };
 
-class Result {
+struct Result {
+  std::string msg_;
+  Result() {};
+  Result(std::string msg) {msg_ = msg;};
+  virtual ~Result() = default;
 };
 
-class StopResult : public Result {
-};
 
-extern void* enabler;
+// trait
+template<typename R, typename = typename std::enable_if<std::is_base_of<Result, R>::value>::type>
+class ThreadPool;
 
-//template<typename R>
-template<typename R, typename std::enable_if<std::is_base_of<Result, R>::value>::type*>
-class ThreadPool {
+template<typename R>
+class ThreadPool<R> {
 private:
   int pool_size_;
   BlockingQueue<std::pair<std::function<R()>, std::shared_ptr<std::promise<R>>>> queue_;

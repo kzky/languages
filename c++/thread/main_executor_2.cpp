@@ -15,8 +15,6 @@ int main(int argc, char *argv[])
 	auto f = thread_pool.submit([&]() {  x += 1; return Result();});
 
 
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-
   // join
 	f->get();
 
