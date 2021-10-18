@@ -1,0 +1,40 @@
+FROM tvmai/ci-gpu:v0.64
+
+LABEL maintainer="Kauki.Yoshiyama@gmail.com"
+
+ENV TVM_HOME=/opt/tvm
+
+#RUN rm -rf /var/lib/apt/lists/*
+#RUN apt-get update
+RUN apt-get install -y vim less
+
+# Git clone tvm
+RUN git clone --recursive https://github.com/apache/incubator-tvm ${TVM_HOME} &&\
+  cd ${TVM_HOME} && \
+  git submodule init && \
+  git submodule update 
+
+# Use this one if LLVM not found error
+#sed -i "s!set(USE_LLVM OFF)!set(USE_LLVM /usr/lib/llvm-9/bin/llvm-config)!g" ${TVM_HOME}/build/config.cmake && \
+
+# LLVM build
+RUN cd ${TVM_HOME} && \
+  mkdir build && \
+  cp cmake/config.cmake build && \
+  sed -i "s/set(USE_LLVM OFF)/set(USE_LLVM ON)/g" ${TVM_HOME}/build/config.cmake && \
+  sed -i "s/set(USE_CUDA OFF)/set(USE_CUDA ON)/g" ${TVM_HOME}/build/config.cmake && \
+  sed -i "s/set(USE_CUDNN OFF)/set(USE_CUDNN ON)/g" ${TVM_HOME}/build/config.cmake && \
+  sed -i "s/set(USE_CUBLAS OFF)/set(USE_CUBLAS ON)/g" ${TVM_HOME}/build/config.cmake && \
+  cd build && \
+  cmake .. && \
+  make -j 32 && \
+  make install
+
+
+# ONNX
+RUN pip3 install --user onnx
+
+# PYTHONPATH
+ENV PYTHONPATH "$TVM_HOME/python:$TVM_HOME/topi/python:${PYTHONPATH}"
+
+

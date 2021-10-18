@@ -1,0 +1,37 @@
+FROM tvmai/ci-cpu:v0.62
+
+LABEL maintainer="Kauki.Yoshiyama@gmail.com"
+
+ENV TVM_HOME=/opt/tvm
+
+RUN apt-get update && \
+  apt-get install -y numactl
+
+# Git clone tvm
+RUN git clone --recursive https://github.com/apache/incubator-tvm ${TVM_HOME} &&\
+  cd ${TVM_HOME} && \
+  git submodule init && \
+  git submodule update 
+
+
+# Use this one if LLVM not found error
+#sed -i "s!set(USE_LLVM OFF)!set(USE_LLVM /usr/lib/llvm-9/bin/llvm-config)!g" ${TVM_HOME}/build/config.cmake && \
+
+# LLVM build
+RUN cd ${TVM_HOME} && \
+  mkdir build && \
+  cp cmake/config.cmake build && \
+  sed -i "s/set(USE_LLVM OFF)/set(USE_LLVM ON)/g" ${TVM_HOME}/build/config.cmake && \
+  cd build && \
+  cmake .. && \
+  make -j 32 && \
+  make install
+
+
+# ONNX
+RUN pip3 install --user onnx
+
+# PYTHONPATH
+ENV PYTHONPATH "$TVM_HOME/python:$TVM_HOME/topi/python:${PYTHONPATH}"
+
+
